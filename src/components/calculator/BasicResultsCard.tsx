@@ -1,54 +1,206 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalculationResults, CalculatorInputs } from "@/types/calculator";
 import { CheckCircle, AlertTriangle, Calendar, Target, TrendingUp, ArrowRight, Sparkles, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CEILING, FV } from "@/pages/FinancialFreedomCalculator";
 
 interface BasicResultsCardProps {
   results: CalculationResults;
   inputs: CalculatorInputs;
+  projections: any[];
 }
 
 const formatCurrency = (value: number): string => {
   if (value >= 10000000) {
-    return `₹${(value / 10000000).toFixed(2)}Cr`;
+    // 1 crore or more
+    return `₹${(value / 10000000).toFixed(1)}Cr`;
   } else if (value >= 100000) {
-    return `₹${(value / 100000).toFixed(2)}L`;
+    // 1 lakh or more
+    return `₹${(value / 100000).toFixed(1)}L`;
+  } else if (value >= 1000) {
+    // 1 thousand or more
+    return `₹${(value / 1000).toFixed(0)}K`;
   } else {
     return `₹${Math.round(value).toLocaleString("en-IN")}`;
   }
 };
 
-const BasicResultsCard: React.FC<BasicResultsCardProps> = ({ results, inputs }) => {
+const BasicResultsCard: React.FC<BasicResultsCardProps> = ({ results, inputs, projections }) => {
   const navigate = useNavigate();
-  const needsOptimization = results.corpusDepletesBeforeLifeExpectancy;
+  const isNegativeCorpus = projections.some(
+    (projection) => projection.expectedCorpus < 0
+  );
+  const needsOptimization = isNegativeCorpus || results.corpusDepletesBeforeLifeExpectancy;
 
   const handleSignUp = () => {
     localStorage.setItem('redirect_after_login', '/dashboard/ffr');
     navigate("/auth");
   };
 
-  // Calculate projected corpus at retirement
-  const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
-  const yearsToRetirement = retirementAge - inputs.age;
-  
-  // Simple FV calculation for projected corpus
-  const monthlyRate = inputs.returnDuringSIPAndWaiting / 100 / 12;
-  const sipMonths = inputs.yearsForSIP * 12;
-  let sipValue = 0;
-  if (monthlyRate > 0) {
-    sipValue = inputs.sipAmount * ((Math.pow(1 + monthlyRate, sipMonths) - 1) / monthlyRate);
-  } else {
-    sipValue = inputs.sipAmount * sipMonths;
-  }
-  const initialGrowth = inputs.initialPortfolioValue * Math.pow(1 + inputs.returnDuringSIPAndWaiting / 100, inputs.yearsForSIP);
-  const corpusAfterSIP = initialGrowth + sipValue;
-  const projectedCorpus = corpusAfterSIP * Math.pow(1 + inputs.returnDuringSIPAndWaiting / 100, inputs.waitingYearsBeforeSWP);
+  // Generate detailed projections using correct formulas
+  const generateDetailedProjections = (inputs: CalculatorInputs) => {
+    const projections = [];
+    let currentCorpus = inputs.initialPortfolioValue;
+    const monthlyReturn = inputs.returnDuringSIPAndWaiting / 100 / 12;
+    const annualReturn = inputs.returnDuringSIPAndWaiting / 100;
+    const swpReturn = inputs.returnDuringSWP / 100;
+    const currentAge = inputs.age;
+    const sipEndYear = inputs.yearsForSIP;
+    const swpStartYear = inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
+
+    // Calculate inflated monthly expenses for SWP period
+    const inflatedMonthlyExpenses = CEILING(
+      inputs.currentMonthlyExpenses *
+      Math.pow(1 + inputs.inflation / 100, swpStartYear),
+      1000
+    );
+
+    // Track previous year's SWP amount for proper growth calculation
+    let previousMonthlySWP = 0;
+
+    // Start from year 1 (first investment year)
+    for (
+      let year = 1;
+      year <= Math.min(50, inputs.lifeExpectancy - currentAge);
+      year++
+    ) {
+      const age = currentAge + year;
+      const yearNumber = year;
+
+      // Determine phase
+      const isInSIPPhase = year <= sipEndYear;
+      const isInWaitingPhase = year > sipEndYear && year <= swpStartYear;
+      const isInSWPPhase = year > swpStartYear;
+
+      // Calculate SIP amount (with growth if applicable)
+      let monthlySIP = 0;
+      if (isInSIPPhase) {
+        const sipGrowthRate = inputs.growthInSIP / 100;
+        monthlySIP = inputs.sipAmount * Math.pow(1 + sipGrowthRate, year - 1);
+      }
+
+      // Get user-defined lumpsum values
+      const lumpsumInvestment = 0;
+      const lumpsumWithdrawal = 0;
+
+      // Calculate returns
+      const returnRate = isInSWPPhase ? swpReturn : annualReturn;
+
+      // Calculate SWP amount
+      let monthlySWP = 0;
+      if (isInSWPPhase) {
+        if (inputs.yearsForSIP + inputs.waitingYearsBeforeSWP + 1 === year) {
+          // First year of SWP - use base inflated monthly expenses
+          monthlySWP = inflatedMonthlyExpenses;
+        } else {
+          // Subsequent years - apply growth to previous year's SWP amount
+          monthlySWP = previousMonthlySWP * (1 + inputs.growthInSWP / 100);
+        }
+        // Update previousMonthlySWP for next year's calculation
+        previousMonthlySWP = monthlySWP;
+      }
+
+      // Calculate corpus at beginning of year
+      let beginningCorpus = currentCorpus;
+
+      // Add SIP contributions throughout the year and calculate compounding
+      if (isInSIPPhase || isInWaitingPhase) {
+        const rate = Math.pow(1 + annualReturn, 1 / 12) - 1;
+        beginningCorpus =
+          FV(rate, 12, -monthlySIP, -(beginningCorpus + lumpsumInvestment), 1) -
+          lumpsumWithdrawal;
+      } else {
+        const rate = Math.pow(1 + swpReturn, 1 / 12) - 1;
+        beginningCorpus =
+          FV(rate, 12, monthlySWP, -beginningCorpus, 1) - lumpsumWithdrawal;
+      }
+
+      // Calculate expected corpus at end of year
+      const expectedCorpus = beginningCorpus;
+
+      projections.push({
+        year: currentAge + year,
+        yearNumber,
+        age,
+        amountInHand: currentCorpus,
+        lumpsumInvestment,
+        monthlySIP,
+        returnRate: returnRate * 100,
+        monthlySWP,
+        lumpsumWithdrawal,
+        expectedCorpus,
+        isInSIPPhase,
+        isInWaitingPhase,
+        isInSWPPhase,
+      });
+
+      currentCorpus = expectedCorpus;
+    }
+
+    return projections;
+  };
+
+  // Trial and error function to find optimal SIP amount
+  const trailError = () => {
+    const testInputs = { ...inputs };
+    let currentSipAmount = testInputs.sipAmount;
+    let iterationCount = 0;
+    const maxIterations = 200;
+    const targetCorpus = (() => {
+      const swpProjection = projections.find((element) => element.isInSWPPhase === true);
+      return swpProjection ? formatCurrency(swpProjection.expectedCorpus) : "₹0";
+    })();
+
+    while (iterationCount < maxIterations) {
+      iterationCount++;
+
+      // Update the SIP amount for this iteration
+      testInputs.sipAmount = currentSipAmount;
+
+      // Calculate results with current SIP amount
+      const testProjections = generateDetailedProjections(testInputs);
+
+      // Check if any expectedCorpus is negative
+      const hasNegativeCorpus = testProjections.some(
+        (projection) => projection.expectedCorpus < 0
+      );
+      if (hasNegativeCorpus) {
+        // Increase SIP amount by 500 for next iteration
+        currentSipAmount += 500;
+      } else {
+        const targetCorpus = (() => {
+          const swpProjection = testProjections.find((element) => element.isInSWPPhase === true);
+          return swpProjection ? formatCurrency(swpProjection.expectedCorpus) : "₹0";
+        })();
+        return { currentSipAmount, targetCorpus };
+      }
+    }
+
+    return { currentSipAmount, targetCorpus };
+  };
+
+  const [trailErrorData, setTrailErrorData] = useState<{
+    currentSipAmount: number;
+    targetCorpus: string;
+  }>({ currentSipAmount: 0, targetCorpus: "" });
+
+  useEffect(() => {
+    const data = trailError();
+    setTrailErrorData(data);
+  }, [inputs]);
+
+  // Calculate expected corpus using passed projections
+  const expectedCorpus = (() => {
+    const swpProjection = projections.find((element) => element.isInSWPPhase === true);
+    return swpProjection ? swpProjection.expectedCorpus : 0;
+  })();
 
   const currentMonthlySIP = inputs.sipAmount;
-  const sipGap = results.requiredMonthlySIP - currentMonthlySIP;
+  const requiredSIPAmount = trailErrorData.currentSipAmount || currentMonthlySIP;
+  const sipGap = requiredSIPAmount - currentMonthlySIP;
   const currentSIPStatus = sipGap > 0 ? "Insufficient" : "Secure";
   const requiredSIPStatus = sipGap > 0 ? "Secure" : "Excellent";
 
@@ -112,7 +264,7 @@ const BasicResultsCard: React.FC<BasicResultsCardProps> = ({ results, inputs }) 
               Expected Corpus
             </div>
             <div className="text-3xl font-bold text-foreground">
-              {formatCurrency(projectedCorpus)}
+              {formatCurrency(expectedCorpus)}
             </div>
             <div className="text-sm text-muted-foreground">
               At retirement
@@ -130,7 +282,7 @@ const BasicResultsCard: React.FC<BasicResultsCardProps> = ({ results, inputs }) 
               Required Corpus
             </div>
             <div className="text-3xl font-bold text-blue-500">
-              {formatCurrency(results.requiredCorpus)}
+              {trailErrorData.targetCorpus || formatCurrency(results.requiredCorpus)}
             </div>
             <div className="text-sm text-blue-400">
               Target needed
@@ -181,7 +333,7 @@ const BasicResultsCard: React.FC<BasicResultsCardProps> = ({ results, inputs }) 
                     </Badge>
                   </div>
                   <div className="text-3xl font-bold text-green-600">
-                    {formatCurrency(results.requiredMonthlySIP)}
+                    {formatCurrency(requiredSIPAmount)}
                   </div>
                 </div>
               </Card>
@@ -215,7 +367,7 @@ const BasicResultsCard: React.FC<BasicResultsCardProps> = ({ results, inputs }) 
               <Sparkles className="w-10 h-10 text-primary" />
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <h3 className="text-xl md:text-2xl font-bold text-foreground">
               Sign up free to view your full analysis and detailed action plan

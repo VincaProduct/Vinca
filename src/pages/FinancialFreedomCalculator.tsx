@@ -90,7 +90,7 @@ const FinancialFreedomCalculator = () => {
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [userLumpsumData, setUserLumpsumData] = useState<UserLumpsumData>({});
   const [showForm, setShowForm] = useState(true);
-  
+
   const handleInputChange = (newInputs: CalculatorInputs) => {
     setInputs(newInputs);
   };
@@ -99,10 +99,10 @@ const FinancialFreedomCalculator = () => {
     const calculatedResults = calculateFinancialFreedom(inputs);
     setResults(calculatedResults);
     setShowForm(false);
-    
+
     localStorage.setItem('financial_calculator_inputs', JSON.stringify(inputs));
     localStorage.setItem('financial_calculator_results', JSON.stringify(calculatedResults));
-    
+
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
@@ -135,7 +135,7 @@ const FinancialFreedomCalculator = () => {
     // Calculate inflated monthly expenses for SWP period
     const inflatedMonthlyExpenses = CEILING(
       inputs.currentMonthlyExpenses *
-        Math.pow(1 + inputs.inflation / 100, swpStartYear),
+      Math.pow(1 + inputs.inflation / 100, swpStartYear),
       1000
     );
 
@@ -264,7 +264,7 @@ const FinancialFreedomCalculator = () => {
           {results && !showForm && (
             <div className="animate-fade-in space-y-4">
               <div className="flex justify-start">
-                <Button 
+                <Button
                   onClick={handleEditDetails}
                   variant="outline"
                   className="gap-2"
@@ -273,7 +273,7 @@ const FinancialFreedomCalculator = () => {
                   Edit Details
                 </Button>
               </div>
-              <BasicResultsCard results={results} inputs={inputs} />
+              <BasicResultsCard results={results} inputs={inputs} projections={projections} />
             </div>
           )}
         </div>
