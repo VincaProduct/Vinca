@@ -234,7 +234,7 @@ serve(async (req) => {
           .from('profiles')
           .update({
             zoho_sync_status: 'failed',
-            zoho_sync_error: error.message,
+            zoho_sync_error: error instanceof Error ? error.message : 'Unknown error',
           })
           .eq('id', body.userId);
       }
@@ -245,7 +245,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || 'Internal server error',
+        error: error instanceof Error ? error.message : 'Internal server error',
       }),
       { 
         status: 500, 
