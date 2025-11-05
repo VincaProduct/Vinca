@@ -2,83 +2,127 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --background: 184 100% 99%;
+    --foreground: 185 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 185 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 185 25% 15%;
 
-    --primary: 221 83% 53%;
+    --primary: 158 64% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 158 25% 95%;
+    --secondary-foreground: 158 64% 25%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 184 44% 96%;
+    --muted-foreground: 185 15% 45%;
 
-    --accent: 199 89% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 158 25% 95%;
+    --accent-foreground: 158 64% 25%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 184 32% 89%;
+    --input: 184 32% 94%;
+    --ring: 158 64% 52%;
 
-    --radius: 0.75rem;
+    /* Phase Colors for Timeline */
+    --phase-current: 158 64% 52%;
+    --phase-building: 158 64% 52%;
+    --phase-growing: 43 96% 56%;
+    --phase-living: 262 83% 58%;
+    --phase-success: 142 76% 36%;
+    --phase-warning: 38 92% 50%;
 
-    /* Custom design tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(199 89% 48%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
-    --shadow-soft: 0 4px 6px -1px hsl(221 83% 53% / 0.1), 0 2px 4px -2px hsl(221 83% 53% / 0.1);
-    --shadow-medium: 0 10px 15px -3px hsl(221 83% 53% / 0.1), 0 4px 6px -4px hsl(221 83% 53% / 0.1);
-    --shadow-large: 0 20px 25px -5px hsl(221 83% 53% / 0.15), 0 8px 10px -6px hsl(221 83% 53% / 0.1);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52% / 0.1), hsl(158 64% 52% / 0.05));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(158 25% 98%));
+    --gradient-accent: linear-gradient(135deg, hsl(158 64% 52%), hsl(142 76% 36%));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 6px -1px hsl(158 64% 52% / 0.1), 0 2px 4px -1px hsl(158 64% 52% / 0.06);
+    --shadow-medium: 0 10px 15px -3px hsl(158 64% 52% / 0.1), 0 4px 6px -2px hsl(158 64% 52% / 0.05);
+    --shadow-large: 0 20px 25px -5px hsl(158 64% 52% / 0.1), 0 10px 10px -5px hsl(158 64% 52% / 0.04);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 0 0% 100%;
+    --background: 185 25% 8%;
+    --foreground: 184 100% 99%;
 
-    --card: 217 33% 17%;
-    --card-foreground: 0 0% 100%;
+    --card: 185 25% 10%;
+    --card-foreground: 184 100% 99%;
 
-    --popover: 217 33% 17%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 185 25% 10%;
+    --popover-foreground: 184 100% 99%;
 
-    --primary: 221 83% 53%;
+    --primary: 158 64% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 185 25% 15%;
+    --secondary-foreground: 184 100% 99%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 185 25% 15%;
+    --muted-foreground: 185 15% 65%;
 
-    --accent: 199 89% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 185 25% 15%;
+    --accent-foreground: 184 100% 99%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 217 33% 24%;
-    --input: 217 33% 24%;
-    --ring: 221 83% 53%;
+    --border: 185 25% 20%;
+    --input: 185 25% 15%;
+    --ring: 158 64% 52%;
 
-    /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(199 89% 48%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(222 47% 11%) 0%, hsl(217 33% 17%) 100%);
+    /* Phase Colors for Timeline - Dark Mode */
+    --phase-current: 158 64% 52%;
+    --phase-building: 158 64% 52%;
+    --phase-growing: 43 96% 56%;
+    --phase-living: 262 83% 58%;
+    --phase-success: 142 76% 36%;
+    --phase-warning: 38 92% 50%;
+
+    /* Gradients - Dark Mode */
+    --gradient-hero: linear-gradient(135deg, hsl(158 64% 52% / 0.1), hsl(158 64% 52% / 0.05));
+    --gradient-card: linear-gradient(135deg, hsl(185 25% 10%), hsl(185 25% 12%));
+    --gradient-accent: linear-gradient(135deg, hsl(158 64% 52%), hsl(142 76% 36%));
+
+    /* Shadows - Dark Mode */
+    --shadow-soft: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+    --shadow-medium: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -2px hsl(0 0% 0% / 0.05);
+    --shadow-large: 0 20px 25px -5px hsl(0 0% 0% / 0.3), 0 10px 10px -5px hsl(0 0% 0% / 0.04);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -89,5 +133,205 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Set dark mode as default for dashboard */
+  .dark {
+    color-scheme: dark;
+  }
+
+
+  /* Preserve accessibility for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Optimize scrollbar appearance for smooth scroll */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.6);
+  }
+
+  /* Enhanced Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  .animate-bounce-gentle {
+    animation: bounceGentle 0.6s ease-out forwards;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes bounceGentle {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(-5px) scale(1.02);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Interactive Elements */
+  .hover-lift {
+    transition: all 0.2s ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .button-primary {
+    background: var(--gradient-accent);
+    border: none;
+    color: white;
+    transition: all 0.2s ease-out;
+  }
+
+  .button-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  /* CTA Specific Styles */
+  .cta-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background: var(--gradient-card);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease-out;
+  }
+
+  .cta-container:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-1px);
+  }
+
+  .cta-button-enhanced {
+    background: var(--gradient-accent);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-out;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .cta-button-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    background: var(--gradient-accent);
+  }
+
+  .cta-banner {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.04));
+    border: 1px solid hsl(var(--primary) / 0.2);
+    border-left: 4px solid hsl(var(--primary));
+  }
+
+  .cta-card-elevated {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-large);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  /* Phase Colors */
+  .phase-current { color: hsl(var(--phase-current)); }
+  .phase-building { color: hsl(var(--phase-building)); }
+  .phase-growing { color: hsl(var(--phase-growing)); }
+  .phase-living { color: hsl(var(--phase-living)); }
+  .phase-success { color: hsl(var(--phase-success)); }
+  .phase-warning { color: hsl(var(--phase-warning)); }
+
+  .bg-phase-current { background-color: hsl(var(--phase-current)); }
+  .bg-phase-building { background-color: hsl(var(--phase-building)); }
+  .bg-phase-growing { background-color: hsl(var(--phase-growing)); }
+  .bg-phase-living { background-color: hsl(var(--phase-living)); }
+  .bg-phase-success { background-color: hsl(var(--phase-success)); }
+  .bg-phase-warning { background-color: hsl(var(--phase-warning)); }
+
+  /* Ensure smooth transforms */
+  .smooth-transform {
+    will-change: transform;
+    transform: translateZ(0);
   }
 }
