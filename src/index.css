@@ -44,7 +44,7 @@
     --gradient-hero: linear-gradient(135deg, hsl(158 64% 52% / 0.1), hsl(158 64% 52% / 0.05));
     --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(158 25% 98%));
     --gradient-accent: linear-gradient(135deg, hsl(158 64% 52%), hsl(142 76% 36%));
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 6px -1px hsl(158 64% 52% / 0.1), 0 2px 4px -1px hsl(158 64% 52% / 0.06);
     --shadow-medium: 0 10px 15px -3px hsl(158 64% 52% / 0.1), 0 4px 6px -2px hsl(158 64% 52% / 0.05);
@@ -134,7 +134,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Set dark mode as default for dashboard */
   .dark {
     color-scheme: dark;
@@ -195,6 +195,7 @@
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -206,6 +207,7 @@
       opacity: 0;
       transform: translateY(30px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -217,6 +219,7 @@
       opacity: 0;
       transform: scale(0.9);
     }
+
     to {
       opacity: 1;
       transform: scale(1);
@@ -228,10 +231,12 @@
       opacity: 0;
       transform: translateY(20px) scale(0.9);
     }
+
     60% {
       opacity: 1;
       transform: translateY(-5px) scale(1.02);
     }
+
     100% {
       opacity: 1;
       transform: translateY(0) scale(1);
@@ -239,9 +244,12 @@
   }
 
   @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translateY(0px);
     }
+
     50% {
       transform: translateY(-10px);
     }
@@ -315,19 +323,53 @@
   }
 
   /* Phase Colors */
-  .phase-current { color: hsl(var(--phase-current)); }
-  .phase-building { color: hsl(var(--phase-building)); }
-  .phase-growing { color: hsl(var(--phase-growing)); }
-  .phase-living { color: hsl(var(--phase-living)); }
-  .phase-success { color: hsl(var(--phase-success)); }
-  .phase-warning { color: hsl(var(--phase-warning)); }
+  .phase-current {
+    color: hsl(var(--phase-current));
+  }
 
-  .bg-phase-current { background-color: hsl(var(--phase-current)); }
-  .bg-phase-building { background-color: hsl(var(--phase-building)); }
-  .bg-phase-growing { background-color: hsl(var(--phase-growing)); }
-  .bg-phase-living { background-color: hsl(var(--phase-living)); }
-  .bg-phase-success { background-color: hsl(var(--phase-success)); }
-  .bg-phase-warning { background-color: hsl(var(--phase-warning)); }
+  .phase-building {
+    color: hsl(var(--phase-building));
+  }
+
+  .phase-growing {
+    color: hsl(var(--phase-growing));
+  }
+
+  .phase-living {
+    color: hsl(var(--phase-living));
+  }
+
+  .phase-success {
+    color: hsl(var(--phase-success));
+  }
+
+  .phase-warning {
+    color: hsl(var(--phase-warning));
+  }
+
+  .bg-phase-current {
+    background-color: hsl(var(--phase-current));
+  }
+
+  .bg-phase-building {
+    background-color: hsl(var(--phase-building));
+  }
+
+  .bg-phase-growing {
+    background-color: hsl(var(--phase-growing));
+  }
+
+  .bg-phase-living {
+    background-color: hsl(var(--phase-living));
+  }
+
+  .bg-phase-success {
+    background-color: hsl(var(--phase-success));
+  }
+
+  .bg-phase-warning {
+    background-color: hsl(var(--phase-warning));
+  }
 
   /* Ensure smooth transforms */
   .smooth-transform {
