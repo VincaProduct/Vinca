@@ -34,6 +34,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Clear redirect path after successful sign in
+        if (event === 'SIGNED_IN') {
+          localStorage.removeItem('redirect_after_login');
+        }
       }
     );
 
@@ -68,7 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('pending_referral_code', referralCode);
     }
     
-    const redirectUrl = `${window.location.origin}/`;
+    // Check for stored redirect path
+    const redirectPath = localStorage.getItem('redirect_after_login') || '/';
+    const redirectUrl = `${window.location.origin}${redirectPath}`;
     
     await supabase.auth.signInWithOAuth({
       provider: 'google',
