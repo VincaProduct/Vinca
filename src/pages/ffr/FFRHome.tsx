@@ -7,7 +7,12 @@ import { EssentialsPanel } from '@/components/ffr/EssentialsPanel';
 import { ProgressPathway } from '@/components/ffr/ProgressPathway';
 import { BusinessOpportunitiesPreview } from '@/components/ffr/BusinessOpportunitiesPreview';
 // import { ExportResults } from '@/components/ffr/ExportResults';
-import { InputParametersPanel } from '@/components/ffr/InputParametersPanel';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Edit } from "lucide-react";
+import TimelineCalculatorForm from "@/components/calculator/TimelineCalculatorForm";
+import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
+import { toast } from "sonner";
 import { HeadlineInsights } from '@/components/ffr/HeadlineInsights';
 import { YearlyCorpusAnalysis } from '@/components/ffr/YearlyCorpusAnalysis';
 import { EducationalContent } from '@/components/ffr/EducationalContent';
@@ -22,10 +27,40 @@ export default function FFRHome() {
   const { ffrProgress, checklist, loading, initializeUserData, getCurrentScores } = useFFR();
   const [calculatorInputs, setCalculatorInputs] = useState<CalculatorInputs | null>(null);
   const [calculatorResults, setCalculatorResults] = useState<CalculationResults | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editedInputs, setEditedInputs] = useState<CalculatorInputs | null>(null);
 
-  const handleInputsUpdate = (newInputs: CalculatorInputs, newResults: CalculationResults) => {
-    setCalculatorInputs(newInputs);
+  const handleCalculate = async () => {
+    if (!editedInputs) return;
+    
+    const newResults = calculateFinancialFreedom(editedInputs);
+    
+    // Store in localStorage
+    localStorage.setItem('financial_calculator_inputs', JSON.stringify(editedInputs));
+    localStorage.setItem('financial_calculator_results', JSON.stringify(newResults));
+    
+    // Save to database if user is logged in
+    if (user) {
+      try {
+        await supabase
+          .from('user_calculations')
+          .insert({
+            user_id: user.id,
+            calculation_type: 'financial_freedom',
+            inputs: editedInputs as any,
+            results: newResults as any
+          });
+      } catch (error) {
+        console.error('Error saving to database:', error);
+      }
+    }
+    
+    // Update state
+    setCalculatorInputs(editedInputs);
     setCalculatorResults(newResults);
+    
+    setIsEditOpen(false);
+    toast.success("Your financial plan has been updated!");
   };
 
   useEffect(() => {
@@ -47,8 +82,11 @@ export default function FFRHome() {
             .single();
 
           if (!error && data) {
-            setCalculatorInputs(data.inputs as unknown as CalculatorInputs);
-            setCalculatorResults(data.results as unknown as CalculationResults);
+            const inputs = data.inputs as unknown as CalculatorInputs;
+            const results = data.results as unknown as CalculationResults;
+            setCalculatorInputs(inputs);
+            setCalculatorResults(results);
+            setEditedInputs(inputs);
             return; // DB data found, don't check localStorage
           }
         } catch (error) {
@@ -61,8 +99,11 @@ export default function FFRHome() {
       const storedResults = localStorage.getItem('financial_calculator_results');
 
       if (storedInputs && storedResults) {
-        setCalculatorInputs(JSON.parse(storedInputs));
-        setCalculatorResults(JSON.parse(storedResults));
+        const inputs = JSON.parse(storedInputs);
+        const results = JSON.parse(storedResults);
+        setCalculatorInputs(inputs);
+        setCalculatorResults(results);
+        setEditedInputs(inputs);
       }
     };
 
@@ -186,23 +227,39 @@ export default function FFRHome() {
                 Your personalized roadmap to financial independence
               </p>
             </div>
-            {/* <ExportResults 
-              ffrProgress={ffrProgress}
-              calculatorResults={calculatorResults}
-            /> */}
+            {calculatorInputs && (
+              <Dialog open={isEditOpen} onOpenChange={(open) => {
+                setIsEditOpen(open);
+                if (open) setEditedInputs(calculatorInputs);
+              }}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Edit className="w-4 h-4" />
+                    Edit Inputs
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Edit Your Financial Plan</DialogTitle>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    {editedInputs && (
+                      <TimelineCalculatorForm
+                        inputs={editedInputs}
+                        onInputChange={setEditedInputs}
+                        onCalculate={handleCalculate}
+                      />
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto p-6 space-y-8">
-        {/* a. Top Panel: Calculator Results with Edit */}
-        {calculatorInputs && (
-          <InputParametersPanel
-            inputs={calculatorInputs}
-            onInputsUpdate={handleInputsUpdate}
-          />
-        )}
-
+        {/* Calculator Results */}
         {calculatorInputs && calculatorResults && (
           <Card className="border-primary/50 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
