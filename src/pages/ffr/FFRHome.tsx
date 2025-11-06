@@ -307,42 +307,126 @@ export default function FFRHome() {
           />
         )}
 
-        {/* e. Foundations Checklist */}
-        <EssentialsPanel
-          checklist={checklist}
-          calculatorResults={calculatorResults}
-        />
+        {/* Story-driven CTA Journey */}
+        <div className="space-y-8">
+          {/* Step 1: Satisfied with Planning? */}
+          <Card className="border-primary/30 overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8">
+              <div className="max-w-3xl">
+                <h2 className="text-2xl font-bold mb-4">
+                  ✅ Satisfied with Your Financial Planning?
+                </h2>
+                <p className="text-lg text-muted-foreground mb-6">
+                  You've taken the first step by calculating your path to financial freedom. 
+                  But a solid plan is just the beginning of your journey.
+                </p>
+              </div>
+            </div>
+          </Card>
 
-        {/* f. Action Plan & g. Journey Progress */}
-        {/* <ProgressPathway ffrProgress={ffrProgress} /> */}
+          {/* Step 2: Financial Essentials */}
+          <Card className="border-primary/30">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                🛡️ Are You Covered with Financial Essentials?
+              </CardTitle>
+              <p className="text-muted-foreground mt-2">
+                Before building wealth, ensure your foundation is solid. These essentials protect you and your family from unexpected events.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <EssentialsPanel
+                checklist={checklist}
+                calculatorResults={calculatorResults}
+              />
+            </CardContent>
+          </Card>
 
-        {/* h. Educational Content & Learning Path */}
-        {/* <EducationalContent
-          ffrScores={ffrProgress ? {
-            foundation_score: ffrProgress.foundation_score,
-            habit_score: ffrProgress.habit_score,
-            literacy_score: ffrProgress.literacy_score
-          } : undefined}
-        /> */}
+          {/* Step 3: Business Opportunities */}
+          <Card className="border-primary/30">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                🚀 Ready to Explore More Opportunities?
+              </CardTitle>
+              <p className="text-muted-foreground mt-2">
+                Beyond traditional investments, discover exclusive business and investment opportunities curated for your financial goals.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <BusinessOpportunitiesPreview />
+            </CardContent>
+          </Card>
 
-        {/* Business Opportunities Guidance */}
-        <BusinessOpportunitiesPreview />
+          {/* Step 4: Main CTA - Portfolio Login */}
+          <Card className="border-2 border-primary bg-gradient-to-br from-primary/10 via-primary/5 to-background overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32" />
+            <CardContent className="pt-8 pb-8 relative z-10">
+              <div className="max-w-3xl mx-auto text-center space-y-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
+                  <span className="text-3xl">🎯</span>
+                </div>
+                
+                <h2 className="text-3xl font-bold">
+                  Take the Next Step with Professional Guidance
+                </h2>
+                
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Your financial journey deserves expert support. Login to your Portfolio 
+                  and connect with our advisors who will personally guide you through:
+                </p>
 
-        {/* Motivational Summary */}
-        <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-secondary/5">
-          <CardContent className="pt-6 text-center">
-            <h3 className="text-2xl font-bold mb-3">
-              You're {scores ? Math.round(scores.base) : 0}% Ready for Financial Freedom
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              {scores && scores.base < 50
-                ? "Every journey begins with a single step. Complete your essentials and build momentum towards your financial goals."
-                : scores && scores.base < 75
-                  ? "You're making great progress! Stay consistent with your habits and continue learning to accelerate your journey."
-                  : "Outstanding work! You're well-positioned for financial freedom. Keep exploring opportunities to optimize your wealth."}
-            </p>
-          </CardContent>
-        </Card>
+                <div className="grid md:grid-cols-3 gap-4 my-8">
+                  <div className="p-4 rounded-lg bg-background/50 border border-primary/20">
+                    <div className="text-2xl mb-2">📊</div>
+                    <h3 className="font-semibold mb-1">Personalized Strategy</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Tailored investment plans based on your unique goals
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-background/50 border border-primary/20">
+                    <div className="text-2xl mb-2">💼</div>
+                    <h3 className="font-semibold mb-1">Exclusive Access</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Premium investment opportunities and business ventures
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-background/50 border border-primary/20">
+                    <div className="text-2xl mb-2">🤝</div>
+                    <h3 className="font-semibold mb-1">Expert Support</h3>
+                    <p className="text-sm text-muted-foreground">
+                      One-on-one guidance from experienced wealth managers
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-6 w-full sm:w-auto"
+                    onClick={() => window.location.href = '/dashboard'}
+                  >
+                    Access Your Portfolio Now
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="text-lg px-8 py-6 w-full sm:w-auto"
+                    onClick={() => {
+                      const element = document.getElementById('contact');
+                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    Talk to an Advisor
+                  </Button>
+                </div>
+
+                <p className="text-sm text-muted-foreground mt-6">
+                  ⭐ Trusted by 1000+ investors achieving their financial goals
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* i. Compliance Note */}
         <div className="bg-muted/30 border border-border rounded-lg p-4">
