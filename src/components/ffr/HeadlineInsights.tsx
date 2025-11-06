@@ -11,13 +11,19 @@ interface HeadlineInsightsProps {
 }
 
 export const HeadlineInsights = ({ inputs, results, projections }: HeadlineInsightsProps) => {
-  const formatCurrency = (value: number) => {
-    const formatted = new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value);
-    return formatted.replace('₹', '₹ ');
+  const formatCurrency = (value: number): string => {
+    if (value >= 10000000) {
+      // 1 crore or more
+      return `₹${(value / 10000000).toFixed(1)}Cr`;
+    } else if (value >= 100000) {
+      // 1 lakh or more
+      return `₹${(value / 100000).toFixed(1)}L`;
+    } else if (value >= 1000) {
+      // 1 thousand or more
+      return `₹${(value / 1000).toFixed(0)}K`;
+    } else {
+      return `₹${Math.round(value).toLocaleString("en-IN")}`;
+    }
   };
 
   // Generate detailed projections function (same as MinimalResultsCard)
