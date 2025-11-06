@@ -87,29 +87,56 @@ const FinancialCalculatorPage = () => {
   const [userLumpsumData, setUserLumpsumData] = useState<UserLumpsumData>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  // Load cached data from localStorage on component mount
+  // Load data from DB first, then localStorage on component mount
   useEffect(() => {
-    const cachedInputs = localStorage.getItem('financial_calculator_inputs');
-    const cachedResults = localStorage.getItem('financial_calculator_results');
-    
-    if (cachedInputs) {
-      try {
-        const parsedInputs = JSON.parse(cachedInputs);
-        setInputs(parsedInputs);
-      } catch (error) {
-        console.error('Error parsing cached inputs:', error);
+    const loadData = async () => {
+      // Try to load from DB if user is logged in
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('user_calculations')
+            .select('inputs, results')
+            .eq('user_id', user.id)
+            .eq('calculation_type', 'financial_freedom')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (!error && data) {
+            setInputs(data.inputs as unknown as CalculatorInputs);
+            if (data.results) {
+              setResults(data.results as unknown as CalculationResults);
+            }
+            return; // DB data found, don't check localStorage
+          }
+        } catch (error) {
+          console.log('No DB data found, checking localStorage');
+        }
       }
-    }
-    
-    if (cachedResults) {
-      try {
-        const parsedResults = JSON.parse(cachedResults);
-        setResults(parsedResults);
-      } catch (error) {
-        console.error('Error parsing cached results:', error);
+
+      // Fallback to localStorage
+      const cachedInputs = localStorage.getItem('financial_calculator_inputs');
+      const cachedResults = localStorage.getItem('financial_calculator_results');
+      
+      if (cachedInputs) {
+        try {
+          setInputs(JSON.parse(cachedInputs));
+        } catch (error) {
+          console.error('Error parsing cached inputs:', error);
+        }
       }
-    }
-  }, []);
+      
+      if (cachedResults) {
+        try {
+          setResults(JSON.parse(cachedResults));
+        } catch (error) {
+          console.error('Error parsing cached results:', error);
+        }
+      }
+    };
+
+    loadData();
+  }, [user]);
 
   const handleInputChange = (newInputs: CalculatorInputs) => {
     setInputs(newInputs);

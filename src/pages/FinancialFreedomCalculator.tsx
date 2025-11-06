@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
@@ -94,6 +94,65 @@ const FinancialFreedomCalculator = () => {
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [userLumpsumData, setUserLumpsumData] = useState<UserLumpsumData>({});
   const [showForm, setShowForm] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load data from DB first, then localStorage, then use defaults
+  React.useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      
+      // Try to load from DB if user is logged in
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('user_calculations')
+            .select('inputs, results')
+            .eq('user_id', user.id)
+            .eq('calculation_type', 'financial_freedom')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (!error && data) {
+            setInputs(data.inputs as unknown as CalculatorInputs);
+            if (data.results) {
+              setResults(data.results as unknown as CalculationResults);
+              setShowForm(false);
+            }
+            setIsLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.log('No DB data found, checking localStorage');
+        }
+      }
+
+      // Fallback to localStorage
+      const cachedInputs = localStorage.getItem('financial_calculator_inputs');
+      const cachedResults = localStorage.getItem('financial_calculator_results');
+      
+      if (cachedInputs) {
+        try {
+          setInputs(JSON.parse(cachedInputs));
+        } catch (error) {
+          console.error('Error parsing cached inputs:', error);
+        }
+      }
+      
+      if (cachedResults) {
+        try {
+          setResults(JSON.parse(cachedResults));
+          setShowForm(false);
+        } catch (error) {
+          console.error('Error parsing cached results:', error);
+        }
+      }
+      
+      setIsLoading(false);
+    };
+
+    loadData();
+  }, [user]);
 
   const handleInputChange = (newInputs: CalculatorInputs) => {
     setInputs(newInputs);
@@ -269,8 +328,18 @@ const FinancialFreedomCalculator = () => {
       {/* Main Calculator Section */}
       <div className="container mx-auto px-4 lg:px-8 py-8">
         <div className="max-w-6xl mx-auto space-y-6">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center space-y-3">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <p className="text-muted-foreground">Loading your financial data...</p>
+              </div>
+            </div>
+          )}
+
           {/* Calculator Form - Only show when no results or when editing */}
-          {(!results || showForm) && (
+          {!isLoading && (!results || showForm) && (
             <div className="animate-fade-in">
               <TimelineCalculatorForm
                 inputs={inputs}
@@ -281,7 +350,7 @@ const FinancialFreedomCalculator = () => {
           )}
 
           {/* Results Section with Edit Button */}
-          {results && !showForm && (
+          {!isLoading && results && !showForm && (
             <div className="animate-fade-in space-y-4">
               <div className="flex justify-start">
                 <Button
