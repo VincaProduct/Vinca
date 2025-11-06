@@ -286,9 +286,9 @@ export default function FFRHome() {
         )}
 
         {/* b. FFR Scorecard */}
-        {scores && (
+        {/* {scores && (
           <FFRBandCard scores={scores} />
-        )}
+        )} */}
 
         {/* c. Headline Insights / Big Picture
         // {calculatorInputs && calculatorResults && projections.length > 0 && (
