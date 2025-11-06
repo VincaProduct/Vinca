@@ -94,6 +94,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    // Manually clear the localStorage key to ensure complete cleanup
+    localStorage.removeItem('sb-xmmyjphoaqazwlifehxs-auth-token');
+    localStorage.removeItem('pending_referral_code');
+    localStorage.removeItem('redirect_after_login');
+    
     await supabase.auth.signOut();
     window.location.href = '/';
   };
