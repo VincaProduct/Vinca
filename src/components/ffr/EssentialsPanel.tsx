@@ -29,27 +29,25 @@ export const EssentialsPanel = ({ checklist, calculatorResults }: EssentialsPane
       title: 'Life Insurance',
       icon: <Shield className="w-5 h-5" />,
       status: checklist?.insurance_evidence ? 'complete' : 'incomplete',
-      value: checklist?.insurance_evidence ? 'Covered' : 'Not Set Up',
+      value: '10x Annual Income',
       description: 'Protects your loved ones financially in case of unforeseen events'
     },
     {
       title: 'Health Insurance',
       icon: <Heart className="w-5 h-5" />,
       status: checklist?.insurance_evidence ? 'complete' : 'incomplete',
-      value: checklist?.insurance_evidence ? 'Active' : 'Not Set Up',
+      value: '50% of Annual Income',
       description: 'Comprehensive health coverage for medical emergencies'
     },
     {
       title: 'Emergency Fund',
       icon: <Wallet className="w-5 h-5" />,
       status: checklist?.emergency_fund_baseline ? 'complete' : 'incomplete',
-      value: checklist?.emergency_fund_baseline 
-        ? `₹${calculatorResults?.emergencyFundRequired.toLocaleString('en-IN') || '0'}` 
-        : 'Not Built Yet',
+      value: `₹${calculatorResults?.emergencyFundRequired.toLocaleString('en-IN') || '0'}`,
       description: '6-12 months of expenses as a financial safety net'
     },
     {
-      title: 'Monthly SIP',
+      title: 'Required Monthly SIP',
       icon: <TrendingUp className="w-5 h-5" />,
       status: checklist?.sip_mandate_active ? 'complete' : 'incomplete',
       value: `₹${calculatorResults?.requiredMonthlySIP.toLocaleString('en-IN') || '0'}/month`,
