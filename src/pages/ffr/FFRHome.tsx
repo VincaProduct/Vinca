@@ -31,11 +31,11 @@ export default function FFRHome() {
     if (user && !ffrProgress) {
       initializeUserData();
     }
-    
+
     // Load calculator results from localStorage
     const storedInputs = localStorage.getItem('financial_calculator_inputs');
     const storedResults = localStorage.getItem('financial_calculator_results');
-    
+
     if (storedInputs && storedResults) {
       setCalculatorInputs(JSON.parse(storedInputs));
       setCalculatorResults(JSON.parse(storedResults));
@@ -47,7 +47,7 @@ export default function FFRHome() {
   // Generate projections for calculator results display
   const generateDetailedProjections = () => {
     if (!calculatorInputs) return [];
-    
+
     const projections = [];
     let currentCorpus = calculatorInputs.initialPortfolioValue;
     const annualReturn = calculatorInputs.returnDuringSIPAndWaiting / 100;
@@ -58,7 +58,7 @@ export default function FFRHome() {
 
     const inflatedMonthlyExpenses = CEILING(
       calculatorInputs.currentMonthlyExpenses *
-        Math.pow(1 + calculatorInputs.inflation / 100, swpStartYear),
+      Math.pow(1 + calculatorInputs.inflation / 100, swpStartYear),
       1000
     );
 
@@ -170,7 +170,7 @@ export default function FFRHome() {
       <div className="max-w-6xl mx-auto p-6 space-y-8">
         {/* a. Top Panel: Calculator Results with Edit */}
         {calculatorInputs && (
-          <InputParametersPanel 
+          <InputParametersPanel
             inputs={calculatorInputs}
             onInputsUpdate={handleInputsUpdate}
           />
@@ -207,23 +207,24 @@ export default function FFRHome() {
         )}
 
         {/* c. Headline Insights / Big Picture */}
-        {calculatorInputs && calculatorResults && (
-          <HeadlineInsights 
+        {calculatorInputs && calculatorResults && projections.length > 0 && (
+          <HeadlineInsights
             inputs={calculatorInputs}
             results={calculatorResults}
+            projections={projections}
           />
         )}
 
         {/* d. Year-on-Year Corpus Analysis */}
         {projections.length > 0 && calculatorInputs && (
-          <YearlyCorpusAnalysis 
+          <YearlyCorpusAnalysis
             projections={projections}
             inputs={calculatorInputs}
           />
         )}
 
         {/* e. Foundations Checklist */}
-        <EssentialsPanel 
+        <EssentialsPanel
           checklist={checklist}
           calculatorResults={calculatorResults}
         />
@@ -232,7 +233,7 @@ export default function FFRHome() {
         <ProgressPathway ffrProgress={ffrProgress} />
 
         {/* h. Educational Content & Learning Path */}
-        <EducationalContent 
+        <EducationalContent
           ffrScores={ffrProgress ? {
             foundation_score: ffrProgress.foundation_score,
             habit_score: ffrProgress.habit_score,
@@ -250,11 +251,11 @@ export default function FFRHome() {
               You're {scores ? Math.round(scores.base) : 0}% Ready for Financial Freedom
             </h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              {scores && scores.base < 50 
+              {scores && scores.base < 50
                 ? "Every journey begins with a single step. Complete your essentials and build momentum towards your financial goals."
                 : scores && scores.base < 75
-                ? "You're making great progress! Stay consistent with your habits and continue learning to accelerate your journey."
-                : "Outstanding work! You're well-positioned for financial freedom. Keep exploring opportunities to optimize your wealth."}
+                  ? "You're making great progress! Stay consistent with your habits and continue learning to accelerate your journey."
+                  : "Outstanding work! You're well-positioned for financial freedom. Keep exploring opportunities to optimize your wealth."}
             </p>
           </CardContent>
         </Card>
@@ -262,8 +263,8 @@ export default function FFRHome() {
         {/* i. Compliance Note */}
         <div className="bg-muted/30 border border-border rounded-lg p-4">
           <p className="text-xs text-muted-foreground text-center">
-            📚 <strong>Educational & Execution-Only Platform</strong> • No investment advice provided • 
-            All transactions conducted through authorized partners • 
+            📚 <strong>Educational & Execution-Only Platform</strong> • No investment advice provided •
+            All transactions conducted through authorized partners •
             Consult a qualified financial advisor for personalized recommendations
           </p>
         </div>
