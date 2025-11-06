@@ -529,14 +529,17 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button 
-              onClick={() => window.location.href = '/auth'}
-              size="lg"
-              className="px-6 py-3 font-semibold flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Get Detailed Analysis
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+          <Button 
+            onClick={() => {
+              localStorage.setItem('redirect_after_login', '/dashboard/ffr');
+              window.location.href = '/auth';
+            }}
+            size="lg"
+            className="px-6 py-3 font-semibold flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            Get Detailed Analysis
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
             <Button 
               onClick={() => window.location.href = '/#contact'}
               variant="outline"
