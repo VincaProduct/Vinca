@@ -290,14 +290,14 @@ export default function FFRHome() {
           <FFRBandCard scores={scores} />
         )}
 
-        {/* c. Headline Insights / Big Picture */}
-        {calculatorInputs && calculatorResults && projections.length > 0 && (
-          <HeadlineInsights
-            inputs={calculatorInputs}
-            results={calculatorResults}
-            projections={projections}
-          />
-        )}
+        {/* c. Headline Insights / Big Picture
+        // {calculatorInputs && calculatorResults && projections.length > 0 && (
+        //   <HeadlineInsights
+        //     inputs={calculatorInputs}
+        //     results={calculatorResults}
+        //     projections={projections}
+        //   />
+        // )} */}
 
         {/* d. Year-on-Year Corpus Analysis */}
         {projections.length > 0 && calculatorInputs && (
