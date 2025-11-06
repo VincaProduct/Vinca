@@ -19,7 +19,7 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
     setIsMenuOpen(false);
   };
 
-  const handleSignInClick = () => {
+  const handlePortfolioLoginClick = () => {
     window.open("https://portfolio.vincawealth.com/login?_gl=1*1c7uhfu*_gcl_au*MTg1NjAzODIzOC4xNzQ5Mjk4MTEy*_ga*MTg1NzI3NTc0MC4xNzQ5Mjk4MTEy*_ga_6MQBMGPXJJ*czE3NDkzNzE3MTkkbzIkZzAkdDE3NDkzNzE3MTkkajYwJGwwJGgw", "_blank", "noopener,noreferrer");
     setIsMenuOpen(false);
   };
@@ -149,16 +149,29 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
               {/* Action Buttons */}
               <div className="pt-4 mt-4 border-t border-border/30">
                 {user ? (
-                  <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group">
-                      <span className="transition-transform duration-200 group-hover:translate-x-1">
-                        Dashboard
-                      </span>
-                    </Button>
-                  </Link>
+                  <div className="space-y-3">
+                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group">
+                        <span className="transition-transform duration-200 group-hover:translate-x-1">
+                          Dashboard
+                        </span>
+                      </Button>
+                    </Link>
+                    
+                    <button onClick={handlePortfolioLoginClick} className="w-full">
+                      <Button 
+                        variant="outline" 
+                        className="w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:bg-accent/80 hover:border-primary/30 group"
+                      >
+                        <span className="transition-transform duration-200 group-hover:translate-x-1">
+                          Portfolio Login
+                        </span>
+                      </Button>
+                    </button>
+                  </div>
                 ) : (
                   <div className="space-y-3">
-                    <button onClick={handleSignInClick} className="w-full">
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)} className="block">
                       <Button 
                         variant="outline" 
                         className="w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:bg-accent/80 hover:border-primary/30 group"
@@ -167,16 +180,17 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                           Sign In
                         </span>
                       </Button>
-                    </button>
+                    </Link>
                     
-                    <Button 
-                      onClick={() => handleMenuItemClick(() => scrollToSection('contact'))}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group"
-                    >
-                      <span className="transition-transform duration-200 group-hover:translate-x-1">
-                        Get Started
-                      </span>
-                    </Button>
+                    <button onClick={handlePortfolioLoginClick} className="w-full">
+                      <Button 
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group"
+                      >
+                        <span className="transition-transform duration-200 group-hover:translate-x-1">
+                          Portfolio Login
+                        </span>
+                      </Button>
+                    </button>
                   </div>
                 )}
               </div>
