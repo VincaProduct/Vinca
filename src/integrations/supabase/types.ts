@@ -118,6 +118,54 @@ export type Database = {
           },
         ]
       }
+      consultation_bookings: {
+        Row: {
+          additional_info: string | null
+          admin_notes: string | null
+          consultation_type: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          preferred_date: string
+          preferred_time_slot: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          consultation_type: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          preferred_date: string
+          preferred_time_slot: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          additional_info?: string | null
+          admin_notes?: string | null
+          consultation_type?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          preferred_date?: string
+          preferred_time_slot?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cta_analytics: {
         Row: {
           blog_post_id: string | null

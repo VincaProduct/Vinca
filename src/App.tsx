@@ -25,6 +25,8 @@ import AuthorsDashboard from "./pages/dashboard/AuthorsDashboard";
 import CTADashboardPage from "./pages/dashboard/CTADashboard";
 import CTAPlacementPage from "./pages/dashboard/CTAPlacementPage";
 import CTAAnalyticsPage from "./pages/dashboard/CTAAnalyticsPage";
+import BookingsDashboard from "./pages/dashboard/BookingsDashboard";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import FFRHome from "./pages/ffr/FFRHome";
 import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
@@ -83,6 +85,11 @@ const App = () => (
               <Route path="cta-dashboard" element={<CTADashboardPage />} />
               <Route path="cta-placements" element={<CTAPlacementPage />} />
               <Route path="cta-analytics" element={<CTAAnalyticsPage />} />
+              <Route path="bookings" element={
+                <RoleProtectedRoute requiredRole="super_admin">
+                  <BookingsDashboard />
+                </RoleProtectedRoute>
+              } />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

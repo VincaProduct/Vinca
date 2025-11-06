@@ -7,26 +7,81 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const BookWealthManager = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingComplete, setBookingComplete] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: user?.email || '',
+    phone: '',
+    timeSlot: '',
+    consultationType: '',
+    additionalInfo: ''
+  });
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to book a consultation.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!selectedDate) {
+      toast({
+        title: "Date Required",
+        description: "Please select a preferred date for your consultation.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate booking submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const { error } = await supabase
+        .from('consultation_bookings')
+        .insert({
+          user_id: user.id,
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          preferred_date: format(selectedDate, 'yyyy-MM-dd'),
+          preferred_time_slot: formData.timeSlot,
+          consultation_type: formData.consultationType,
+          additional_info: formData.additionalInfo || null
+        });
+
+      if (error) throw error;
+
       setBookingComplete(true);
       toast({
         title: "Booking Request Submitted",
         description: "Our wealth manager will contact you shortly to confirm your appointment.",
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      toast({
+        title: "Booking Failed",
+        description: "There was an error submitting your booking. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (bookingComplete) {
@@ -51,7 +106,18 @@ const BookWealthManager = () => {
             <p className="text-sm text-muted-foreground">
               You'll receive a confirmation email at <span className="font-medium text-foreground">{user?.email}</span>
             </p>
-            <Button onClick={() => setBookingComplete(false)} className="mt-4">
+            <Button onClick={() => {
+              setBookingComplete(false);
+              setSelectedDate(undefined);
+              setFormData({
+                fullName: '',
+                email: user?.email || '',
+                phone: '',
+                timeSlot: '',
+                consultationType: '',
+                additionalInfo: ''
+              });
+            }} className="mt-4">
               Schedule Another Meeting
             </Button>
           </CardContent>
@@ -83,24 +149,75 @@ const BookWealthManager = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" placeholder="Your name" required />
+                    <Input 
+                      id="name" 
+                      placeholder="Your name" 
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                      required 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue={user?.email || ''} required />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      required 
+                    />
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input id="phone" type="tel" placeholder="+91 XXXXX XXXXX" required />
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      placeholder="+91 XXXXX XXXXX"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      required 
+                    />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="preferred-date">Preferred Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !selectedDate && "text-muted-foreground"
+                          )}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="preferred-time">Preferred Time Slot</Label>
                     <select 
                       id="preferred-time" 
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      value={formData.timeSlot}
+                      onChange={(e) => setFormData({...formData, timeSlot: e.target.value})}
                       required
                     >
                       <option value="">Select a time slot</option>
@@ -109,22 +226,23 @@ const BookWealthManager = () => {
                       <option value="evening">Evening (4 PM - 7 PM)</option>
                     </select>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="consultation-type">Consultation Type</Label>
-                  <select 
-                    id="consultation-type" 
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    required
-                  >
-                    <option value="">Select consultation type</option>
-                    <option value="retirement">Retirement Planning</option>
-                    <option value="investment">Investment Strategy</option>
-                    <option value="tax">Tax Optimization</option>
-                    <option value="estate">Estate Planning</option>
-                    <option value="general">General Consultation</option>
-                  </select>
+                  <div className="space-y-2">
+                    <Label htmlFor="consultation-type">Consultation Type</Label>
+                    <select 
+                      id="consultation-type" 
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      value={formData.consultationType}
+                      onChange={(e) => setFormData({...formData, consultationType: e.target.value})}
+                      required
+                    >
+                      <option value="">Select consultation type</option>
+                      <option value="retirement">Retirement Planning</option>
+                      <option value="investment">Investment Strategy</option>
+                      <option value="tax">Tax Optimization</option>
+                      <option value="estate">Estate Planning</option>
+                      <option value="general">General Consultation</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -133,6 +251,8 @@ const BookWealthManager = () => {
                     id="message" 
                     placeholder="Tell us about your financial goals or any specific topics you'd like to discuss..."
                     rows={4}
+                    value={formData.additionalInfo}
+                    onChange={(e) => setFormData({...formData, additionalInfo: e.target.value})}
                   />
                 </div>
 
