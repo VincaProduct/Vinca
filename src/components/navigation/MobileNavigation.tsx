@@ -149,49 +149,23 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
               {/* Action Buttons */}
               <div className="pt-4 mt-4 border-t border-border/30">
                 {user ? (
-                  <div className="space-y-3">
-                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group">
-                        <span className="transition-transform duration-200 group-hover:translate-x-1">
-                          Dashboard
-                        </span>
-                      </Button>
-                    </Link>
-                    
-                    <button onClick={handlePortfolioLoginClick} className="w-full">
-                      <Button 
-                        variant="outline" 
-                        className="w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:bg-accent/80 hover:border-primary/30 group"
-                      >
-                        <span className="transition-transform duration-200 group-hover:translate-x-1">
-                          Portfolio Login
-                        </span>
-                      </Button>
-                    </button>
-                  </div>
+                  <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group">
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        Dashboard
+                      </span>
+                    </Button>
+                  </Link>
                 ) : (
-                  <div className="space-y-3">
-                    <Link to="/auth" onClick={() => setIsMenuOpen(false)} className="block">
-                      <Button 
-                        variant="outline" 
-                        className="w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:bg-accent/80 hover:border-primary/30 group"
-                      >
-                        <span className="transition-transform duration-200 group-hover:translate-x-1">
-                          Sign In
-                        </span>
-                      </Button>
-                    </Link>
-                    
-                    <button onClick={handlePortfolioLoginClick} className="w-full">
-                      <Button 
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group"
-                      >
-                        <span className="transition-transform duration-200 group-hover:translate-x-1">
-                          Portfolio Login
-                        </span>
-                      </Button>
-                    </button>
-                  </div>
+                  <Link to="/auth" onClick={() => setIsMenuOpen(false)} className="block">
+                    <Button 
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group"
+                    >
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">
+                        Sign In
+                      </span>
+                    </Button>
+                  </Link>
                 )}
               </div>
             </div>

@@ -84,49 +84,23 @@ const DesktopNavigation = ({ scrollToSection }: DesktopNavigationProps) => {
         </div>
         
         {user ? (
-          <div className="flex items-center space-x-2 xl:space-x-3">
-            <Link to="/dashboard" className="group">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg group-hover:shadow-primary/25">
-                <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                  Dashboard
-                </span>
-              </Button>
-            </Link>
-            
-            <button onClick={handlePortfolioLoginClick} className="group">
-              <Button 
-                variant="outline" 
-                className="text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:bg-accent/80 hover:border-primary/30 focus:scale-105 focus:bg-accent/80 focus:border-primary/30"
-              >
-                <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                  Portfolio Login
-                </span>
-              </Button>
-            </button>
-          </div>
+          <Link to="/dashboard" className="group">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg group-hover:shadow-primary/25">
+              <span className="transition-transform duration-200 group-hover:translate-x-0.5">
+                Dashboard
+              </span>
+            </Button>
+          </Link>
         ) : (
-          <div className="flex items-center space-x-2 xl:space-x-3">
-            <Link to="/auth" className="group">
-              <Button 
-                variant="outline" 
-                className="text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:bg-accent/80 hover:border-primary/30 focus:scale-105 focus:bg-accent/80 focus:border-primary/30"
-              >
-                <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                  Sign In
-                </span>
-              </Button>
-            </Link>
-            
-            <button onClick={handlePortfolioLoginClick} className="group">
-              <Button 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg hover:shadow-primary/25"
-              >
-                <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                  Portfolio Login
-                </span>
-              </Button>
-            </button>
-          </div>
+          <Link to="/auth" className="group">
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg hover:shadow-primary/25"
+            >
+              <span className="transition-transform duration-200 group-hover:translate-x-0.5">
+                Sign In
+              </span>
+            </Button>
+          </Link>
         )}
       </div>
     </div>
