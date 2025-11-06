@@ -46,6 +46,11 @@ const baseMenuItems = [
     icon: TrendingUp,
   },
   {
+    title: 'Book a Wealth Manager',
+    url: '/dashboard/book-wealth-manager',
+    icon: Calendar,
+  },
+  {
     title: 'Investment Opportunities',
     url: '/dashboard/investment-opportunities',
     icon: TrendingUp,
@@ -88,6 +93,11 @@ const adminMenuItems = [
     url: '/dashboard/cta-analytics',
     icon: BarChart3,
   },
+  {
+    title: 'Bookings Management',
+    url: '/dashboard/bookings',
+    icon: Calendar,
+  },
 ];
 
 export function DashboardSidebar() {
@@ -114,18 +124,8 @@ export function DashboardSidebar() {
     return () => observer.disconnect();
   }, []);
 
-  // Add Book Wealth Manager only for pro users or wealth management clients
-  const menuItems = isPro || isClient 
-    ? [
-        ...baseMenuItems.slice(0, 2), // Home and FFR
-        {
-          title: "Book a Wealth Manager",
-          url: "/dashboard/book-wealth-manager",
-          icon: Calendar,
-        },
-        ...baseMenuItems.slice(2), // Rest of the items
-      ]
-    : baseMenuItems;
+  // All logged-in users see the same menu items
+  const menuItems = baseMenuItems;
 
   const isActive = (url: string) => {
     if (url === '/dashboard') {
