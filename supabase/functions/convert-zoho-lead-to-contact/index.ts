@@ -234,10 +234,10 @@ Deno.serve(async (req) => {
           .insert({
             user_id: userId,
             zoho_lead_id: profile?.zoho_lead_id || 'unknown',
-            error_message: error.message || 'Unknown error',
+            error_message: error instanceof Error ? error.message : 'Unknown error',
             error_details: { 
               error: String(error),
-              stack: error.stack 
+              stack: error instanceof Error ? error.stack : undefined
             },
             plan_type: planName || 'Premium Pro',
             plan_amount: planAmount || 25000,
@@ -250,7 +250,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || 'Conversion failed',
+        error: error instanceof Error ? error.message : 'Conversion failed',
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
