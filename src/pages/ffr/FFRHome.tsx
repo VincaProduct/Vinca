@@ -342,20 +342,6 @@ export default function FFRHome() {
             </CardContent>
           </Card>
 
-          {/* Step 3: Business Opportunities */}
-          <Card className="border-primary/30">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center gap-2">
-                🚀 Ready to Explore More Opportunities?
-              </CardTitle>
-              <p className="text-muted-foreground mt-2">
-                Beyond traditional investments, discover exclusive business and investment opportunities curated for your financial goals.
-              </p>
-            </CardHeader>
-            <CardContent>
-              <BusinessOpportunitiesPreview />
-            </CardContent>
-          </Card>
 
           {/* Step 4: Main CTA - Portfolio Login */}
           <Card className="border-2 border-primary bg-gradient-to-br from-primary/10 via-primary/5 to-background overflow-hidden relative">
