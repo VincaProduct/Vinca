@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WealthGrowthChart from '@/components/calculator/WealthGrowthChart';
 import { CalculatorInputs } from '@/types/calculator';
@@ -55,20 +54,19 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
         </p>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="chart" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="chart">Visual Chart</TabsTrigger>
-            <TabsTrigger value="table">Detailed Table</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="chart" className="space-y-4">
+        <div className="space-y-6">
+          {/* Visual Chart */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Visual Chart</h3>
             <WealthGrowthChart inputs={inputs} projections={projections} />
             <p className="text-xs text-muted-foreground text-center">
               Chart shows corpus growth through SIP accumulation, waiting period, and retirement withdrawals
             </p>
-          </TabsContent>
+          </div>
           
-          <TabsContent value="table" className="space-y-4">
+          {/* Detailed Table */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Detailed Table</h3>
             <div className="rounded-md border overflow-auto max-h-[500px]">
               <Table>
                 <TableHeader className="sticky top-0 bg-background">
@@ -105,8 +103,8 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
                 </TableBody>
               </Table>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
