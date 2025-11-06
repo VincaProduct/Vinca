@@ -5,7 +5,7 @@ import { FFRBandCard } from '@/components/ffr/FFRBandCard';
 import { EssentialsPanel } from '@/components/ffr/EssentialsPanel';
 import { ProgressPathway } from '@/components/ffr/ProgressPathway';
 import { BusinessOpportunitiesPreview } from '@/components/ffr/BusinessOpportunitiesPreview';
-import { ExportResults } from '@/components/ffr/ExportResults';
+// import { ExportResults } from '@/components/ffr/ExportResults';
 import { InputParametersPanel } from '@/components/ffr/InputParametersPanel';
 import { HeadlineInsights } from '@/components/ffr/HeadlineInsights';
 import { YearlyCorpusAnalysis } from '@/components/ffr/YearlyCorpusAnalysis';
@@ -159,10 +159,10 @@ export default function FFRHome() {
                 Your personalized roadmap to financial independence
               </p>
             </div>
-            <ExportResults 
+            {/* <ExportResults 
               ffrProgress={ffrProgress}
               calculatorResults={calculatorResults}
-            />
+            /> */}
           </div>
         </div>
       </div>
