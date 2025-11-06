@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TimelineCalculatorForm from "@/components/calculator/TimelineCalculatorForm";
-import BasicResultsCard from "@/components/calculator/BasicResultsCard";
+import MinimalResultsCard from "@/components/calculator/MinimalResultsCard";
+// Keep ResultsDashboard for later use
+// import ResultsDashboard from '@/components/calculator/ResultsDashboard';
 import { CalculatorInputs, CalculationResults } from "@/types/calculator";
 import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
-import { Edit } from "lucide-react";
 interface UserLumpsumData {
   [yearNumber: number]: {
     investment: number;
@@ -89,8 +89,6 @@ const FinancialFreedomCalculator = () => {
 
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [userLumpsumData, setUserLumpsumData] = useState<UserLumpsumData>({});
-  const [showForm, setShowForm] = useState(true);
-
   const handleInputChange = (newInputs: CalculatorInputs) => {
     setInputs(newInputs);
   };
@@ -98,21 +96,6 @@ const FinancialFreedomCalculator = () => {
   const handleCalculate = () => {
     const calculatedResults = calculateFinancialFreedom(inputs);
     setResults(calculatedResults);
-    setShowForm(false);
-
-    localStorage.setItem('financial_calculator_inputs', JSON.stringify(inputs));
-    localStorage.setItem('financial_calculator_results', JSON.stringify(calculatedResults));
-
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
-  };
-
-  const handleEditDetails = () => {
-    setShowForm(true);
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
   };
 
   const getUserLumpsumValue = (
@@ -234,48 +217,61 @@ const FinancialFreedomCalculator = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Prominent Heading */}
-      <div className="bg-gradient-to-br from-primary/10 via-background to-accent/10 border-b">
-        <div className="container mx-auto px-4 lg:px-8 py-8 pt-24">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Financial Freedom Calculator
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground text-center max-w-3xl mx-auto">
-            Calculate how ready are you to achieve financial independence
-          </p>
-        </div>
-      </div>
-
       {/* Main Calculator Section */}
-      <div className="container mx-auto px-4 lg:px-8 py-8">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Calculator Form - Only show when no results or when editing */}
-          {(!results || showForm) && (
-            <div className="animate-fade-in">
+      <div className="container mx-auto px-4 lg:px-8 py-8 pt-24">
+        {!results ? (
+          /* Input Section Only */
+          <div className="max-w-3xl mx-auto animate-slide-up">
+            <TimelineCalculatorForm
+              inputs={inputs}
+              onInputChange={handleInputChange}
+              onCalculate={handleCalculate}
+            />
+          </div>
+        ) : (
+          /* 2 Column Layout with Results */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+            {/* Left Column - Calculator Input */}
+            <div className="animate-slide-up">
               <TimelineCalculatorForm
                 inputs={inputs}
                 onInputChange={handleInputChange}
                 onCalculate={handleCalculate}
               />
             </div>
-          )}
 
-          {/* Results Section with Edit Button */}
-          {results && !showForm && (
-            <div className="animate-fade-in space-y-4">
-              <div className="flex justify-start">
-                <Button
-                  onClick={handleEditDetails}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Edit className="w-4 h-4" />
-                  Edit Details
-                </Button>
-              </div>
-              <BasicResultsCard results={results} inputs={inputs} projections={projections} />
+            {/* Right Column - Results */}
+            <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <MinimalResultsCard
+                inputs={inputs}
+                results={results}
+                projections={projections}
+              />
             </div>
-          )}
+          </div>
+        )}
+      </div>
+
+      {/* CTAs Section */}
+      <div className="bg-muted/30 py-12">
+        <div className="container mx-auto px-4 lg:px-8">
+          <Card className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">
+              Ready to Start Your Journey?
+            </h2>
+            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Get personalized guidance from our financial experts to accelerate
+              your path to financial freedom.
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => window.location.href = '/#contact'}
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-semibold"
+              >
+                Schedule Free Consultation
+              </button>
+            </div>
+          </Card>
         </div>
       </div>
 
