@@ -314,16 +314,16 @@ export default function FFRHome() {
         />
 
         {/* f. Action Plan & g. Journey Progress */}
-        <ProgressPathway ffrProgress={ffrProgress} />
+        {/* <ProgressPathway ffrProgress={ffrProgress} /> */}
 
         {/* h. Educational Content & Learning Path */}
-        <EducationalContent
+        {/* <EducationalContent
           ffrScores={ffrProgress ? {
             foundation_score: ffrProgress.foundation_score,
             habit_score: ffrProgress.habit_score,
             literacy_score: ffrProgress.literacy_score
           } : undefined}
-        />
+        /> */}
 
         {/* Business Opportunities Guidance */}
         <BusinessOpportunitiesPreview />
