@@ -9,6 +9,8 @@ import { CalculatorInputs, CalculationResults } from "@/types/calculator";
 import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
 import { Edit } from "lucide-react";
 import MinimalResultsCard from "@/components/calculator/MinimalResultsCard";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 interface UserLumpsumData {
   [yearNumber: number]: {
     investment: number;
@@ -73,6 +75,7 @@ export function CEILING(number, significance) {
 }
 
 const FinancialFreedomCalculator = () => {
+  const { user } = useAuth();
   const [inputs, setInputs] = useState<CalculatorInputs>({
     age: 26,
     lifeExpectancy: 85,
@@ -96,13 +99,29 @@ const FinancialFreedomCalculator = () => {
     setInputs(newInputs);
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     const calculatedResults = calculateFinancialFreedom(inputs);
     setResults(calculatedResults);
     setShowForm(false);
 
     localStorage.setItem('financial_calculator_inputs', JSON.stringify(inputs));
     localStorage.setItem('financial_calculator_results', JSON.stringify(calculatedResults));
+
+    // Save to database if user is logged in
+    if (user) {
+      try {
+        await supabase
+          .from('user_calculations')
+          .insert({
+            user_id: user.id,
+            calculation_type: 'financial_freedom',
+            inputs: inputs as any,
+            results: calculatedResults as any
+          });
+      } catch (error) {
+        console.error('Error saving calculation:', error);
+      }
+    }
 
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });

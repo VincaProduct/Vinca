@@ -117,12 +117,28 @@ const FinancialCalculatorPage = () => {
     localStorage.setItem('financial_calculator_inputs', JSON.stringify(newInputs));
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     const calculatedResults = calculateFinancialFreedom(inputs);
     setResults(calculatedResults);
     
     // Cache results in localStorage
     localStorage.setItem('financial_calculator_results', JSON.stringify(calculatedResults));
+
+    // Auto-save to database if user is logged in
+    if (user) {
+      try {
+        await supabase
+          .from('user_calculations')
+          .insert({
+            user_id: user.id,
+            calculation_type: 'financial_freedom',
+            inputs: inputs as any,
+            results: calculatedResults as any
+          });
+      } catch (error) {
+        console.error('Error saving calculation:', error);
+      }
+    }
   };
 
   const saveCalculation = async () => {
