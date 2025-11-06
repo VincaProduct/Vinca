@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CEILING, FV } from "@/pages/FinancialFreedomCalculator";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MinimalResultsCardProps {
   inputs: CalculatorInputs;
@@ -103,6 +104,8 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
   results,
   projections,
 }) => {
+  const { user } = useAuth();
+  console.log(user);
   const isNegativeCorpus = projections.some(
     (projection) => projection.expectedCorpus < 0
   );
@@ -121,7 +124,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
     // Calculate inflated monthly expenses for SWP period
     const inflatedMonthlyExpenses = CEILING(
       inputs.currentMonthlyExpenses *
-        Math.pow(1 + inputs.inflation / 100, swpStartYear),
+      Math.pow(1 + inputs.inflation / 100, swpStartYear),
       1000
     );
 
@@ -467,7 +470,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
                         +
                         {formatCurrency(
                           trailErrorData.currentSipAmount -
-                            optimizationData.originalSIP
+                          optimizationData.originalSIP
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -528,19 +531,19 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button 
-            onClick={() => {
-              localStorage.setItem('redirect_after_login', '/dashboard/ffr');
-              window.location.href = '/auth';
-            }}
-            size="lg"
-            className="px-6 py-3 font-semibold flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Get Detailed Analysis
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-            <Button 
+          {!user && <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button
+              onClick={() => {
+                localStorage.setItem('redirect_after_login', '/dashboard/ffr');
+                window.location.href = '/auth';
+              }}
+              size="lg"
+              className="px-6 py-3 font-semibold flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              Get Detailed Analysis
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button
               onClick={() => window.location.href = '/#contact'}
               variant="outline"
               size="lg"
@@ -548,7 +551,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
             >
               Schedule Call
             </Button>
-          </div>
+          </div>}
         </div>
       </Card>
     </TooltipProvider>
