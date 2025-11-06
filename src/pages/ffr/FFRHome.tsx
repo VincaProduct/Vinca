@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calculator } from 'lucide-react';
 import { FFRBandCard } from '@/components/ffr/FFRBandCard';
@@ -28,18 +29,44 @@ export default function FFRHome() {
   };
 
   useEffect(() => {
-    if (user && !ffrProgress) {
-      initializeUserData();
-    }
+    const loadData = async () => {
+      if (user && !ffrProgress) {
+        initializeUserData();
+      }
 
-    // Load calculator results from localStorage
-    const storedInputs = localStorage.getItem('financial_calculator_inputs');
-    const storedResults = localStorage.getItem('financial_calculator_results');
+      // Try to load from DB first if user is logged in
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('user_calculations')
+            .select('inputs, results')
+            .eq('user_id', user.id)
+            .eq('calculation_type', 'financial_freedom')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
 
-    if (storedInputs && storedResults) {
-      setCalculatorInputs(JSON.parse(storedInputs));
-      setCalculatorResults(JSON.parse(storedResults));
-    }
+          if (!error && data) {
+            setCalculatorInputs(data.inputs as unknown as CalculatorInputs);
+            setCalculatorResults(data.results as unknown as CalculationResults);
+            return; // DB data found, don't check localStorage
+          }
+        } catch (error) {
+          console.log('No DB data found, checking localStorage');
+        }
+      }
+
+      // Fallback to localStorage
+      const storedInputs = localStorage.getItem('financial_calculator_inputs');
+      const storedResults = localStorage.getItem('financial_calculator_results');
+
+      if (storedInputs && storedResults) {
+        setCalculatorInputs(JSON.parse(storedInputs));
+        setCalculatorResults(JSON.parse(storedResults));
+      }
+    };
+
+    loadData();
   }, [user, ffrProgress]);
 
   const scores = getCurrentScores();

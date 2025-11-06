@@ -7,6 +7,8 @@ import { useState } from "react";
 import TimelineCalculatorForm from "@/components/calculator/TimelineCalculatorForm";
 import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface InputParametersPanelProps {
   inputs: CalculatorInputs;
@@ -14,6 +16,7 @@ interface InputParametersPanelProps {
 }
 
 export function InputParametersPanel({ inputs, onInputsUpdate }: InputParametersPanelProps) {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [editedInputs, setEditedInputs] = useState<CalculatorInputs>(inputs);
 
@@ -28,12 +31,28 @@ export function InputParametersPanel({ inputs, onInputsUpdate }: InputParameters
     return `₹${value}`;
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
     const newResults = calculateFinancialFreedom(editedInputs);
     
     // Store in localStorage
     localStorage.setItem('financial_calculator_inputs', JSON.stringify(editedInputs));
     localStorage.setItem('financial_calculator_results', JSON.stringify(newResults));
+    
+    // Save to database if user is logged in
+    if (user) {
+      try {
+        await supabase
+          .from('user_calculations')
+          .insert({
+            user_id: user.id,
+            calculation_type: 'financial_freedom',
+            inputs: editedInputs as any,
+            results: newResults as any
+          });
+      } catch (error) {
+        console.error('Error saving to database:', error);
+      }
+    }
     
     // Update parent component
     onInputsUpdate(editedInputs, newResults);
