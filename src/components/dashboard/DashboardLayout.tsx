@@ -5,15 +5,12 @@ import { DashboardHeader } from './DashboardHeader';
 import { useState, useEffect } from 'react';
 
 const DashboardLayout = () => {
-  const [defaultOpen, setDefaultOpen] = useState(true);
+  const [open, setOpen] = useState(window.innerWidth >= 1100);
 
   useEffect(() => {
     const handleResize = () => {
-      setDefaultOpen(window.innerWidth >= 1100);
+      setOpen(window.innerWidth >= 1100);
     };
-    
-    // Set initial value
-    handleResize();
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -21,7 +18,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="min-h-screen bg-background dark">
-      <SidebarProvider defaultOpen={defaultOpen}>
+      <SidebarProvider open={open} onOpenChange={setOpen}>
         <div className="min-h-screen flex w-full bg-background">
           <DashboardSidebar />
           <div className="flex-1 flex flex-col">
