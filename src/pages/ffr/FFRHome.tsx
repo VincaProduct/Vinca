@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calculator } from 'lucide-react';
-import { FFRBandCard } from '@/components/ffr/FFRBandCard';
-import { EssentialsPanel } from '@/components/ffr/EssentialsPanel';
-import { ProgressPathway } from '@/components/ffr/ProgressPathway';
-import { BusinessOpportunitiesPreview } from '@/components/ffr/BusinessOpportunitiesPreview';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calculator } from "lucide-react";
+import { FFRBandCard } from "@/components/ffr/FFRBandCard";
+import { EssentialsPanel } from "@/components/ffr/EssentialsPanel";
+import { ProgressPathway } from "@/components/ffr/ProgressPathway";
+import { BusinessOpportunitiesPreview } from "@/components/ffr/BusinessOpportunitiesPreview";
 // import { ExportResults } from '@/components/ffr/ExportResults';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -13,14 +13,14 @@ import { Edit } from "lucide-react";
 import TimelineCalculatorForm from "@/components/calculator/TimelineCalculatorForm";
 import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
 import { toast } from "sonner";
-import { HeadlineInsights } from '@/components/ffr/HeadlineInsights';
-import { YearlyCorpusAnalysis } from '@/components/ffr/YearlyCorpusAnalysis';
-import { EducationalContent } from '@/components/ffr/EducationalContent';
-import { useFFR } from '@/hooks/useFFR';
-import { useAuth } from '@/contexts/AuthContext';
-import { CalculatorInputs, CalculationResults } from '@/types/calculator';
-import MinimalResultsCard from '@/components/calculator/MinimalResultsCard';
-import { FV, CEILING } from '@/pages/FinancialFreedomCalculator';
+import { HeadlineInsights } from "@/components/ffr/HeadlineInsights";
+import { YearlyCorpusAnalysis } from "@/components/ffr/YearlyCorpusAnalysis";
+import { EducationalContent } from "@/components/ffr/EducationalContent";
+import { useFFR } from "@/hooks/useFFR";
+import { useAuth } from "@/contexts/AuthContext";
+import { CalculatorInputs, CalculationResults } from "@/types/calculator";
+import MinimalResultsCard from "@/components/calculator/MinimalResultsCard";
+import { FV, CEILING } from "@/pages/FinancialFreedomCalculator";
 
 export default function FFRHome() {
   const { user } = useAuth();
@@ -32,33 +32,31 @@ export default function FFRHome() {
 
   const handleCalculate = async () => {
     if (!editedInputs) return;
-    
+
     const newResults = calculateFinancialFreedom(editedInputs);
-    
+
     // Store in localStorage
-    localStorage.setItem('financial_calculator_inputs', JSON.stringify(editedInputs));
-    localStorage.setItem('financial_calculator_results', JSON.stringify(newResults));
-    
+    localStorage.setItem("financial_calculator_inputs", JSON.stringify(editedInputs));
+    localStorage.setItem("financial_calculator_results", JSON.stringify(newResults));
+
     // Save to database if user is logged in
     if (user) {
       try {
-        await supabase
-          .from('user_calculations')
-          .insert({
-            user_id: user.id,
-            calculation_type: 'financial_freedom',
-            inputs: editedInputs as any,
-            results: newResults as any
-          });
+        await supabase.from("user_calculations").insert({
+          user_id: user.id,
+          calculation_type: "financial_freedom",
+          inputs: editedInputs as any,
+          results: newResults as any,
+        });
       } catch (error) {
-        console.error('Error saving to database:', error);
+        console.error("Error saving to database:", error);
       }
     }
-    
+
     // Update state
     setCalculatorInputs(editedInputs);
     setCalculatorResults(newResults);
-    
+
     setIsEditOpen(false);
     toast.success("Your financial plan has been updated!");
   };
@@ -73,11 +71,11 @@ export default function FFRHome() {
       if (user) {
         try {
           const { data, error } = await supabase
-            .from('user_calculations')
-            .select('inputs, results')
-            .eq('user_id', user.id)
-            .eq('calculation_type', 'financial_freedom')
-            .order('created_at', { ascending: false })
+            .from("user_calculations")
+            .select("inputs, results")
+            .eq("user_id", user.id)
+            .eq("calculation_type", "financial_freedom")
+            .order("created_at", { ascending: false })
             .limit(1)
             .single();
 
@@ -90,13 +88,13 @@ export default function FFRHome() {
             return; // DB data found, don't check localStorage
           }
         } catch (error) {
-          console.log('No DB data found, checking localStorage');
+          console.log("No DB data found, checking localStorage");
         }
       }
 
       // Fallback to localStorage
-      const storedInputs = localStorage.getItem('financial_calculator_inputs');
-      const storedResults = localStorage.getItem('financial_calculator_results');
+      const storedInputs = localStorage.getItem("financial_calculator_inputs");
+      const storedResults = localStorage.getItem("financial_calculator_results");
 
       if (storedInputs && storedResults) {
         const inputs = JSON.parse(storedInputs);
@@ -125,18 +123,13 @@ export default function FFRHome() {
     const swpStartYear = calculatorInputs.yearsForSIP + calculatorInputs.waitingYearsBeforeSWP;
 
     const inflatedMonthlyExpenses = CEILING(
-      calculatorInputs.currentMonthlyExpenses *
-      Math.pow(1 + calculatorInputs.inflation / 100, swpStartYear),
-      1000
+      calculatorInputs.currentMonthlyExpenses * Math.pow(1 + calculatorInputs.inflation / 100, swpStartYear),
+      1000,
     );
 
     let previousMonthlySWP = 0;
 
-    for (
-      let year = 1;
-      year <= Math.min(50, calculatorInputs.lifeExpectancy - currentAge);
-      year++
-    ) {
+    for (let year = 1; year <= Math.min(50, calculatorInputs.lifeExpectancy - currentAge); year++) {
       const age = currentAge + year;
       const yearNumber = year;
 
@@ -198,6 +191,14 @@ export default function FFRHome() {
 
   const projections = calculatorInputs ? generateDetailedProjections() : [];
 
+  const handlePortfolioLoginClick = () => {
+    window.open(
+      "https://portfolio.vincawealth.com/login?_gl=1*1c7uhfu*_gcl_au*MTg1NjAzODIzOC4xNzQ5Mjk4MTEy*_ga*MTg1NzI3NTc0MC4xNzQ5Mjk4MTEy*_ga_6MQBMGPXJJ*czE3NDkzNzE3MTkkbzIkZzAkdDE3NDkzNzE3MTkkajYwJGwwJGgw",
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background p-6">
@@ -223,15 +224,16 @@ export default function FFRHome() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">Financial Freedom Readiness</h1>
-              <p className="text-muted-foreground">
-                Your personalized roadmap to financial independence
-              </p>
+              <p className="text-muted-foreground">Your personalized roadmap to financial independence</p>
             </div>
             {calculatorInputs && (
-              <Dialog open={isEditOpen} onOpenChange={(open) => {
-                setIsEditOpen(open);
-                if (open) setEditedInputs(calculatorInputs);
-              }}>
+              <Dialog
+                open={isEditOpen}
+                onOpenChange={(open) => {
+                  setIsEditOpen(open);
+                  if (open) setEditedInputs(calculatorInputs);
+                }}
+              >
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm" className="gap-2">
                     <Edit className="w-4 h-4" />
@@ -276,11 +278,7 @@ export default function FFRHome() {
               </div>
             </CardHeader>
             <CardContent className="pt-6">
-              <MinimalResultsCard
-                inputs={calculatorInputs}
-                results={calculatorResults}
-                projections={projections}
-              />
+              <MinimalResultsCard inputs={calculatorInputs} results={calculatorResults} projections={projections} />
             </CardContent>
           </Card>
         )}
@@ -301,10 +299,7 @@ export default function FFRHome() {
 
         {/* d. Year-on-Year Corpus Analysis */}
         {projections.length > 0 && calculatorInputs && (
-          <YearlyCorpusAnalysis
-            projections={projections}
-            inputs={calculatorInputs}
-          />
+          <YearlyCorpusAnalysis projections={projections} inputs={calculatorInputs} />
         )}
 
         {/* Story-driven CTA Journey */}
@@ -313,12 +308,10 @@ export default function FFRHome() {
           <Card className="border-primary/30 overflow-hidden">
             <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8">
               <div className="max-w-3xl">
-                <h2 className="text-2xl font-bold mb-4">
-                  ✅ Satisfied with Your Financial Planning?
-                </h2>
+                <h2 className="text-2xl font-bold mb-4">✅ Satisfied with Your Financial Planning?</h2>
                 <p className="text-lg text-muted-foreground mb-6">
-                  You've taken the first step by calculating your path to financial freedom. 
-                  But a solid plan is just the beginning of your journey.
+                  You've taken the first step by calculating your path to financial freedom. But a solid plan is just
+                  the beginning of your journey.
                 </p>
               </div>
             </div>
@@ -331,17 +324,14 @@ export default function FFRHome() {
                 🛡️ Are You Covered with Financial Essentials?
               </CardTitle>
               <p className="text-muted-foreground mt-2">
-                Before building wealth, ensure your foundation is solid. These essentials protect you and your family from unexpected events.
+                Before building wealth, ensure your foundation is solid. These essentials protect you and your family
+                from unexpected events.
               </p>
             </CardHeader>
             <CardContent>
-              <EssentialsPanel
-                checklist={checklist}
-                calculatorResults={calculatorResults}
-              />
+              <EssentialsPanel checklist={checklist} calculatorResults={calculatorResults} />
             </CardContent>
           </Card>
-
 
           {/* Step 4: Main CTA - Portfolio Login */}
           <Card className="border-2 border-primary bg-gradient-to-br from-primary/10 via-primary/5 to-background overflow-hidden relative">
@@ -351,14 +341,12 @@ export default function FFRHome() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
                   <span className="text-3xl">🎯</span>
                 </div>
-                
-                <h2 className="text-3xl font-bold">
-                  Take the Next Step with Professional Guidance
-                </h2>
-                
+
+                <h2 className="text-3xl font-bold">Take the Next Step with Professional Guidance</h2>
+
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Your financial journey deserves expert support. Login to your Portfolio 
-                  and connect with our advisors who will personally guide you through:
+                  Your financial journey deserves expert support. Login to your Portfolio and connect with our advisors
+                  who will personally guide you through:
                 </p>
 
                 <div className="grid md:grid-cols-3 gap-4 my-8">
@@ -386,20 +374,16 @@ export default function FFRHome() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-                  <Button 
-                    size="lg" 
-                    className="text-lg px-8 py-6 w-full sm:w-auto"
-                    onClick={() => window.location.href = '/dashboard'}
-                  >
+                  <Button size="lg" className="text-lg px-8 py-6 w-full sm:w-auto" onClick={handlePortfolioLoginClick}>
                     Access Your Portfolio Now
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="lg"
                     className="text-lg px-8 py-6 w-full sm:w-auto"
                     onClick={() => {
-                      const element = document.getElementById('contact');
-                      if (element) element.scrollIntoView({ behavior: 'smooth' });
+                      const element = document.getElementById("contact");
+                      if (element) element.scrollIntoView({ behavior: "smooth" });
                     }}
                   >
                     Talk to an Advisor
@@ -417,9 +401,9 @@ export default function FFRHome() {
         {/* i. Compliance Note */}
         <div className="bg-muted/30 border border-border rounded-lg p-4">
           <p className="text-xs text-muted-foreground text-center">
-            📚 <strong>Educational & Execution-Only Platform</strong> • No investment advice provided •
-            All transactions conducted through authorized partners •
-            Consult a qualified financial advisor for personalized recommendations
+            📚 <strong>Educational & Execution-Only Platform</strong> • No investment advice provided • All transactions
+            conducted through authorized partners • Consult a qualified financial advisor for personalized
+            recommendations
           </p>
         </div>
       </div>
