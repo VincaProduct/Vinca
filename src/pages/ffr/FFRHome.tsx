@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calculator } from "lucide-react";
@@ -24,6 +25,7 @@ import { FV, CEILING } from "@/pages/FinancialFreedomCalculator";
 
 export default function FFRHome() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { ffrProgress, checklist, loading, initializeUserData, getCurrentScores } = useFFR();
   const [calculatorInputs, setCalculatorInputs] = useState<CalculatorInputs | null>(null);
   const [calculatorResults, setCalculatorResults] = useState<CalculationResults | null>(null);
@@ -381,10 +383,7 @@ export default function FFRHome() {
                     variant="outline"
                     size="lg"
                     className="text-lg px-8 py-6 w-full sm:w-auto"
-                    onClick={() => {
-                      const element = document.getElementById("contact");
-                      if (element) element.scrollIntoView({ behavior: "smooth" });
-                    }}
+                    onClick={() => navigate("/dashboard/book-wealth-manager")}
                   >
                     Talk to an Advisor
                   </Button>
