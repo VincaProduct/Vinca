@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { CalculatorInputs, CalculationResults } from "@/types/calculator";
 import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
 import {
@@ -105,6 +106,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
   projections,
 }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   console.log(user);
   const isNegativeCorpus = projections.some(
     (projection) => projection.expectedCorpus < 0
@@ -544,7 +546,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button
-              onClick={() => window.location.href = '/#contact'}
+              onClick={() => navigate('/auth')}
               variant="outline"
               size="lg"
               className="px-6 py-3 font-semibold flex-1 sm:flex-none border-primary/30 hover:bg-primary/5 transition-all duration-300"
