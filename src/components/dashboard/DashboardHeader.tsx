@@ -47,7 +47,7 @@ export function DashboardHeader() {
             <Button 
               variant="default" 
               size="sm" 
-              onClick={() => navigate('/dashboard/achievers-club')}
+              onClick={() => navigate('/dashboard/upgrade')}
               className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Crown className="h-4 w-4 mr-2" />

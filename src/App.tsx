@@ -32,6 +32,7 @@ import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
 import AchieversClubLanding from "./pages/AchieversClubLanding";
 import AchieversClubDashboard from "./pages/dashboard/AchieversClubDashboard";
+import UpgradePage from "./pages/dashboard/UpgradePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -77,7 +78,9 @@ const App = () => (
               <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
               <Route path="refer" element={<ReferFriend />} />
               <Route path="support" element={<SupportPage />} />
-              <Route path="achievers-club" element={<AchieversClubDashboard />} />
+              {/* Achievers Club - Currently in progress, hidden for production */}
+              {/* <Route path="achievers-club" element={<AchieversClubDashboard />} /> */}
+              <Route path="upgrade" element={<UpgradePage />} />
               
               {/* Admin Routes */}
               <Route path="blog-cms" element={<BlogCMSDashboard />} />

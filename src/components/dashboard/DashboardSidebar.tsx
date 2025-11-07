@@ -67,6 +67,12 @@ const baseMenuItems = [
   },
 ];
 
+const upgradeMenuItem = {
+  title: 'Upgrade to Pro',
+  url: '/dashboard/upgrade',
+  icon: TrendingUp,
+};
+
 const adminMenuItems = [
   {
     title: 'Blog CMS',
@@ -124,8 +130,8 @@ export function DashboardSidebar() {
     return () => observer.disconnect();
   }, []);
 
-  // All logged-in users see the same menu items
-  const menuItems = baseMenuItems;
+  // Add upgrade menu item for non-pro users
+  const menuItems = isPro ? baseMenuItems : [...baseMenuItems, upgradeMenuItem];
 
   const isActive = (url: string) => {
     if (url === '/dashboard') {
