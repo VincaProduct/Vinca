@@ -331,7 +331,12 @@ export default function FFRHome() {
               </p>
             </CardHeader>
             <CardContent>
-              <EssentialsPanel checklist={checklist} calculatorResults={calculatorResults} />
+              <EssentialsPanel
+                checklist={checklist}
+                calculatorResults={calculatorResults}
+                inputs={calculatorInputs || undefined}
+                projections={projections}
+              />
             </CardContent>
           </Card>
 
