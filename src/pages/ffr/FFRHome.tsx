@@ -376,9 +376,6 @@ export default function FFRHome() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-                  <Button size="lg" className="text-lg px-8 py-6 w-full sm:w-auto" onClick={handlePortfolioLoginClick}>
-                    Access Your Portfolio Now
-                  </Button>
                   <Button
                     variant="outline"
                     size="lg"
@@ -386,6 +383,9 @@ export default function FFRHome() {
                     onClick={() => navigate("/dashboard/book-wealth-manager")}
                   >
                     Talk to an Advisor
+                  </Button>
+                  <Button size="lg" className="text-lg px-8 py-6 w-full sm:w-auto" onClick={handlePortfolioLoginClick}>
+                    Access Your Portfolio Now
                   </Button>
                 </div>
 
