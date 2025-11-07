@@ -1,10 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Crown, Check, Loader2 } from 'lucide-react';
-import { useRazorpayPayment } from '@/hooks/useRazorpayPayment';
-import { razorpayConfig } from '@/config/razorpay';
-import { useState } from 'react';
-import { PaymentSuccess } from '@/components/payment/PaymentSuccess';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Crown, Check, Loader2 } from "lucide-react";
+import { useRazorpayPayment } from "@/hooks/useRazorpayPayment";
+import { razorpayConfig } from "@/config/razorpay";
+import { useState } from "react";
+import { PaymentSuccess } from "@/components/payment/PaymentSuccess";
 
 const UpgradeOptions = () => {
   const { initiatePayment, isProcessing } = useRazorpayPayment();
@@ -12,9 +12,9 @@ const UpgradeOptions = () => {
 
   const handleProUpgrade = async () => {
     const planConfig = razorpayConfig.plans.pro_lifetime;
-    
+
     await initiatePayment({
-      planType: 'pro_lifetime',
+      planType: "pro_lifetime",
       amount: planConfig.amount,
       onSuccess: () => {
         setPaymentSuccess(true);
@@ -23,20 +23,20 @@ const UpgradeOptions = () => {
         }, 3000);
       },
       onFailure: (error) => {
-        console.error('Payment failed:', error);
-      }
+        console.error("Payment failed:", error);
+      },
     });
   };
 
   const proBenefits = [
-    'Advanced investment tools',
-    'Startup co-founder matching',
-    'Pre-IPO investment opportunities',
-    'Real estate & franchise deals',
-    'Priority support',
-    'Exclusive webinars & workshops',
-    'Advanced analytics dashboard',
-    'Downloadable resource library',
+    "Advanced investment tools",
+    "Startup co-founder matching",
+    "Pre-IPO investment opportunities",
+    "Real estate & franchise deals",
+    "Priority support",
+    "Exclusive webinars & workshops",
+    "Advanced analytics dashboard",
+    "Downloadable resource library",
   ];
 
   if (paymentSuccess) {
@@ -65,18 +65,14 @@ const UpgradeOptions = () => {
           <CardHeader>
             <div className="flex items-center gap-2 text-primary mb-2">
               <Crown className="h-6 w-6" />
-              <span className="text-sm font-semibold px-2 py-1 bg-primary/10 rounded-full">
-                Lifetime Access
-              </span>
+              <span className="text-sm font-semibold px-2 py-1 bg-primary/10 rounded-full">Lifetime Access</span>
             </div>
             <CardTitle className="text-2xl">Pro Version</CardTitle>
-            <CardDescription className="text-base">
-              All features unlocked forever with one payment
-            </CardDescription>
+            <CardDescription className="text-base">All features unlocked forever with one payment</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="text-center py-2">
-              <div className="text-3xl font-bold mb-2 text-muted-foreground">₹25,000<span className="text-lg font-normal"> one-time</span></div>
+              {/* <div className="text-3xl font-bold mb-2 text-muted-foreground">₹25,000<span className="text-lg font-normal"> one-time</span></div> */}
               <p className="text-sm text-muted-foreground">Lifetime platform access • No recurring fees</p>
             </div>
 
@@ -109,11 +105,12 @@ const UpgradeOptions = () => {
               )}
             </Button>
             */}
-            
+
             <div className="text-center py-4 px-6 bg-muted/50 rounded-lg border border-border">
               <p className="text-sm font-medium mb-2">Pro Version Launching Soon</p>
               <p className="text-xs text-muted-foreground">
-                We're preparing something special. Stay tuned for exclusive access to premium features and opportunities.
+                We're preparing something special. Stay tuned for exclusive access to premium features and
+                opportunities.
               </p>
             </div>
           </CardContent>
@@ -123,8 +120,8 @@ const UpgradeOptions = () => {
       <Card className="max-w-2xl mx-auto bg-muted/30">
         <CardContent className="py-6">
           <p className="text-center text-sm text-muted-foreground">
-            <strong>Wealth management clients</strong> automatically receive Pro Version access for free 
-            as part of their wealth management service.
+            <strong>Wealth management clients</strong> automatically receive Pro Version access for free as part of
+            their wealth management service.
           </p>
         </CardContent>
       </Card>
