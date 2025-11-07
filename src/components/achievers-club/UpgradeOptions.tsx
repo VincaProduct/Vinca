@@ -50,9 +50,13 @@ const UpgradeOptions = () => {
   return (
     <div className="space-y-8">
       <div className="text-center space-y-3">
-        <h2 className="text-3xl font-bold">Upgrade to Pro Version</h2>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-2">
+          <Crown className="h-5 w-5 text-primary" />
+          <span className="text-sm font-semibold text-primary">Coming Soon</span>
+        </div>
+        <h2 className="text-3xl font-bold">Pro Version</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          One-time lifetime fee of ₹25,000 for complete access
+          Unlock exclusive features and opportunities - Launching Soon
         </p>
       </div>
 
@@ -71,8 +75,8 @@ const UpgradeOptions = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div>
-              <div className="text-4xl font-bold mb-2">₹25,000<span className="text-lg font-normal text-muted-foreground"> one-time</span></div>
+            <div className="text-center py-2">
+              <div className="text-3xl font-bold mb-2 text-muted-foreground">₹25,000<span className="text-lg font-normal"> one-time</span></div>
               <p className="text-sm text-muted-foreground">Lifetime platform access • No recurring fees</p>
             </div>
 
@@ -85,6 +89,7 @@ const UpgradeOptions = () => {
               ))}
             </div>
 
+            {/* Payment button - Phase 2 implementation
             <Button 
               className="w-full" 
               size="lg"
@@ -103,6 +108,14 @@ const UpgradeOptions = () => {
                 </>
               )}
             </Button>
+            */}
+            
+            <div className="text-center py-4 px-6 bg-muted/50 rounded-lg border border-border">
+              <p className="text-sm font-medium mb-2">Pro Version Launching Soon</p>
+              <p className="text-xs text-muted-foreground">
+                We're preparing something special. Stay tuned for exclusive access to premium features and opportunities.
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
