@@ -127,15 +127,15 @@ const BookWealthManager = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 p-4 sm:p-0">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Book a Wealth Manager</h1>
-        <p className="text-muted-foreground mt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Book a Wealth Manager</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-2">
           Schedule a personalized consultation with our expert wealth managers
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -145,8 +145,8 @@ const BookWealthManager = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleBooking} className="space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
+              <form onSubmit={handleBooking} className="space-y-4 sm:space-y-6">
+                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <Input 
@@ -169,7 +169,7 @@ const BookWealthManager = () => {
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
                     <Input 
@@ -210,7 +210,7 @@ const BookWealthManager = () => {
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="preferred-time">Preferred Time Slot</Label>
                     <select 
@@ -264,12 +264,12 @@ const BookWealthManager = () => {
           </Card>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">What to Expect</CardTitle>
+              <CardTitle className="text-base sm:text-lg">What to Expect</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               <div className="flex gap-3">
                 <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>

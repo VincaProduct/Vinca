@@ -48,63 +48,65 @@ export const ReferralCard = ({
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-card to-card/50">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="space-y-1">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Users className="h-5 w-5 text-primary" />
               Your Referral Program
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-sm">
               Share your referral code and earn rewards
             </CardDescription>
           </div>
-          <Badge variant="secondary" className="text-lg px-4 py-2">
+          <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 self-start sm:self-auto">
             {referralCode}
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-4 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-primary">{totalReferrals}</div>
-            <div className="text-sm text-muted-foreground">Total</div>
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="text-center p-2 sm:p-4 rounded-lg bg-muted/50">
+            <div className="text-xl sm:text-2xl font-bold text-primary">{totalReferrals}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Total</div>
           </div>
-          <div className="text-center p-4 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-amber-500">{pendingReferrals}</div>
-            <div className="text-sm text-muted-foreground">Pending</div>
+          <div className="text-center p-2 sm:p-4 rounded-lg bg-muted/50">
+            <div className="text-xl sm:text-2xl font-bold text-amber-500">{pendingReferrals}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Pending</div>
           </div>
-          <div className="text-center p-4 rounded-lg bg-muted/50">
-            <div className="text-2xl font-bold text-green-500">{convertedReferrals}</div>
-            <div className="text-sm text-muted-foreground">Converted</div>
+          <div className="text-center p-2 sm:p-4 rounded-lg bg-muted/50">
+            <div className="text-xl sm:text-2xl font-bold text-green-500">{convertedReferrals}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Converted</div>
           </div>
         </div>
 
         {/* Referral Link */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">Your Referral Link</label>
-          <div className="flex gap-2">
+          <label className="text-xs sm:text-sm font-medium">Your Referral Link</label>
+          <div className="flex flex-col sm:flex-row gap-2">
             <Input
               value={referralLink}
               readOnly
-              className="font-mono text-sm"
+              className="font-mono text-xs sm:text-sm"
             />
-            <Button
-              onClick={handleCopyLink}
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={handleShare}
-              variant="outline"
-              size="icon"
-              className="shrink-0"
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleCopyLink}
+                variant="outline"
+                size="icon"
+                className="shrink-0 flex-1 sm:flex-none"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={handleShare}
+                variant="outline"
+                size="icon"
+                className="shrink-0 flex-1 sm:flex-none"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
 

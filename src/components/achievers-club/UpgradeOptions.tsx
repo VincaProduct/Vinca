@@ -48,19 +48,19 @@ const UpgradeOptions = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-2">
-          <Crown className="h-5 w-5 text-primary" />
-          <span className="text-sm font-semibold text-primary">Coming Soon</span>
+    <div className="space-y-6 sm:space-y-8 p-4 sm:p-0">
+      <div className="text-center space-y-2 sm:space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/10 rounded-full mb-2">
+          <Crown className="h-4 sm:h-5 w-4 sm:w-5 text-primary" />
+          <span className="text-xs sm:text-sm font-semibold text-primary">Coming Soon</span>
         </div>
-        <h2 className="text-3xl font-bold">Pro Version</h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold">Pro Version</h2>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
           Unlock exclusive features and opportunities - Launching Soon
         </p>
       </div>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto px-4 sm:px-0">
         <Card className="border-primary shadow-lg bg-gradient-to-br from-primary/5 to-background">
           <CardHeader>
             <div className="flex items-center gap-2 text-primary mb-2">
@@ -76,11 +76,11 @@ const UpgradeOptions = () => {
               <p className="text-sm text-muted-foreground">Lifetime platform access • No recurring fees</p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {proBenefits.map((benefit, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">{benefit}</span>
+                <div key={index} className="flex items-start gap-2 sm:gap-3">
+                  <Check className="h-4 sm:h-5 w-4 sm:w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-xs sm:text-sm">{benefit}</span>
                 </div>
               ))}
             </div>
@@ -117,9 +117,9 @@ const UpgradeOptions = () => {
         </Card>
       </div>
 
-      <Card className="max-w-2xl mx-auto bg-muted/30">
-        <CardContent className="py-6">
-          <p className="text-center text-sm text-muted-foreground">
+      <Card className="max-w-2xl mx-auto bg-muted/30 mx-4 sm:mx-auto">
+        <CardContent className="py-4 sm:py-6">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground">
             <strong>Wealth management clients</strong> automatically receive Pro Version access for free as part of
             their wealth management service.
           </p>

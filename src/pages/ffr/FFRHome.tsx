@@ -222,11 +222,11 @@ export default function FFRHome() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-b">
-        <div className="max-w-6xl mx-auto p-6">
-          <div className="flex items-center justify-between">
+        <div className="max-w-6xl mx-auto p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Financial Freedom Readiness</h1>
-              <p className="text-muted-foreground">Your personalized roadmap to financial independence</p>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">Financial Freedom Readiness</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Your personalized roadmap to financial independence</p>
             </div>
             {calculatorInputs && (
               <Dialog
@@ -237,12 +237,12 @@ export default function FFRHome() {
                 }}
               >
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto">
                     <Edit className="w-4 h-4" />
                     Edit Inputs
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Edit Your Financial Plan</DialogTitle>
                   </DialogHeader>
@@ -262,7 +262,7 @@ export default function FFRHome() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
         {/* Calculator Results */}
         {calculatorInputs && calculatorResults && (
           <Card className="border-primary/50 shadow-lg">
@@ -304,14 +304,14 @@ export default function FFRHome() {
           <YearlyCorpusAnalysis projections={projections} inputs={calculatorInputs} />
         )}
 
-        {/* Story-driven CTA Journey */}
-        <div className="space-y-8">
+          {/* Story-driven CTA Journey */}
+        <div className="space-y-6 sm:space-y-8">
           {/* Step 1: Satisfied with Planning? */}
           <Card className="border-primary/30 overflow-hidden">
-            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-8">
+            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 sm:p-8">
               <div className="max-w-3xl">
-                <h2 className="text-2xl font-bold mb-4">✅ Satisfied with Your Financial Planning?</h2>
-                <p className="text-lg text-muted-foreground mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">✅ Satisfied with Your Financial Planning?</h2>
+                <p className="text-base sm:text-lg text-muted-foreground mb-4 sm:mb-6">
                   You've taken the first step by calculating your path to financial freedom. But a solid plan is just
                   the beginning of your journey.
                 </p>
@@ -356,40 +356,40 @@ export default function FFRHome() {
                   who will personally guide you through:
                 </p>
 
-                <div className="grid md:grid-cols-3 gap-4 my-8">
-                  <div className="p-4 rounded-lg bg-background/50 border border-primary/20">
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 my-6 sm:my-8">
+                  <div className="p-3 sm:p-4 rounded-lg bg-background/50 border border-primary/20">
                     <div className="text-2xl mb-2">📊</div>
-                    <h3 className="font-semibold mb-1">Personalized Strategy</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold mb-1 text-sm sm:text-base">Personalized Strategy</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Tailored investment plans based on your unique goals
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-background/50 border border-primary/20">
+                  <div className="p-3 sm:p-4 rounded-lg bg-background/50 border border-primary/20">
                     <div className="text-2xl mb-2">💼</div>
-                    <h3 className="font-semibold mb-1">Exclusive Access</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold mb-1 text-sm sm:text-base">Exclusive Access</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Premium investment opportunities and business ventures
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-background/50 border border-primary/20">
+                  <div className="p-3 sm:p-4 rounded-lg bg-background/50 border border-primary/20 sm:col-span-2 md:col-span-1">
                     <div className="text-2xl mb-2">🤝</div>
-                    <h3 className="font-semibold mb-1">Expert Support</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold mb-1 text-sm sm:text-base">Expert Support</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       One-on-one guidance from experienced wealth managers
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-4">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="text-lg px-8 py-6 w-full sm:w-auto"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto"
                     onClick={() => navigate("/dashboard/book-wealth-manager")}
                   >
                     Talk to an Advisor
                   </Button>
-                  <Button size="lg" className="text-lg px-8 py-6 w-full sm:w-auto" onClick={handlePortfolioLoginClick}>
+                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto" onClick={handlePortfolioLoginClick}>
                     Access Your Portfolio Now
                   </Button>
                 </div>

@@ -45,10 +45,10 @@ const ReferFriend = () => {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto p-6 space-y-6">
+    <div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Refer a Friend</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold">Refer a Friend</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Share the wealth of knowledge and grow together. Invite your friends to join Vinca Wealth.
         </p>
       </div>
