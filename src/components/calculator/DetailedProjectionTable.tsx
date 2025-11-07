@@ -107,20 +107,20 @@ const DetailedProjectionTable: React.FC<DetailedProjectionTableProps> = ({
         </p>
       </CardHeader>
       <CardContent>
-        <div className="max-h-96 overflow-y-auto">
-          <Table>
-            <TableHeader className="sticky top-0 bg-background">
+        <div className="overflow-x-auto max-h-96">
+          <Table className="min-w-[1000px]">
+            <TableHeader className="sticky top-0 bg-background z-10">
               <TableRow>
-                <TableHead>Year</TableHead>
-                <TableHead>Year No.</TableHead>
-                <TableHead>Age</TableHead>
-                <TableHead>Amount in Hand</TableHead>
-                <TableHead>Lumpsum Investment</TableHead>
-                <TableHead>Monthly SIP</TableHead>
-                <TableHead>Return</TableHead>
-                <TableHead>Monthly SWP</TableHead>
-                <TableHead>Lumpsum Withdrawal</TableHead>
-                <TableHead>Expected Corpus</TableHead>
+                <TableHead className="min-w-[70px]">Year</TableHead>
+                <TableHead className="min-w-[80px]">Year No.</TableHead>
+                <TableHead className="min-w-[60px]">Age</TableHead>
+                <TableHead className="min-w-[120px]">Amount in Hand</TableHead>
+                <TableHead className="min-w-[130px]">Lumpsum Investment</TableHead>
+                <TableHead className="min-w-[110px]">Monthly SIP</TableHead>
+                <TableHead className="min-w-[80px]">Return</TableHead>
+                <TableHead className="min-w-[110px]">Monthly SWP</TableHead>
+                <TableHead className="min-w-[140px]">Lumpsum Withdrawal</TableHead>
+                <TableHead className="min-w-[130px]">Expected Corpus</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

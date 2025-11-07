@@ -288,30 +288,30 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
     <TooltipProvider>
       <Card className="relative overflow-hidden bg-gradient-to-br from-background via-background/95 to-muted/40 border-2 border-primary/10 shadow-2xl backdrop-blur-sm">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-        <div className="relative p-4 lg:p-6 space-y-4">
+        <div className="relative p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
           {/* Status Header */}
           <div className="text-center space-y-2">
             {needsOptimization ? (
               <>
                 <div className="flex justify-center">
-                  <AlertTriangle className="w-10 h-10 text-orange-600" />
+                  <AlertTriangle className="w-8 h-8 sm:w-10 sm:h-10 text-orange-600" />
                 </div>
-                <h2 className="text-xl lg:text-2xl font-bold text-orange-600">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600">
                   Plan Needs Adjustment
                 </h2>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto px-2">
                   Your current plan may not sustain your financial goals. Let's optimize it.
                 </p>
               </>
             ) : (
               <>
                 <div className="flex justify-center">
-                  <CheckCircle className="w-10 h-10 text-green-600" />
+                  <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
                 </div>
-                <h2 className="text-xl lg:text-2xl font-bold text-green-600">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">
                   You're On Track!
                 </h2>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto px-2">
                   Your financial freedom plan looks solid.
                 </p>
               </>
@@ -319,20 +319,20 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
           </div>
 
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent rounded-lg blur-lg group-hover:blur-sm transition-all duration-300" />
-              <div className="relative text-center p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 mb-2">
-                  <Calendar className="w-4 h-4 text-primary" />
+              <div className="relative text-center p-2.5 sm:p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 mb-1.5 sm:mb-2">
+                  <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                 </div>
-                <div className="text-xs font-medium text-muted-foreground mb-1">
+                <div className="text-[10px] sm:text-xs font-medium text-muted-foreground mb-1">
                   Financial Freedom Age
                 </div>
-                <div className="text-xl font-bold text-foreground mb-1">
+                <div className="text-lg sm:text-xl font-bold text-foreground mb-0.5 sm:mb-1">
                   {results.freedomAge}
                 </div>
-                <div className="text-xs text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full inline-block">
+                <div className="text-[10px] sm:text-xs text-muted-foreground bg-muted/30 px-1.5 sm:px-2 py-0.5 rounded-full inline-block">
                   In {results.yearsToFreedom} years
                 </div>
               </div>
@@ -340,57 +340,57 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
 
             <div className="relative group">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/20 via-accent/5 to-transparent rounded-lg blur-lg group-hover:blur-sm transition-all duration-300" />
-              <div className="relative text-center p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-accent/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent/10 mb-2">
-                  <Target className="w-4 h-4 text-accent" />
+              <div className="relative text-center p-2.5 sm:p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-accent/30 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
+                <div className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent/10 mb-1.5 sm:mb-2">
+                  <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
                 </div>
-                <div className="flex items-center justify-center gap-1 text-xs font-medium text-muted-foreground mb-1">
+                <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs font-medium text-muted-foreground mb-1">
                   Expected Corpus
                   <Tooltip>
                     <TooltipTrigger>
-                      <Info className="w-3 h-3 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
+                      <Info className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">
+                      <p className="max-w-xs text-xs">
                         The total amount you're expected to accumulate by your
                         retirement age based on your current investment plan
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="text-xl font-bold text-foreground mb-1">
+                <div className="text-lg sm:text-xl font-bold text-foreground mb-0.5 sm:mb-1 break-words">
                   {expectedCorpus}
                 </div>
-                <div className="text-xs text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-full inline-block">
+                <div className="text-[10px] sm:text-xs text-muted-foreground bg-muted/30 px-1.5 sm:px-2 py-0.5 rounded-full inline-block">
                   At retirement
                 </div>
               </div>
             </div>
 
             {needsOptimization && (
-              <div className="relative group">
+              <div className="relative group sm:col-span-2 lg:col-span-1">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-300/20 via-blue-200/5 to-transparent rounded-lg blur-lg group-hover:blur-sm transition-all duration-300" />
-                <div className="relative text-center p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-blue-300/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-300/10">
-                  <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100/50 dark:bg-blue-900/30 mb-2">
-                    <DollarSign className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <div className="relative text-center p-2.5 sm:p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-blue-300/30 transition-all duration-300 hover:shadow-lg hover:shadow-blue-300/10">
+                  <div className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-100/50 dark:bg-blue-900/30 mb-1.5 sm:mb-2">
+                    <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex items-center justify-center gap-1 text-xs font-medium text-muted-foreground mb-1">
+                  <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs font-medium text-muted-foreground mb-1">
                     Required Corpus
                     <Tooltip>
                       <TooltipTrigger>
-                        <Info className="w-3 h-3 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
+                        <Info className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-muted-foreground hover:text-foreground cursor-help transition-colors" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="max-w-xs">
+                        <p className="max-w-xs text-xs">
                           The target corpus needed to achieve your financial goals without depletion
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
-                  <div className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                  <div className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-400 mb-0.5 sm:mb-1 break-words">
                     {trailErrorData.targetCorpus}
                   </div>
-                  <div className="text-xs text-blue-600/80 dark:text-blue-400/80 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded-full inline-block">
+                  <div className="text-[10px] sm:text-xs text-blue-600/80 dark:text-blue-400/80 bg-blue-50 dark:bg-blue-900/20 px-1.5 sm:px-2 py-0.5 rounded-full inline-block">
                     Target needed
                   </div>
                 </div>
@@ -404,18 +404,18 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
               <div className="absolute inset-0 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 dark:from-red-950/20 dark:via-orange-950/20 dark:to-yellow-950/20" />
               <div className="relative bg-card/95 backdrop-blur-sm border-2 border-red-200 dark:border-red-800/50 rounded-xl shadow-lg">
                 {/* Header */}
-                <div className="p-4 border-b border-red-200 dark:border-red-800/30 bg-gradient-to-r from-red-500/5 to-orange-500/5">
-                  <div className="flex items-center gap-3">
+                <div className="p-3 sm:p-4 border-b border-red-200 dark:border-red-800/30 bg-gradient-to-r from-red-500/5 to-orange-500/5">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 border-2 border-red-200 dark:border-red-700 flex items-center justify-center">
-                        <TrendingUp className="w-6 h-6 text-red-600 dark:text-red-400" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 dark:bg-red-900/30 border-2 border-red-200 dark:border-red-700 flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-red-700 dark:text-red-400 mb-1">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base sm:text-lg font-bold text-red-700 dark:text-red-400 mb-1">
                         SIP Adjustment Required
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         Your corpus may deplete around age{" "}
                         <span className="font-semibold text-red-600 dark:text-red-400">
                           {results.corpusDepletionAge}
@@ -426,15 +426,15 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
                 </div>
 
                 {/* Investment Comparison */}
-                <div className="p-4 space-y-4">
+                <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
                   {/* Current vs Required SIP */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-background/80 rounded-lg p-3 border border-border/50">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-muted-foreground">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                    <div className="bg-background/80 rounded-lg p-2.5 sm:p-3 border border-border/50">
+                      <div className="flex items-center justify-between mb-2 gap-2">
+                        <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                           Current Monthly SIP
                         </span>
-                        <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-1 rounded-full">
+                        <span className="text-[10px] sm:text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full whitespace-nowrap">
                           Insufficient
                         </span>
                       </div>

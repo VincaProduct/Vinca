@@ -66,18 +66,18 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
           
           {/* Detailed Table */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Detailed Table</h3>
-            <div className="rounded-md border overflow-auto max-h-[500px]">
-              <Table>
-                <TableHeader className="sticky top-0 bg-background">
+            <h3 className="text-base sm:text-lg font-semibold">Detailed Table</h3>
+            <div className="rounded-md border overflow-x-auto max-h-[500px]">
+              <Table className="min-w-[800px]">
+                <TableHeader className="sticky top-0 bg-background z-10">
                   <TableRow>
-                    <TableHead>Age</TableHead>
-                    <TableHead>Phase</TableHead>
-                    <TableHead className="text-right">Starting Amount</TableHead>
-                    <TableHead className="text-right">Monthly SIP</TableHead>
-                    <TableHead className="text-right">Monthly SWP</TableHead>
-                    <TableHead className="text-right">Return %</TableHead>
-                    <TableHead className="text-right">Ending Corpus</TableHead>
+                    <TableHead className="min-w-[60px]">Age</TableHead>
+                    <TableHead className="min-w-[120px]">Phase</TableHead>
+                    <TableHead className="text-right min-w-[120px]">Starting Amount</TableHead>
+                    <TableHead className="text-right min-w-[110px]">Monthly SIP</TableHead>
+                    <TableHead className="text-right min-w-[110px]">Monthly SWP</TableHead>
+                    <TableHead className="text-right min-w-[80px]">Return %</TableHead>
+                    <TableHead className="text-right min-w-[120px]">Ending Corpus</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
