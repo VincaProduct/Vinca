@@ -157,7 +157,15 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border pt-8">
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="flex items-center gap-4 text-sm">
+              <a 
+                href="/privacy-policy" 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                Privacy Policy
+              </a>
+            </div>
             <div className="text-sm text-muted-foreground text-center">
               © 2025 Vinca Wealth. All rights reserved.
             </div>

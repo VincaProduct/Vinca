@@ -33,6 +33,7 @@ import FFROpportunities from "./pages/ffr/FFROpportunities";
 import AchieversClubLanding from "./pages/AchieversClubLanding";
 import AchieversClubDashboard from "./pages/dashboard/AchieversClubDashboard";
 import UpgradePage from "./pages/dashboard/UpgradePage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/financial-freedom-calculator" element={<FinancialFreedomCalculator />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/achievers-club" element={<AchieversClubLanding />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             
             {/* FFR Module Routes - moved to dashboard/tools */}
             
