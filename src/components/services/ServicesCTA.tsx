@@ -1,7 +1,9 @@
 
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const ServicesCTA = () => {
+  const navigate = useNavigate();
   return (
     <div className="text-center">
       <div className="bg-primary/10 rounded-xl p-6 sm:p-8 max-w-4xl mx-auto">
@@ -14,10 +16,7 @@ const ServicesCTA = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
-            onClick={() => {
-              const element = document.getElementById('contact');
-              if (element) element.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onClick={() => navigate('/auth')}
             size="lg" 
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 sm:px-8"
           >

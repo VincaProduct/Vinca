@@ -1,7 +1,9 @@
 
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const AIToolsCTA = () => {
+  const navigate = useNavigate();
   return (
     <div className="text-center">
       <div className="bg-primary/10 rounded-lg p-4 sm:p-6 max-w-2xl mx-auto">
@@ -12,10 +14,7 @@ const AIToolsCTA = () => {
           Our AI tools provide insights, but our certified wealth managers provide the roadmap to your financial success.
         </p>
         <Button 
-          onClick={() => {
-            const element = document.getElementById('contact');
-            if (element) element.scrollIntoView({ behavior: 'smooth' });
-          }}
+          onClick={() => navigate('/auth')}
           variant="outline" 
           className="border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full sm:w-auto"
         >

@@ -2,14 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, TrendingUp, Users, BarChart3, DollarSign, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
-  const scrollToContact = () => {
-    const element = document.getElementById("contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const navigate = useNavigate();
 
   // Sample portfolio data for the model portfolio card
   const portfolioData = [65, 72, 68, 78, 85, 92, 88, 95, 101, 108, 115, 122];
@@ -71,7 +67,7 @@ const HeroSection = () => {
             {/* CTA Button */}
             <div className="pt-4">
               <Button
-                onClick={scrollToContact}
+                onClick={() => navigate('/auth')}
                 size="lg"
                 className="text-lg font-semibold px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
               >
