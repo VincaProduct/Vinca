@@ -5,7 +5,6 @@ import {
   Home, 
   User, 
   UserPlus,
-  HelpCircle,
   TrendingUp,
   Calendar,
   FileText,
@@ -51,19 +50,9 @@ const baseMenuItems = [
     icon: Calendar,
   },
   {
-    title: 'Investment Opportunities',
-    url: '/dashboard/investment-opportunities',
-    icon: TrendingUp,
-  },
-  {
     title: 'Refer a Friend',
     url: '/dashboard/refer',
     icon: UserPlus,
-  },
-  {
-    title: 'Support',
-    url: '/dashboard/support',
-    icon: HelpCircle,
   },
 ];
 
