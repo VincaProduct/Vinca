@@ -133,12 +133,12 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar className="border-r-0 bg-sidebar">
-      <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <Link to="/" className="flex items-center justify-center py-2">
+      <SidebarHeader className="h-14 px-4 border-b border-sidebar-border flex items-center justify-center">
+        <Link to="/" className="flex items-center justify-center">
           <img
             src={logoSrc}
             alt="Vinca Wealth"
-            className={`${isDark ? "h-10 w-auto" : "h-10 w-auto"} object-contain transition-all duration-500`}
+            className="h-8 w-auto object-contain transition-all duration-500"
             loading="eager"
           />
         </Link>
