@@ -30,16 +30,16 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center justify-between px-6 border-b border-border ">
-        <div className="flex items-center space-x-4">
+    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full">
+      <div className="flex h-14 items-center justify-between px-3 sm:px-4 md:px-6 border-b border-border">
+        <div className="flex items-center gap-2 sm:gap-4">
           <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
         </div>
         
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 text-sm">
-            <User className="h-4 w-4 text-muted-foreground" />
-            <span className="hidden sm:inline-block text-foreground">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            <span className="hidden md:inline-block text-foreground truncate max-w-[120px] lg:max-w-[200px]">
               {user?.email}
             </span>
           </div>
@@ -48,20 +48,21 @@ export function DashboardHeader() {
               variant="default" 
               size="sm" 
               onClick={() => navigate('/dashboard/upgrade')}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
             >
-              <Crown className="h-4 w-4 mr-2" />
-              Upgrade to Pro
+              <Crown className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Upgrade to Pro</span>
+              <span className="sm:hidden">Upgrade</span>
             </Button>
           )}
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={handleSignOut}
-            className="text-muted-foreground hover:text-foreground hover:bg-accent"
+            className="text-muted-foreground hover:text-foreground hover:bg-accent h-8 px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
           >
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
+            <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Sign Out</span>
           </Button>
         </div>
       </div>
