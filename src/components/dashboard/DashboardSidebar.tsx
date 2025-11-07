@@ -132,7 +132,7 @@ export function DashboardSidebar() {
     : "/images/black-logo-Photoroom.png";
 
   return (
-    <Sidebar className="border-r-0 bg-sidebar">
+    <Sidebar className="border-r-0 bg-sidebar" collapsible="offcanvas">
       <SidebarHeader className="h-14 px-4 border-b border-sidebar-border flex items-center justify-center">
         <Link to="/" className="flex items-center justify-center">
           <img
