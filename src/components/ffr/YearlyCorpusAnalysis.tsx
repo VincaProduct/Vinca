@@ -3,6 +3,12 @@ import { BarChart3 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import WealthGrowthChart from '@/components/calculator/WealthGrowthChart';
 import { CalculatorInputs } from '@/types/calculator';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 
 interface Projection {
   year: number;
@@ -42,6 +48,71 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
     return 'Unknown';
   };
 
+  const columns: ColumnDef<Projection>[] = [
+    {
+      accessorKey: 'age',
+      header: 'Age',
+      cell: ({ row }) => <div className="font-medium">{row.original.age}</div>,
+    },
+    {
+      id: 'phase',
+      header: 'Phase',
+      cell: ({ row }) => {
+        const proj = row.original;
+        return (
+          <span className={`text-xs px-2 py-1 rounded-full ${
+            proj.isInSIPPhase ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200' :
+            proj.isInWaitingPhase ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200' :
+            'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200'
+          }`}>
+            {getPhase(proj)}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'amountInHand',
+      header: () => <div className="text-right">Starting Amount</div>,
+      cell: ({ row }) => <div className="text-right">{formatCurrency(row.original.amountInHand)}</div>,
+    },
+    {
+      accessorKey: 'monthlySIP',
+      header: () => <div className="text-right">Monthly SIP</div>,
+      cell: ({ row }) => (
+        <div className="text-right">
+          {row.original.monthlySIP > 0 ? formatCurrency(row.original.monthlySIP) : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'monthlySWP',
+      header: () => <div className="text-right">Monthly SWP</div>,
+      cell: ({ row }) => (
+        <div className="text-right">
+          {row.original.monthlySWP > 0 ? formatCurrency(row.original.monthlySWP) : '-'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'returnRate',
+      header: () => <div className="text-right">Return %</div>,
+      cell: ({ row }) => <div className="text-right">{row.original.returnRate.toFixed(1)}%</div>,
+    },
+    {
+      accessorKey: 'expectedCorpus',
+      header: () => <div className="text-right">Ending Corpus</div>,
+      cell: ({ row }) => (
+        <div className="text-right font-semibold">{formatCurrency(row.original.expectedCorpus)}</div>
+      ),
+    },
+  ];
+
+  const table = useReactTable({
+    data: projections,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
     <Card className="border-primary/30">
       <CardHeader>
@@ -67,41 +138,53 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
           {/* Detailed Table */}
           <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold">Detailed Table</h3>
-            <div className="rounded-md border overflow-x-auto max-h-[500px]">
-              <table className="w-full caption-bottom text-sm min-w-[800px]">
-                <thead className="sticky top-0 bg-background z-10 [&_tr]:border-b">
-                  <tr className="border-b transition-colors hover:bg-muted/50">
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground min-w-[60px]">Age</th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground min-w-[120px]">Phase</th>
-                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[120px]">Starting Amount</th>
-                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[110px]">Monthly SIP</th>
-                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[110px]">Monthly SWP</th>
-                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[80px]">Return %</th>
-                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[120px]">Ending Corpus</th>
-                  </tr>
-                </thead>
-                <tbody className="[&_tr:last-child]:border-0">
-                  {projections.map((proj) => (
-                    <tr key={proj.yearNumber} className="border-b transition-colors hover:bg-muted/50">
-                      <td className="p-4 align-middle font-medium">{proj.age}</td>
-                      <td className="p-4 align-middle">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          proj.isInSIPPhase ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200' :
-                          proj.isInWaitingPhase ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200' :
-                          'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200'
-                        }`}>
-                          {getPhase(proj)}
-                        </span>
-                      </td>
-                      <td className="p-4 align-middle text-right">{formatCurrency(proj.amountInHand)}</td>
-                      <td className="p-4 align-middle text-right">{proj.monthlySIP > 0 ? formatCurrency(proj.monthlySIP) : '-'}</td>
-                      <td className="p-4 align-middle text-right">{proj.monthlySWP > 0 ? formatCurrency(proj.monthlySWP) : '-'}</td>
-                      <td className="p-4 align-middle text-right">{proj.returnRate.toFixed(1)}%</td>
-                      <td className="p-4 align-middle text-right font-semibold">{formatCurrency(proj.expectedCorpus)}</td>
-                    </tr>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
           </div>
       </div>
