@@ -134,7 +134,8 @@ const AuthPage = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <form onSubmit={handleEmailSignIn} className="space-y-4">
+                  {/* Email/Password Login - Commented out for Phase 1 */}
+                  {/* <form onSubmit={handleEmailSignIn} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
                       <Input
@@ -176,7 +177,7 @@ const AuthPage = () => {
                         Or continue with
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                   
                   <Button 
                     type="button" 
