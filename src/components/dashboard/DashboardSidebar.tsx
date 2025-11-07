@@ -35,11 +35,6 @@ import { useUserRole } from '@/hooks/useUserRole';
 
 const baseMenuItems = [
   {
-    title: 'Home',
-    url: '/dashboard',
-    icon: Home,
-  },
-  {
     title: 'Financial Freedom Readiness',
     url: '/dashboard/ffr',
     icon: TrendingUp,

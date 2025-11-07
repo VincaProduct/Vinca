@@ -15,11 +15,17 @@ import {
   Trophy
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { tier, isPro } = useMembership();
   const navigate = useNavigate();
+
+  // Redirect to FFR page
+  useEffect(() => {
+    navigate('/dashboard/ffr', { replace: true });
+  }, [navigate]);
 
   // Free content items
   const freeContent = [
