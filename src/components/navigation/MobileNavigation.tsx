@@ -85,7 +85,7 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                 </span>
               </button>
 
-              <Link
+              {/* <Link
                 to="/achievers-club"
                 className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"
                 onClick={() => setIsMenuOpen(false)}
@@ -93,7 +93,7 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                 <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
                   Achievers Club
                 </span>
-              </Link>
+              </Link> */}
               
               {/* Tools Dropdown */}
               <div>
