@@ -65,27 +65,26 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
           </div>
           
           {/* Detailed Table */}
-          <div className="space-y-4 w-full">
+          <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold">Detailed Table</h3>
-            <div className="w-full overflow-hidden">
-              <div className="rounded-md border overflow-x-auto max-h-[500px]">
-                <Table className="min-w-[800px]">
-                <TableHeader className="sticky top-0 bg-background z-10">
-                  <TableRow>
-                    <TableHead className="min-w-[60px]">Age</TableHead>
-                    <TableHead className="min-w-[120px]">Phase</TableHead>
-                    <TableHead className="text-right min-w-[120px]">Starting Amount</TableHead>
-                    <TableHead className="text-right min-w-[110px]">Monthly SIP</TableHead>
-                    <TableHead className="text-right min-w-[110px]">Monthly SWP</TableHead>
-                    <TableHead className="text-right min-w-[80px]">Return %</TableHead>
-                    <TableHead className="text-right min-w-[120px]">Ending Corpus</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+            <div className="rounded-md border overflow-x-auto max-h-[500px]">
+              <table className="w-full caption-bottom text-sm min-w-[800px]">
+                <thead className="sticky top-0 bg-background z-10 [&_tr]:border-b">
+                  <tr className="border-b transition-colors hover:bg-muted/50">
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground min-w-[60px]">Age</th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground min-w-[120px]">Phase</th>
+                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[120px]">Starting Amount</th>
+                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[110px]">Monthly SIP</th>
+                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[110px]">Monthly SWP</th>
+                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[80px]">Return %</th>
+                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground min-w-[120px]">Ending Corpus</th>
+                  </tr>
+                </thead>
+                <tbody className="[&_tr:last-child]:border-0">
                   {projections.map((proj) => (
-                    <TableRow key={proj.yearNumber}>
-                      <TableCell className="font-medium">{proj.age}</TableCell>
-                      <TableCell>
+                    <tr key={proj.yearNumber} className="border-b transition-colors hover:bg-muted/50">
+                      <td className="p-4 align-middle font-medium">{proj.age}</td>
+                      <td className="p-4 align-middle">
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           proj.isInSIPPhase ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200' :
                           proj.isInWaitingPhase ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200' :
@@ -93,19 +92,18 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
                         }`}>
                           {getPhase(proj)}
                         </span>
-                      </TableCell>
-                      <TableCell className="text-right">{formatCurrency(proj.amountInHand)}</TableCell>
-                      <TableCell className="text-right">{proj.monthlySIP > 0 ? formatCurrency(proj.monthlySIP) : '-'}</TableCell>
-                      <TableCell className="text-right">{proj.monthlySWP > 0 ? formatCurrency(proj.monthlySWP) : '-'}</TableCell>
-                      <TableCell className="text-right">{proj.returnRate.toFixed(1)}%</TableCell>
-                      <TableCell className="text-right font-semibold">{formatCurrency(proj.expectedCorpus)}</TableCell>
-                    </TableRow>
+                      </td>
+                      <td className="p-4 align-middle text-right">{formatCurrency(proj.amountInHand)}</td>
+                      <td className="p-4 align-middle text-right">{proj.monthlySIP > 0 ? formatCurrency(proj.monthlySIP) : '-'}</td>
+                      <td className="p-4 align-middle text-right">{proj.monthlySWP > 0 ? formatCurrency(proj.monthlySWP) : '-'}</td>
+                      <td className="p-4 align-middle text-right">{proj.returnRate.toFixed(1)}%</td>
+                      <td className="p-4 align-middle text-right font-semibold">{formatCurrency(proj.expectedCorpus)}</td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
       </div>
       </CardContent>
     </Card>
