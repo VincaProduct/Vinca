@@ -65,10 +65,11 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
           </div>
           
           {/* Detailed Table */}
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             <h3 className="text-base sm:text-lg font-semibold">Detailed Table</h3>
-            <div className="rounded-md border overflow-x-auto max-h-[500px]">
-              <Table className="min-w-[800px]">
+            <div className="w-full overflow-hidden">
+              <div className="rounded-md border overflow-x-auto max-h-[500px]">
+                <Table className="min-w-[800px]">
                 <TableHeader className="sticky top-0 bg-background z-10">
                   <TableRow>
                     <TableHead className="min-w-[60px]">Age</TableHead>
@@ -105,6 +106,7 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
             </div>
           </div>
         </div>
+      </div>
       </CardContent>
     </Card>
   );
