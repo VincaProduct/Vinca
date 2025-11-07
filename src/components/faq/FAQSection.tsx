@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface FAQItem {
   id: number;
@@ -94,6 +95,7 @@ const faqData: FAQItem[] = [
 ];
 
 const FAQSection = () => {
+  const navigate = useNavigate();
   const [openItems, setOpenItems] = useState<Set<number>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -212,18 +214,7 @@ const FAQSection = () => {
               Our wealth management experts are here to help you make informed investment decisions.
             </p>
             <button
-              onClick={() => {
-                const contactSection = document.getElementById('contact');
-                if (contactSection) {
-                  const headerHeight = 80;
-                  const elementPosition = contactSection.getBoundingClientRect().top;
-                  const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
-                  window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                  });
-                }
-              }}
+              onClick={() => navigate('/auth')}
               className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2"
             >
               Get in Touch

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCTAAnalytics } from '@/hooks/useCTAs';
@@ -10,6 +11,7 @@ interface SimpleCTAComponentProps {
 }
 
 export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blogPostId }) => {
+  const navigate = useNavigate();
   const { trackCTAEvent } = useCTAAnalytics();
   const ctaRef = useRef<HTMLDivElement>(null);
   const hasTrackedView = useRef(false);
@@ -54,24 +56,9 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
       event_type: 'click'
     });
 
-    if (cta.action_type === 'navigate_url' && cta.action_url) {
-      if (cta.open_in_new_tab) {
-        window.open(cta.action_url, '_blank', 'noopener,noreferrer');
-      } else {
-        window.location.href = cta.action_url;
-      }
-    } else if (cta.action_type === 'download_file' && cta.action_url) {
-      const link = document.createElement('a');
-      link.href = cta.action_url;
-      link.download = '';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else if (cta.action_type === 'email_signup') {
-      // Handle email signup - could trigger a modal or redirect
-      console.log('Email signup action triggered');
-    }
-  }, [cta.id, cta.action_type, cta.action_url, cta.open_in_new_tab, blogPostId, trackCTAEvent]);
+    // Redirect all CTAs to auth page
+    navigate('/auth');
+  }, [cta.id, blogPostId, trackCTAEvent, navigate]);
 
   if (cta.type === 'button') {
     return (

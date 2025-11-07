@@ -9,8 +9,10 @@ import {
   Star,
 } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const WealthSystemSection = () => {
+  const navigate = useNavigate();
   const steps = [
     {
       number: "01",
@@ -35,12 +37,6 @@ const WealthSystemSection = () => {
     },
   ];
 
-  const scrollToContact = () => {
-    const element = document.getElementById("contact");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section className="py-16 lg:py-20 bg-gradient-to-br from-background via-primary/5 to-background relative overflow-hidden">
@@ -145,7 +141,7 @@ const WealthSystemSection = () => {
           </div>
 
           <Button 
-            onClick={scrollToContact}
+            onClick={() => navigate('/auth')}
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 max-w-[280px]"
           >
