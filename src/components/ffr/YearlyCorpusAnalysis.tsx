@@ -55,11 +55,10 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
       cell: ({ row }) => {
         const proj = row.original;
         return (
-          <span className={`text-xs px-2 py-1 rounded-full ${
-            proj.isInSIPPhase ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200' :
+          <span className={`text-xs px-2 py-1 rounded-full ${proj.isInSIPPhase ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200' :
             proj.isInWaitingPhase ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200' :
-            'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200'
-          }`}>
+              'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200'
+            }`}>
             {getPhase(proj)}
           </span>
         );
@@ -113,7 +112,7 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
           Detailed projection of your wealth growth through retirement
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-w-0">
         <div className="space-y-6">
           {/* Visual Chart */}
           <div className="space-y-4">
@@ -123,13 +122,13 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
               Chart shows corpus growth through SIP accumulation, waiting period, and retirement withdrawals
             </p>
           </div>
-          
+
           {/* Detailed Table */}
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[500px] overflow-y-auto min-w-0">
             <h3 className="text-base sm:text-lg font-semibold">Detailed Table</h3>
             <DataTable columns={columns} data={projections} />
           </div>
-      </div>
+        </div>
       </CardContent>
     </Card>
   );

@@ -11,7 +11,7 @@ const DashboardLayout = () => {
     const handleResize = () => {
       setOpen(window.innerWidth >= 1100);
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -21,9 +21,9 @@ const DashboardLayout = () => {
       <SidebarProvider open={open} onOpenChange={setOpen}>
         <div className="min-h-screen flex w-full bg-background">
           <DashboardSidebar />
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             <DashboardHeader />
-            <main className="flex-1 overflow-auto bg-background">
+            <main className="flex-1 overflow-auto bg-background min-w-0">
               <Outlet />
             </main>
           </div>
