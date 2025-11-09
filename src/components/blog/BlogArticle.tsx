@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from "@/components/ui/button";
@@ -115,8 +116,77 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
     );
   }
 
+  const blogUrl = `https://vincawealth.com/blog/${article.slug}`;
+  const ogImage = article.featured_image || 'https://vincawealth.com/og-image.png';
+  const description = article.excerpt || article.subtitle || 'Read the latest insights on wealth management, mutual funds, and financial planning from Vinca Wealth.';
+
   return (
     <>
+      <Helmet>
+        {/* Primary Meta Tags */}
+        <title>{article.title} | Vinca Wealth Blog</title>
+        <meta name="title" content={`${article.title} | Vinca Wealth Blog`} />
+        <meta name="description" content={description} />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={blogUrl} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={blogUrl} />
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:secure_url" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Vinca Wealth" />
+        <meta property="article:published_time" content={article.published_at || article.created_at} />
+        <meta property="article:author" content={article.author?.name || article.author_name || 'Vinca Wealth'} />
+        <meta property="article:section" content={article.category} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={blogUrl} />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content={article.title} />
+        <meta name="twitter:site" content="@vincawealth" />
+        <meta name="twitter:creator" content="@vincawealth" />
+
+        {/* Structured Data for Article */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": article.title,
+            "description": description,
+            "image": ogImage,
+            "author": {
+              "@type": "Person",
+              "name": article.author?.name || article.author_name || "Vinca Wealth",
+              "jobTitle": article.author?.title || article.author_title
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Vinca Wealth",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://vincawealth.com/logo.png"
+              }
+            },
+            "datePublished": article.published_at || article.created_at,
+            "dateModified": article.updated_at,
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": blogUrl
+            },
+            "articleSection": article.category
+          })}
+        </script>
+      </Helmet>
+
       {/* Scroll to Top Button */}
       {showScrollToTop && (
         <Button
