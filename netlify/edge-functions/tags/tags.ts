@@ -2,7 +2,7 @@ import type { Context } from "https://edge.netlify.com";
 
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
-  
+
   // Only process blog post URLs
   if (!url.pathname.startsWith('/blog/') || url.pathname === '/blog' || url.pathname === '/blog/') {
     return;
@@ -10,14 +10,14 @@ export default async (request: Request, context: Context) => {
 
   // Extract slug from URL
   const slug = url.pathname.replace('/blog/', '');
-  
+
   try {
     // Fetch blog post data from Supabase (using hardcoded values since they're public)
     const supabaseUrl = 'https://xmmyjphoaqazwlifehxs.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbXlqcGhvYXFhendsaWZlaHhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTY4NjMsImV4cCI6MjA2NDA5Mjg2M30.E7O_Q0Zcz0S-6ERl0JE-6SUth-lMLMbzTNGrdhDq_1k';
-    
+
     console.log(`Fetching blog post with slug: ${slug}`);
-    
+
     const response = await fetch(
       `${supabaseUrl}/rest/v1/blog_posts?select=*,author:authors(name,title,image)&slug=eq.${slug}`,
       {
@@ -35,7 +35,7 @@ export default async (request: Request, context: Context) => {
 
     const posts = await response.json();
     console.log(`Found ${posts?.length || 0} posts for slug: ${slug}`);
-    
+
     if (!posts || posts.length === 0) {
       console.log('No blog post found, skipping OG tag injection');
       return;
@@ -43,18 +43,18 @@ export default async (request: Request, context: Context) => {
 
     const post = posts[0];
     console.log(`Processing blog post: ${post.title}`);
-    
+
     // Fetch the original HTML
     const htmlResponse = await context.next();
     const html = await htmlResponse.text();
-    
+
     // Prepare meta tag values
     const title = post.title || 'Vinca Wealth Blog';
     const description = post.excerpt || post.subtitle || 'Read the latest insights on wealth management from Vinca Wealth';
     const image = post.featured_image || 'https://vincawealth.com/og-image.png';
     const blogUrl = `https://vincawealth.com/blog/${post.slug}`;
     const authorName = post.author?.name || post.author_name || 'Vinca Wealth';
-    
+
     // Create meta tags
     const metaTags = `
     <!-- Dynamic Blog Post Meta Tags -->
@@ -115,10 +115,10 @@ export default async (request: Request, context: Context) => {
     }
     </script>
     `;
-    
+
     // Inject meta tags into HTML (replace the closing </head> tag)
     const modifiedHtml = html.replace('</head>', `${metaTags}\n</head>`);
-    
+
     return new Response(modifiedHtml, {
       headers: {
         'content-type': 'text/html',
