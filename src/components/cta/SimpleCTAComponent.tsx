@@ -57,6 +57,7 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
     });
 
     // Redirect all CTAs to auth page
+    localStorage.setItem('redirect_after_login', '/dashboard/book-wealth-manager');
     navigate('/auth');
   }, [cta.id, blogPostId, trackCTAEvent, navigate]);
 

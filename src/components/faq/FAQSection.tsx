@@ -179,21 +179,21 @@ const FAQSection = () => {
                       />
                     </div>
                   </button>
-                  
+
                   <div
                     id={`faq-answer-${faq.id}`}
                     className={cn(
                       "overflow-hidden transition-all duration-500 ease-in-out",
-                      openItems.has(faq.id) 
-                        ? "max-h-96 opacity-100" 
+                      openItems.has(faq.id)
+                        ? "max-h-96 opacity-100"
                         : "max-h-0 opacity-0"
                     )}
                   >
                     <CardContent className="px-6 pb-6 pt-0">
                       <div className={cn(
                         "text-muted-foreground leading-relaxed transition-all duration-300",
-                        openItems.has(faq.id) 
-                          ? "transform translate-y-0 opacity-100" 
+                        openItems.has(faq.id)
+                          ? "transform translate-y-0 opacity-100"
                           : "transform -translate-y-2 opacity-0"
                       )}>
                         {faq.answer}
@@ -214,7 +214,10 @@ const FAQSection = () => {
               Our wealth management experts are here to help you make informed investment decisions.
             </p>
             <button
-              onClick={() => navigate('/auth')}
+              onClick={() => {
+                localStorage.setItem('redirect_after_login', '/dashboard/book-wealth-manager');
+                navigate('/auth');
+              }}
               className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2"
             >
               Get in Touch

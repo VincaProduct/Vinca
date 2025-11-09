@@ -546,7 +546,10 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button
-              onClick={() => navigate('/auth')}
+              onClick={() => {
+                localStorage.setItem('redirect_after_login', '/dashboard/book-wealth-manager');
+                navigate('/auth');
+              }}
               variant="outline"
               size="lg"
               className="px-6 py-3 font-semibold flex-1 sm:flex-none border-primary/30 hover:bg-primary/5 transition-all duration-300"

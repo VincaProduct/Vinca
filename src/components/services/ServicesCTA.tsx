@@ -11,13 +11,16 @@ const ServicesCTA = () => {
           Ready to Start Your Wealth Building Journey?
         </h3>
         <p className="text-muted-foreground mb-6 text-base sm:text-lg px-2">
-          Schedule a complimentary consultation to discuss your financial goals and 
+          Schedule a complimentary consultation to discuss your financial goals and
           learn how our personalized strategies can help you achieve them.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            onClick={() => navigate('/auth')}
-            size="lg" 
+          <Button
+            onClick={() => {
+              localStorage.setItem('redirect_after_login', '/dashboard/book-wealth-manager');
+              navigate('/auth');
+            }}
+            size="lg"
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 sm:px-8"
           >
             Schedule Free Consultation
