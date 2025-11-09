@@ -12,31 +12,37 @@ export default async (request: Request, context: Context) => {
   const slug = url.pathname.replace('/blog/', '');
   
   try {
-    // Fetch blog post data from Supabase
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://xmmyjphoaqazwlifehxs.supabase.co';
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
+    // Fetch blog post data from Supabase (using hardcoded values since they're public)
+    const supabaseUrl = 'https://xmmyjphoaqazwlifehxs.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbXlqcGhvYXFhendsaWZlaHhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTY4NjMsImV4cCI6MjA2NDA5Mjg2M30.E7O_Q0Zcz0S-6ERl0JE-6SUth-lMLMbzTNGrdhDq_1k';
+    
+    console.log(`Fetching blog post with slug: ${slug}`);
     
     const response = await fetch(
       `${supabaseUrl}/rest/v1/blog_posts?select=*,author:authors(name,title,image)&slug=eq.${slug}`,
       {
         headers: {
-          'apikey': supabaseKey || '',
-          'Authorization': `Bearer ${supabaseKey || ''}`,
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
         },
       }
     );
 
     if (!response.ok) {
+      console.error(`Failed to fetch blog post: ${response.status} ${response.statusText}`);
       return;
     }
 
     const posts = await response.json();
+    console.log(`Found ${posts?.length || 0} posts for slug: ${slug}`);
     
     if (!posts || posts.length === 0) {
+      console.log('No blog post found, skipping OG tag injection');
       return;
     }
 
     const post = posts[0];
+    console.log(`Processing blog post: ${post.title}`);
     
     // Fetch the original HTML
     const htmlResponse = await context.next();
