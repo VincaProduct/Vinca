@@ -1,0 +1,22 @@
+# Headers for all pages
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Cache control for assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# Blog posts should be cached but revalidated for social media crawlers
+/blog/*
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  X-Robots-Tag: index, follow
+
