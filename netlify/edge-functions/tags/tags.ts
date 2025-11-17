@@ -158,49 +158,9 @@ export default async (request: Request, context: Context) => {
     </script>
     `;
 
-    // Inject meta tags into HTML - remove existing meta tags that might conflict
-    let modifiedHtml = html;
-
-    // Remove default OG tags from index.html to prevent conflicts
-    modifiedHtml = modifiedHtml.replace(
-      /<meta property="og:title"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta property="og:description"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta property="og:image"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta property="og:url"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta name="twitter:title"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta name="twitter:description"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta name="twitter:image"[^>]*>/gi,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<title>[^<]*<\/title>/i,
-      ''
-    );
-    modifiedHtml = modifiedHtml.replace(
-      /<meta name="description"[^>]*>/i,
-      ''
-    );
-
-    // Inject new meta tags at the very beginning of head (right after <head>)
-    modifiedHtml = modifiedHtml.replace('<head>', `<head>\n${metaTags}\n`);
+    // Simply inject meta tags at the very beginning of head (right after <head>)
+    // Don't remove existing tags - let the first ones (ours) take precedence
+    const modifiedHtml = html.replace('<head>', `<head>\n${metaTags}`);
 
     console.log(`[OG-Tags] Successfully injected OG tags for: ${post.title}`);
     console.log(`[OG-Tags] Image URL: ${image}`);
