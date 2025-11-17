@@ -2,6 +2,10 @@ import type { Context } from "https://edge.netlify.com";
 
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
+  const userAgent = request.headers.get('user-agent') || '';
+
+  // Log all requests for debugging
+  console.log(`[OG-Tags] Request to: ${url.pathname} from: ${userAgent.substring(0, 100)}`);
 
   // Only process blog post URLs
   if (!url.pathname.startsWith('/blog/') || url.pathname === '/blog' || url.pathname === '/blog/') {
@@ -195,15 +199,17 @@ export default async (request: Request, context: Context) => {
       ''
     );
 
-    // Inject new meta tags
-    modifiedHtml = modifiedHtml.replace('</head>', `${metaTags}\n</head>`);
+    // Inject new meta tags at the very beginning of head (right after <head>)
+    modifiedHtml = modifiedHtml.replace('<head>', `<head>\n${metaTags}\n`);
 
     console.log(`[OG-Tags] Successfully injected OG tags for: ${post.title}`);
+    console.log(`[OG-Tags] Image URL: ${image}`);
+    console.log(`[OG-Tags] User-Agent: ${userAgent.substring(0, 50)}`);
 
     return new Response(modifiedHtml, {
       headers: {
         'content-type': 'text/html; charset=utf-8',
-        'cache-control': 'public, max-age=3600, s-maxage=3600',
+        'cache-control': 'public, max-age=0, must-revalidate',
         'x-robots-tag': 'index, follow',
       },
     });
