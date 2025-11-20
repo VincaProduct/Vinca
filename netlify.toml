@@ -36,3 +36,7 @@
 [[edge_functions]]
 function = "tags"
 path = "/blog/*"
+
+[[edge_functions]]
+function = "sitemap"
+path = "/sitemap.xml"
