@@ -1,14 +1,62 @@
+# Sitemap location
+Sitemap: https://vincawealth.com/sitemap.xml
+
+# Allow all major search engines full access to public content
 User-agent: Googlebot
 Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /financial-freedom-calculator
+Allow: /achievers-club
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /payment/*
+Disallow: /thank-you
 
 User-agent: Bingbot
 Allow: /
+Allow: /blog
+Allow: /blog/*
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /payment/*
+Disallow: /thank-you
 
+# Social media crawlers (for preview cards)
 User-agent: Twitterbot
 Allow: /
+Allow: /blog
+Allow: /blog/*
 
 User-agent: facebookexternalhit
 Allow: /
+Allow: /blog
+Allow: /blog/*
 
+User-agent: LinkedInBot
+Allow: /
+Allow: /blog
+Allow: /blog/*
+
+# All other bots
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /financial-freedom-calculator
+Allow: /achievers-club
+Allow: /privacy-policy
+
+# Block authenticated/private areas
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /payment
+Disallow: /payment/*
+Disallow: /thank-you
+
+# Block API endpoints and admin routes
+Disallow: /api/
+Disallow: /admin/
+
+# Crawl delay (optional - uncomment if needed)
+# Crawl-delay: 1
