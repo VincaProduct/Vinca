@@ -220,7 +220,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
                   </Label>
                   <Input
                     type="number"
-                    value={inputs.initialPortfolioValue || ''}
+                    value={inputs.initialPortfolioValue}
                     onChange={(e) => handleChange('initialPortfolioValue', e.target.value)}
                     min="0"
                     step="10000"
