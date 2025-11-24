@@ -20,8 +20,8 @@ const isCrawler = (userAgent: string): boolean => {
     'WhatsApp',
     'Twitterbot',
   ];
-  
-  return crawlerPatterns.some(pattern => 
+
+  return crawlerPatterns.some(pattern =>
     userAgent.toLowerCase().includes(pattern.toLowerCase())
   );
 };
@@ -173,9 +173,24 @@ export default async (request: Request, context: Context) => {
       "publisher": {
         "@type": "Organization",
         "name": "Vinca Wealth",
+        "url": "https://vincawealth.com",
         "logo": {
           "@type": "ImageObject",
           "url": "https://vincawealth.com/images/vinca-logo.webp"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "183/8, Adjacent to Daddy's Elixir Appartment Singenagrahara, Huskur Post, Sarjapura, hobli, Phase II",
+          "addressLocality": "Electronic City, Bengaluru",
+          "addressRegion": "Karnataka",
+          "postalCode": "560100",
+          "addressCountry": "IN"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "telephone": "+91-7386809164",
+          "email": "support@vincawealth.com"
         }
       },
       "datePublished": "${post.published_at || post.created_at}",
@@ -186,6 +201,48 @@ export default async (request: Request, context: Context) => {
       },
       "articleSection": "${category.replace(/"/g, '\\"')}",
       "timeRequired": "${readTime.replace(/"/g, '\\"')}"
+    }
+    </script>
+    
+    <!-- Organization Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["FinancialService", "Organization"],
+      "@id": "https://vincawealth.com/#organization",
+      "name": "Vinca Wealth",
+      "url": "https://vincawealth.com",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://vincawealth.com/#logo",
+        "url": "https://vincawealth.com/images/vinca-logo.webp",
+        "contentUrl": "https://vincawealth.com/images/vinca-logo.webp",
+        "caption": "Vinca Wealth",
+        "inLanguage": "en-US",
+        "width": "200",
+        "height": "100"
+      },
+      "description": "Professional wealth management services specializing in mutual funds and goal-based investing",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "183/8, Adjacent to Daddy's Elixir Appartment Singenagrahara, Huskur Post, Sarjapura, hobli, Phase II",
+        "addressLocality": "Electronic City, Bengaluru",
+        "addressRegion": "Karnataka",
+        "postalCode": "560100",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://www.facebook.com/vincawealth",
+        "https://www.twitter.com/vincawealth",
+        "https://www.linkedin.com/company/vincawealth"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "telephone": "+91-7386809164",
+        "email": "support@vincawealth.com",
+        "availableLanguage": "English"
+      }
     }
     </script>
     `;

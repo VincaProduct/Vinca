@@ -15,11 +15,44 @@ export default async (request: Request) => {
 
   if (error) {
     console.error('Error fetching posts for sitemap:', error);
-    return new Response('Error generating sitemap', { status: 500 });
+    // Return a minimal sitemap with just the homepage if there's an error
+    const baseUrl = 'https://vincawealth.com';
+    const currentDate = new Date().toISOString();
+    const minimalSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/blog</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>`;
+    return new Response(minimalSitemap, {
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, max-age=300, s-maxage=300',
+      },
+    });
   }
 
   const baseUrl = 'https://vincawealth.com';
   const currentDate = new Date().toISOString();
+
+  // Helper function to format dates properly for sitemap
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return currentDate;
+    try {
+      return new Date(dateString).toISOString();
+    } catch {
+      return currentDate;
+    }
+  };
 
   // Generate sitemap XML
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -46,12 +79,12 @@ export default async (request: Request) => {
   </url>
 
   <!-- Individual blog posts -->
-  ${posts?.map(post => `  <url>
+  ${posts && posts.length > 0 ? posts.map(post => `  <url>
     <loc>${baseUrl}/blog/${post.slug}</loc>
-    <lastmod>${post.updated_at || post.published_at}</lastmod>
+    <lastmod>${formatDate(post.updated_at || post.published_at)}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>`).join('\n')}
+  </url>`).join('\n') : ''}
 
   <!-- Financial Freedom Calculator -->
   <url>
