@@ -387,10 +387,7 @@ export default function FFRHome() {
                     className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto"
                     onClick={() => navigate("/dashboard/book-wealth-manager")}
                   >
-                    Talk to an Advisor
-                  </Button>
-                  <Button size="lg" className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto" onClick={handlePortfolioLoginClick}>
-                    Access Your Portfolio Now
+                    Talk to Wealth Manager
                   </Button>
                 </div>
 
