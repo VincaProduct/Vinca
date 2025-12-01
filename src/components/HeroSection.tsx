@@ -14,7 +14,7 @@ const HeroSection = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-secondary/30 pt-16 sm:pt-18 lg:pt-20">{/* Account for fixed header */}
       {/* Modern Grid Pattern Background */}
       <div 
-        className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05]"
         style={{
           backgroundImage: `
             linear-gradient(hsl(var(--muted-foreground)) 1px, transparent 1px),
