@@ -17,7 +17,7 @@ const DashboardLayout = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background dark">
+    <div className="min-h-screen bg-background">
       <SidebarProvider open={open} onOpenChange={setOpen}>
         <div className="min-h-screen flex w-full bg-background">
           <DashboardSidebar />
