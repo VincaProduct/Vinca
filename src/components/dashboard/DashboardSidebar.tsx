@@ -32,6 +32,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMembership } from '@/hooks/useMembership';
 import { useUserRole } from '@/hooks/useUserRole';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const baseMenuItems = [
   {
@@ -133,8 +134,8 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar className="border-r-0 bg-sidebar" collapsible="offcanvas">
-      <SidebarHeader className="h-14 px-4 border-b border-sidebar-border flex items-center justify-center">
-        <Link to="/" className="flex items-center justify-center">
+      <SidebarHeader className="h-14 px-4 border-b border-sidebar-border flex items-center justify-between">
+        <Link to="/" className="flex items-center justify-center flex-1">
           <img
             src={logoSrc}
             alt="Vinca Wealth"
@@ -142,6 +143,7 @@ export function DashboardSidebar() {
             loading="eager"
           />
         </Link>
+        <ThemeToggle />
       </SidebarHeader>
       
       <SidebarContent className="bg-sidebar">
