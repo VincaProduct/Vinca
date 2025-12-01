@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { RazorpayProvider } from "@/contexts/RazorpayContext";
 import { ReferralProvider } from "@/contexts/ReferralContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import PublicRoute from "@/components/PublicRoute";
 import Index from "./pages/Index";
 import BlogsPage from "./pages/BlogsPage";
 import ThankYou from "./pages/ThankYou";
@@ -50,14 +51,14 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
             <Route path="/blog" element={<BlogsPage />} />
             <Route path="/blog/:slug" element={<BlogsPage />} />
-            <Route path="/thank-you" element={<ThankYou />} />
-            <Route path="/financial-freedom-calculator" element={<FinancialFreedomCalculator />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/achievers-club" element={<AchieversClubLanding />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/thank-you" element={<PublicRoute><ThankYou /></PublicRoute>} />
+            <Route path="/financial-freedom-calculator" element={<PublicRoute><FinancialFreedomCalculator /></PublicRoute>} />
+            <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+            <Route path="/achievers-club" element={<PublicRoute><AchieversClubLanding /></PublicRoute>} />
+            <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
             
             {/* FFR Module Routes - moved to dashboard/tools */}
             
