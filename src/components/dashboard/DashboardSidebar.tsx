@@ -134,8 +134,8 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar className="border-r-0 bg-sidebar" collapsible="offcanvas">
-      <SidebarHeader className="h-14 px-4 border-b border-sidebar-border flex items-center justify-between">
-        <Link to="/" className="flex items-center justify-center flex-1">
+      <SidebarHeader className="h-14 px-4 border-b border-sidebar-border flex items-center justify-center">
+        <Link to="/" className="flex items-center justify-center">
           <img
             src={logoSrc}
             alt="Vinca Wealth"
@@ -143,7 +143,6 @@ export function DashboardSidebar() {
             loading="eager"
           />
         </Link>
-        <ThemeToggle />
       </SidebarHeader>
       
       <SidebarContent className="bg-sidebar">
@@ -219,19 +218,22 @@ export function DashboardSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-sidebar-border">
-        <div className="flex items-center space-x-3 p-3 rounded-lg bg-sidebar-accent hover:bg-sidebar-accent/80 transition-colors">
-          <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-primary-foreground" />
+      <SidebarFooter className="p-4 border-t border-sidebar-border space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 flex-1 min-w-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center flex-shrink-0">
+              <User className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-sidebar-foreground truncate">
+                {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+              </p>
+              <p className="text-xs text-sidebar-foreground/70 truncate">
+                {user?.email || 'user@example.com'}
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-            </p>
-            <p className="text-xs text-sidebar-foreground/70 truncate">
-              {user?.email || 'user@example.com'}
-            </p>
-          </div>
+          <ThemeToggle />
         </div>
       </SidebarFooter>
     </Sidebar>
