@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import MutualFundMistakesSection from "@/components/MutualFundMistakesSection";
+// import MutualFundMistakesSection from "@/components/MutualFundMistakesSection";
 import WealthSystemSection from "@/components/WealthSystemSection";
 // import AIToolsSection from "@/components/AIToolsSection";
 import ServicesSection from "@/components/ServicesSection";
