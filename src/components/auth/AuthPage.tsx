@@ -95,7 +95,7 @@ const AuthPage = () => {
                 <img 
                   src={isDark ? "/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png" : "/images/black-logo-Photoroom.png"} 
                   alt="Vinca Wealth" 
-                  className="h-12 w-44 object-contain"
+                  className="h-16 lg:h-20 w-auto max-w-[280px] object-contain"
                 />
                 <p className="mt-4 text-muted-foreground text-center text-sm">
                   Your trusted partner in wealth management
