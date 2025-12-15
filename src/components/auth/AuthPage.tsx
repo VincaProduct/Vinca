@@ -16,6 +16,22 @@ const AuthPage = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState('');
+  const [isDark, setIsDark] = useState(false);
+
+  // Check theme for logo
+  useEffect(() => {
+    const checkTheme = () => {
+      const isDarkMode = document.documentElement.classList.contains("dark");
+      setIsDark(isDarkMode);
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   // Check for referral code in URL and store immediately
   useEffect(() => {
@@ -77,9 +93,9 @@ const AuthPage = () => {
               {/* Left Side - Logo/Brand */}
               <div className="bg-muted/30 p-8 lg:p-12 flex flex-col items-center justify-center min-h-[300px] lg:min-h-[500px]">
                 <img 
-                  src="/12/vinca-wealth-logo.png" 
+                  src={isDark ? "/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png" : "/images/black-logo-Photoroom.png"} 
                   alt="Vinca Wealth" 
-                  className="h-16 lg:h-20 object-contain"
+                  className="h-12 w-44 object-contain"
                 />
                 <p className="mt-4 text-muted-foreground text-center text-sm">
                   Your trusted partner in wealth management
@@ -160,8 +176,7 @@ const AuthPage = () => {
                   
                   <Button 
                     type="button"
-                    variant="outline"
-                    className="w-full border-accent/50 hover:bg-accent/20"
+                    className="w-full bg-accent text-accent-foreground hover:bg-accent/80 font-semibold"
                     size="lg"
                     onClick={handlePortfolioLoginClick}
                   >
