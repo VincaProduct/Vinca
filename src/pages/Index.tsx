@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import MutualFundMistakesSection from "@/components/MutualFundMistakesSection";
@@ -17,7 +16,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <HeroSection />
-      <MutualFundMistakesSection />
+      {/* <MutualFundMistakesSection /> */}
       <WealthSystemSection />
       {/* <AIToolsSection /> */}
       <ServicesSection />
