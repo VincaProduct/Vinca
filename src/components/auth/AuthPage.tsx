@@ -68,125 +68,45 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <Header />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted pt-20 pb-8 px-4">
-        <div className="w-full max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Left Side - Information */}
-            <div className="space-y-6 text-center lg:text-left">
-              <div className="space-y-4">
-                <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  Welcome to Vinca Wealth
-                </h1>
-                <p className="text-lg text-muted-foreground">
-                  Your trusted partner in achieving financial freedom through smart wealth management and personalized investment strategies.
+      <div className="min-h-screen flex items-center justify-center pt-20 pb-8 px-4">
+        <div className="w-full max-w-4xl">
+          <Card className="overflow-hidden shadow-2xl border-0">
+            <div className="grid lg:grid-cols-2">
+              {/* Left Side - Logo/Brand */}
+              <div className="bg-muted/30 p-8 lg:p-12 flex flex-col items-center justify-center min-h-[300px] lg:min-h-[500px]">
+                <img 
+                  src="/12/vinca-wealth-logo.png" 
+                  alt="Vinca Wealth" 
+                  className="h-16 lg:h-20 object-contain"
+                />
+                <p className="mt-4 text-muted-foreground text-center text-sm">
+                  Your trusted partner in wealth management
                 </p>
               </div>
-              
-              <div className="space-y-4 pt-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Personalized Dashboard</h3>
-                    <p className="text-sm text-muted-foreground">Track your financial journey with our intuitive tools</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Financial Freedom Calculator</h3>
-                    <p className="text-sm text-muted-foreground">Plan your path to financial independence</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">Expert Guidance</h3>
-                    <p className="text-sm text-muted-foreground">Get insights from certified wealth advisors</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Right Side - Auth Forms */}
-            <div className="space-y-6">
-              {/* Main App Sign In */}
-              <Card className="border-2">
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Sign In to Dashboard</CardTitle>
-                  <CardDescription>
-                    Access your Vinca Wealth account
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Email/Password Login - Commented out for Phase 1 */}
-                  {/* <form onSubmit={handleEmailSignIn} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full" 
-                      size="lg"
-                      disabled={loading}
-                    >
-                      {loading ? 'Signing in...' : 'Sign In'}
-                    </Button>
-                  </form>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
-                      </span>
-                    </div>
-                  </div> */}
+              {/* Right Side - Auth Forms */}
+              <div className="p-8 lg:p-12 space-y-8">
+                {/* Sign in to Investor Hub */}
+                <div className="space-y-6">
+                  <div className="text-4xl">👋</div>
+                  <div className="space-y-2">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
+                      Sign in to <span className="text-primary">Investor Hub</span>
+                    </h1>
+                    <p className="text-muted-foreground">
+                      Please use your registered Google account to login
+                    </p>
+                  </div>
                   
                   <Button 
                     type="button" 
-                    className="w-full" 
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
                     onClick={handleGoogleSignIn}
                     size="lg"
-                    variant="outline"
                   >
-                    <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                    <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -204,29 +124,44 @@ const AuthPage = () => {
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                       />
                     </svg>
-                    Continue with Google
+                    Login with Google
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
 
-              {/* Portfolio Login - Separate Section */}
-              <Card className="border-2 border-accent bg-accent/5">
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <svg className="w-5 h-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    Existing Portfolio Access
-                  </CardTitle>
-                  <CardDescription>
-                    Already have a portfolio account? Access it here
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+                {/* Divider */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-3 text-muted-foreground">
+                      or
+                    </span>
+                  </div>
+                </div>
+
+                {/* Existing Portfolio Access */}
+                <div className="space-y-4 p-6 rounded-xl bg-accent/10 border-2 border-accent/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-accent-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold text-foreground">
+                        <span className="text-primary">Existing Portfolio</span> Access
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Already have a portfolio account?
+                      </p>
+                    </div>
+                  </div>
+                  
                   <Button 
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className="w-full border-accent/50 hover:bg-accent/20"
                     size="lg"
                     onClick={handlePortfolioLoginClick}
                   >
@@ -235,10 +170,10 @@ const AuthPage = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>
