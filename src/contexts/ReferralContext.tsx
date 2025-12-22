@@ -22,7 +22,7 @@ export const ReferralProvider = ({ children }: { children: React.ReactNode }) =>
       // Get current user's profile
       const { data: userProfile } = await supabase
         .from('profiles')
-        .select('zoho_sync_status, zoho_lead_id, referred_by_user_id, pending_referral_code')
+        .select('zoho_sync_status, zoho_contact_id, referred_by_user_id, pending_referral_code')
         .eq('id', user.id)
         .single();
 
