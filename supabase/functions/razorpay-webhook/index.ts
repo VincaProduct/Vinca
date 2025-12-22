@@ -143,13 +143,13 @@ Deno.serve(async (req) => {
               onConflict: 'user_id'
             });
 
-          // BACKGROUND TASK: Convert Zoho lead to contact (non-blocking)
-          const convertZohoLead = async () => {
+          // BACKGROUND TASK: Update Zoho Contact User_Type to Pro (non-blocking)
+          const updateZohoContactUserType = async () => {
             try {
-              console.log('Triggering Zoho lead conversion for user:', order.user_id);
+              console.log('Triggering Zoho Contact User_Type update for user:', order.user_id);
               
               const response = await fetch(
-                `${Deno.env.get('SUPABASE_URL')}/functions/v1/convert-zoho-lead-to-contact`,
+                `${Deno.env.get('SUPABASE_URL')}/functions/v1/update-zoho-contact-user-type`,
                 {
                   method: 'POST',
                   headers: {
@@ -158,8 +158,8 @@ Deno.serve(async (req) => {
                   },
                   body: JSON.stringify({
                     userId: order.user_id,
-                    planAmount: 25000,
-                    planName: 'Premium Pro',
+                    planAmount: order.amount,
+                    planName: order.plan_type || 'Premium Pro',
                   }),
                 }
               );
@@ -167,19 +167,19 @@ Deno.serve(async (req) => {
               const result = await response.json();
               
               if (result.success) {
-                console.log('Zoho lead conversion successful:', result);
+                console.log('Zoho Contact User_Type update successful:', result);
               } else {
-                console.warn('Zoho lead conversion failed (non-critical):', result.error);
+                console.warn('Zoho Contact User_Type update failed (non-critical):', result.error);
               }
             } catch (error) {
-              // Log but don't throw - conversion failure shouldn't affect payment flow
-              console.error('Zoho lead conversion error (non-critical):', error);
+              // Log but don't throw - Zoho update failure shouldn't affect payment flow
+              console.error('Zoho Contact update error (non-critical):', error);
             }
           };
 
-          // Start conversion in background without blocking webhook response
-          convertZohoLead().catch(err => 
-            console.error('Background Zoho conversion task failed:', err)
+          // Start update in background without blocking webhook response
+          updateZohoContactUserType().catch(err => 
+            console.error('Background Zoho Contact update task failed:', err)
           );
         }
 
