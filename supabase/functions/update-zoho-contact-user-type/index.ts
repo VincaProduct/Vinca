@@ -78,9 +78,9 @@ Deno.serve(async (req) => {
     if (updateResponse.data && updateResponse.data[0]?.code === 'SUCCESS') {
       console.log('Successfully updated Contact User_Type to Pro');
 
-      // Optionally create a Deal for revenue tracking
+      // Optionally create a Deal for revenue tracking (non-blocking)
       const closingDate = new Date().toISOString().split('T')[0];
-      const dealName = `${profile.first_name || ''} ${profile.last_name || ''} - ${planName}`.trim();
+      const dealName = `${profile.first_name || ''} ${profile.last_name || ''} - ${planName}`.trim() || `${profile.email} - ${planName}`;
 
       const dealPayload = {
         data: [{
@@ -88,26 +88,32 @@ Deno.serve(async (req) => {
           Closing_Date: closingDate,
           Stage: 'Closed Won',
           Amount: planAmount / 100, // Convert paise to rupees
-          Contact_Name: { id: profile.zoho_contact_id }
+          Contact_Name: { id: profile.zoho_contact_id },
+          Pipeline: 'Standard' // Required field for Zoho Deals
         }]
       };
 
       console.log('Creating Deal for revenue tracking:', dealPayload);
 
-      const dealResponse = await zohoRequest('POST', 'Deals', dealPayload);
-
       let dealId = null;
-      if (dealResponse.data && dealResponse.data[0]?.code === 'SUCCESS') {
-        dealId = dealResponse.data[0].details.id;
-        console.log('Deal created successfully:', dealId);
+      try {
+        const dealResponse = await zohoRequest('POST', 'Deals', dealPayload);
+        
+        if (dealResponse.data && dealResponse.data[0]?.code === 'SUCCESS') {
+          dealId = dealResponse.data[0].details.id;
+          console.log('Deal created successfully:', dealId);
 
-        // Update profile with deal ID
-        await supabaseClient
-          .from('profiles')
-          .update({ zoho_deal_id: dealId })
-          .eq('id', userId);
-      } else {
-        console.warn('Failed to create deal (non-critical):', dealResponse);
+          // Update profile with deal ID
+          await supabaseClient
+            .from('profiles')
+            .update({ zoho_deal_id: dealId })
+            .eq('id', userId);
+        } else {
+          console.warn('Failed to create deal (non-critical):', dealResponse);
+        }
+      } catch (dealError) {
+        // Deal creation is optional - don't fail the whole operation
+        console.warn('Deal creation failed (non-critical):', dealError);
       }
 
       // Update referral tracking status to 'converted'
