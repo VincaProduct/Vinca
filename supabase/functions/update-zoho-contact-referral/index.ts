@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface UpdateLeadReferralRequest {
-  zohoLeadId: string;
+interface UpdateContactReferralRequest {
+  zohoContactId: string;
   referralContactId: string;
 }
 
@@ -18,59 +18,59 @@ Deno.serve(async (req) => {
   }
 
   try {
-    console.log('=== Update Zoho Lead Referral Request Started ===');
+    console.log('=== Update Zoho Contact Referral Request Started ===');
 
-    const { zohoLeadId, referralContactId }: UpdateLeadReferralRequest = await req.json();
+    const { zohoContactId, referralContactId }: UpdateContactReferralRequest = await req.json();
 
-    console.log('Request body:', { zohoLeadId, referralContactId });
+    console.log('Request body:', { zohoContactId, referralContactId });
 
-    if (!zohoLeadId || !referralContactId) {
+    if (!zohoContactId || !referralContactId) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: zohoLeadId or referralContactId' }),
+        JSON.stringify({ error: 'Missing required fields: zohoContactId or referralContactId' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Update lead with referral information
+    // Update contact with referral information
     const updatePayload = {
       data: [
         {
-          id: zohoLeadId,
+          id: zohoContactId,
           Lead_Source: 'External Referral',
-          Referral_Contact: referralContactId,
+          Referral_Contact: { id: referralContactId },
         },
       ],
     };
 
-    console.log('Updating Zoho lead with referral:', updatePayload);
+    console.log('Updating Zoho contact with referral:', updatePayload);
 
-    const zohoResponse = await zohoRequest('PATCH', 'Leads', updatePayload);
+    const zohoResponse = await zohoRequest('PATCH', 'Contacts', updatePayload);
 
     console.log('Zoho API response:', JSON.stringify(zohoResponse, null, 2));
 
     if (zohoResponse.data && zohoResponse.data[0]?.code === 'SUCCESS') {
-      console.log('Lead updated successfully with referral info');
+      console.log('Contact updated successfully with referral info');
 
       return new Response(
         JSON.stringify({
           success: true,
-          message: 'Lead updated with referral information',
+          message: 'Contact updated with referral information',
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     } else {
-      console.error('Failed to update lead:', zohoResponse);
+      console.error('Failed to update contact:', zohoResponse);
       
       return new Response(
         JSON.stringify({
-          error: 'Failed to update lead in Zoho',
+          error: 'Failed to update contact in Zoho',
           details: zohoResponse,
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
   } catch (error) {
-    console.error('Error updating lead referral:', error);
+    console.error('Error updating contact referral:', error);
 
     return new Response(
       JSON.stringify({

@@ -8,7 +8,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface LeadData {
+interface ContactData {
   userId: string;
   email: string;
   firstName: string;
@@ -27,7 +27,7 @@ serve(async (req) => {
 
   try {
     // Parse request body
-    const body: LeadData = await req.json();
+    const body: ContactData = await req.json();
 
     // Validate required fields
     const { userId, email, firstName, lastName, fullName, company, phone, referralCode } = body;
@@ -72,19 +72,19 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if user was referred
+    // Check if user was referred - find referrer's Zoho Contact ID
     let referrerContactId: string | null = null;
 
     if (referralCode) {
       // Find referrer by referral code
       const { data: referrerProfile } = await supabase
         .from('profiles')
-        .select('id, zoho_contact_id, zoho_lead_id')
+        .select('id, zoho_contact_id')
         .eq('referral_code', referralCode)
         .maybeSingle();
       
-      if (referrerProfile) {
-        referrerContactId = referrerProfile.zoho_contact_id || referrerProfile.zoho_lead_id;
+      if (referrerProfile?.zoho_contact_id) {
+        referrerContactId = referrerProfile.zoho_contact_id;
         
         // Store referral relationship in profiles (if not already set)
         const { data: existingProfile } = await supabase
@@ -124,17 +124,17 @@ serve(async (req) => {
       }
     }
 
-    // Prepare lead data for Zoho
+    // Prepare contact data for Zoho - Create Contact directly with User_Type = Basic
     const currentDate = new Date().toISOString().split('T')[0];
     
-    const leadPayload = {
+    const contactPayload = {
       data: [
         {
           Last_Name: finalLastName,
           First_Name: finalFirstName,
           Email: email,
-          Company: company || 'Customer',
           Phone: phone || null,
+          User_Type: 'Basic', // NEW FIELD - all signups start as Basic
           Lead_Source: referrerContactId ? 'External Referral' : 'Google Signup',
           Description: `Signed up via Google OAuth on ${currentDate}${referrerContactId ? ' (Referred)' : ''}`,
           ...(referrerContactId && { Referral_Contact: { id: referrerContactId } })
@@ -142,29 +142,35 @@ serve(async (req) => {
       ],
     };
 
-    // Create lead in Zoho CRM
-    const zohoResponse = await zohoRequest('POST', 'Leads', leadPayload);
+    console.log('Creating Zoho Contact with payload:', JSON.stringify(contactPayload));
 
-    // Check if lead creation was successful
+    // Create contact in Zoho CRM (instead of Lead)
+    const zohoResponse = await zohoRequest('POST', 'Contacts', contactPayload);
+
+    console.log('Zoho API response:', JSON.stringify(zohoResponse));
+
+    // Check if contact creation was successful
     if (zohoResponse.data && zohoResponse.data[0] && zohoResponse.data[0].code === 'SUCCESS') {
-      const leadId = zohoResponse.data[0].details.id;
+      const contactId = zohoResponse.data[0].details.id;
 
-      // Update profile with Zoho lead ID
+      console.log('Contact created successfully:', contactId);
+
+      // Update profile with Zoho contact ID (not lead ID)
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          zoho_lead_id: leadId,
+          zoho_contact_id: contactId,
           zoho_sync_status: 'synced',
           zoho_sync_error: null,
           pending_referral_code: null,
         })
         .eq('id', userId);
 
-      // Update referral tracking with zoho_lead_id
+      // Update referral tracking with zoho_contact_id
       if (referralCode) {
         await supabase
           .from('user_referrals')
-          .update({ zoho_lead_id: leadId })
+          .update({ zoho_contact_id: contactId })
           .eq('user_id', userId);
       }
 
@@ -173,8 +179,8 @@ serve(async (req) => {
         return new Response(
           JSON.stringify({ 
             success: false, 
-            error: `Lead created but failed to update profile: ${updateError.message}`,
-            leadId,
+            error: `Contact created but failed to update profile: ${updateError.message}`,
+            contactId,
           }),
           { 
             status: 500, 
@@ -186,8 +192,8 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           success: true, 
-          leadId,
-          message: 'Lead created successfully',
+          contactId,
+          message: 'Contact created successfully',
         }),
         { 
           status: 200, 
@@ -195,9 +201,9 @@ serve(async (req) => {
         }
       );
     } else {
-      // Lead creation failed
+      // Contact creation failed
       const errorMessage = zohoResponse.data?.[0]?.message || 'Unknown error from Zoho API';
-      console.error('Zoho lead creation failed:', errorMessage);
+      console.error('Zoho contact creation failed:', errorMessage);
 
       // Update profile with error status
       await supabase
@@ -220,7 +226,7 @@ serve(async (req) => {
       );
     }
   } catch (error) {
-    console.error('Error in create-zoho-lead function:', error);
+    console.error('Error in create-zoho-contact function:', error);
 
     // Try to update profile with error if we have userId
     try {

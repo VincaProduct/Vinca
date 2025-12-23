@@ -1,6 +1,6 @@
 project_id = "xmmyjphoaqazwlifehxs"
 
-[functions.create-zoho-lead]
+[functions.create-zoho-contact]
 verify_jwt = false
 
 [functions.create-razorpay-order]
@@ -9,5 +9,8 @@ verify_jwt = true
 [functions.razorpay-webhook]
 verify_jwt = false
 
-[functions.convert-zoho-lead-to-contact]
+[functions.update-zoho-contact-user-type]
+verify_jwt = false
+
+[functions.update-zoho-contact-referral]
 verify_jwt = false
