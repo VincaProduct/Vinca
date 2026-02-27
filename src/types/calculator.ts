@@ -9,6 +9,7 @@ export interface CalculatorInputs {
   growthInSIP: number;
   waitingYearsBeforeSWP: number;
   currentMonthlyExpenses: number;
+  monthlyIncome: number;
   inflation: number;
   returnDuringSWP: number;
   growthInSWP: number;

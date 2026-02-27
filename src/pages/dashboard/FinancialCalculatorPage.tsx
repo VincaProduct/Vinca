@@ -67,8 +67,7 @@ export function CEILING(number, significance) {
 const FinancialCalculatorPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  const [inputs, setInputs] = useState<CalculatorInputs>({
+  const defaultInputs: CalculatorInputs = {
     age: 26,
     lifeExpectancy: 85,
     initialPortfolioValue: 50000,
@@ -78,10 +77,13 @@ const FinancialCalculatorPage = () => {
     growthInSIP: 10,
     waitingYearsBeforeSWP: 5,
     currentMonthlyExpenses: 100000,
+    monthlyIncome: 150000,
     inflation: 7,
     returnDuringSWP: 10,
     growthInSWP: 7,
-  });
+  };
+
+  const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
 
   const [results, setResults] = useState<CalculationResults | null>(null);
   const [userLumpsumData, setUserLumpsumData] = useState<UserLumpsumData>({});
@@ -103,7 +105,7 @@ const FinancialCalculatorPage = () => {
             .single();
 
           if (!error && data) {
-            setInputs(data.inputs as unknown as CalculatorInputs);
+            setInputs({ ...defaultInputs, ...(data.inputs as unknown as CalculatorInputs) });
             if (data.results) {
               setResults(data.results as unknown as CalculationResults);
             }
@@ -120,7 +122,7 @@ const FinancialCalculatorPage = () => {
       
       if (cachedInputs) {
         try {
-          setInputs(JSON.parse(cachedInputs));
+          setInputs({ ...defaultInputs, ...JSON.parse(cachedInputs) });
         } catch (error) {
           console.error('Error parsing cached inputs:', error);
         }
@@ -227,7 +229,7 @@ const FinancialCalculatorPage = () => {
 
     for (
       let year = 1;
-      year <= Math.min(50, inputs.lifeExpectancy - currentAge);
+      year <= inputs.lifeExpectancy - currentAge;
       year++
     ) {
       const age = currentAge + year;
