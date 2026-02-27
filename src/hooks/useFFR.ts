@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { FFRScoringEngine } from '@/utils/ffrScoring';
 import type { FFRProgress, FFRFoundationsChecklist, FFRUserAction, FFRScore } from '@/types/ffr';
+import type { CalculatorInputs, CalculationResults } from '@/types/calculator';
 
-export const useFFR = () => {
+interface FFRFinancialData {
+  inputs: CalculatorInputs | null;
+  results: CalculationResults | null;
+}
+
+export const useFFR = (financialData?: FFRFinancialData) => {
   const { user } = useAuth();
   const [ffrProgress, setFFRProgress] = useState<FFRProgress | null>(null);
   const [checklist, setChecklist] = useState<FFRFoundationsChecklist | null>(null);
@@ -59,6 +65,32 @@ export const useFFR = () => {
     }
   };
 
+  // Recalculate scores when financial data changes (SIP amount, required SIP, goal status)
+  const prevHabitKeyRef = useRef<string>('');
+  useEffect(() => {
+    if (!user || !checklist || !financialData?.inputs || !financialData?.results) return;
+
+    // Build a key from the values that affect habit score to avoid unnecessary recalcs
+    const habitKey = [
+      financialData.inputs.sipAmount,
+      financialData.results.requiredMonthlySIP,
+      financialData.results.canAchieveGoal,
+      financialData.inputs.initialPortfolioValue > 0,
+    ].join('|');
+
+    if (habitKey === prevHabitKeyRef.current) return;
+    prevHabitKeyRef.current = habitKey;
+
+    calculateAndUpdateScores(checklist, actions);
+  }, [
+    financialData?.inputs?.sipAmount,
+    financialData?.results?.requiredMonthlySIP,
+    financialData?.results?.canAchieveGoal,
+    financialData?.inputs?.initialPortfolioValue,
+    checklist,
+    user,
+  ]);
+
   const calculateAndUpdateScores = async (
     currentChecklist: FFRFoundationsChecklist,
     currentActions: FFRUserAction[]
@@ -66,7 +98,20 @@ export const useFFR = () => {
     if (!user) return;
 
     const foundationScore = FFRScoringEngine.calculateFoundationScore(currentChecklist);
-    const habitScore = FFRScoringEngine.calculateHabitScore(75, 80); // Mock data for now
+
+    // Derive habit score from real financial data if available,
+    // otherwise preserve existing stored score
+    let habitScore: number;
+    if (financialData?.inputs && financialData?.results) {
+      const { sipReliability, savingConsistency } = FFRScoringEngine.deriveHabitMetrics(
+        financialData.inputs,
+        financialData.results
+      );
+      habitScore = FFRScoringEngine.calculateHabitScore(sipReliability, savingConsistency);
+    } else {
+      habitScore = ffrProgress?.habit_score ?? 0;
+    }
+
     const literacyScore = FFRScoringEngine.calculateLiteracyScore(currentActions);
     const opportunityScore = FFRScoringEngine.calculateOpportunityScore(currentActions);
     const decumulationScore = FFRScoringEngine.calculateDecumulationScore(currentActions);
@@ -94,7 +139,7 @@ export const useFFR = () => {
 
     const { data, error } = await supabase
       .from('ffr_user_progress')
-      .upsert(progressData)
+      .upsert(progressData, { onConflict: 'user_id' })
       .select()
       .single();
 
@@ -117,7 +162,7 @@ export const useFFR = () => {
         user_id: user.id,
         ...updatedChecklist,
         last_updated: new Date().toISOString()
-      })
+      }, { onConflict: 'user_id' })
       .select()
       .single();
 

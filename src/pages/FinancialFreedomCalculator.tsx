@@ -224,7 +224,7 @@ const FinancialFreedomCalculator = () => {
     // Start from year 1 (first investment year)
     for (
       let year = 1;
-      year <= Math.min(50, inputs.lifeExpectancy - currentAge);
+      year <= inputs.lifeExpectancy - currentAge;
       year++
     ) {
       const age = currentAge + year;
