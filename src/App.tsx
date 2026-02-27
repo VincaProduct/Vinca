@@ -32,6 +32,7 @@ import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import FFRHome from "./pages/ffr/FFRHome";
 import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
+import UnifiedFFRPage from "./pages/ffr/UnifiedFFRPage";
 import AchieversClubLanding from "./pages/AchieversClubLanding";
 import AchieversClubDashboard from "./pages/dashboard/AchieversClubDashboard";
 import UpgradePage from "./pages/dashboard/UpgradePage";
@@ -76,6 +77,7 @@ const App = () => (
               <Route path="ffr" element={<FFRHome />} />
               <Route path="ffr/checklist" element={<FFRChecklist />} />
               <Route path="ffr/opportunities" element={<FFROpportunities />} />
+              <Route path="ffr/unified" element={<UnifiedFFRPage />} />
               
               {/* Main Navigation Routes */}
               <Route path="calculator" element={<FinancialCalculatorPage />} />
