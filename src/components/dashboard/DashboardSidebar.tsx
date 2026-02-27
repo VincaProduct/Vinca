@@ -1,11 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  User, 
+import {
+  Home,
+  User,
   UserPlus,
   TrendingUp,
+  Calculator,
   Calendar,
   FileText,
   Users,
@@ -39,6 +40,11 @@ const baseMenuItems = [
     title: 'Financial Freedom Readiness',
     url: '/dashboard/ffr',
     icon: TrendingUp,
+  },
+  {
+    title: 'Financial Planning',
+    url: '/dashboard/ffr/unified',
+    icon: Calculator,
   },
   {
     title: 'Book a Wealth Manager',
