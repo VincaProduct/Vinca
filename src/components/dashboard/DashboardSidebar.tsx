@@ -6,7 +6,6 @@ import {
   User,
   UserPlus,
   TrendingUp,
-  Calculator,
   Calendar,
   FileText,
   Users,
@@ -38,13 +37,8 @@ import ThemeToggle from '@/components/ThemeToggle';
 const baseMenuItems = [
   {
     title: 'Financial Freedom Readiness',
-    url: '/dashboard/ffr',
-    icon: TrendingUp,
-  },
-  {
-    title: 'Financial Planning',
     url: '/dashboard/ffr/unified',
-    icon: Calculator,
+    icon: TrendingUp,
   },
   {
     title: 'Book a Wealth Manager',
