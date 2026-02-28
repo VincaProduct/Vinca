@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3 } from 'lucide-react';
 import { DataTable } from '@/components/ui/data-table';
-import WealthGrowthChart from '@/components/calculator/WealthGrowthChart';
+import { CorpusProjectionChart } from '@/components/financial-planning/financial-readiness/CorpusProjectionChart';
 import { CalculatorInputs } from '@/types/calculator';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -102,34 +102,25 @@ export const YearlyCorpusAnalysis = ({ projections, inputs }: YearlyCorpusAnalys
   ];
 
   return (
-    <Card className="border-primary/30">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="w-5 h-5" />
-          Year-on-Year Corpus Analysis
-        </CardTitle>
-        <p className="text-sm text-muted-foreground mt-1">
-          Detailed projection of your wealth growth through retirement
-        </p>
-      </CardHeader>
-      <CardContent className="min-w-0">
-        <div className="space-y-6">
-          {/* Visual Chart */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Visual Chart</h3>
-            <WealthGrowthChart inputs={inputs} projections={projections} />
-            <p className="text-xs text-muted-foreground text-center">
-              Chart shows corpus growth through SIP accumulation, waiting period, and retirement withdrawals
-            </p>
-          </div>
+    <>
+      <CorpusProjectionChart inputs={inputs} projections={projections} />
 
-          {/* Detailed Table */}
+      <Card className="border-primary/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5" />
+            Year-on-Year Corpus Analysis
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            Detailed projection of your wealth growth through retirement
+          </p>
+        </CardHeader>
+        <CardContent className="min-w-0">
           <div className="space-y-4 max-h-[500px] overflow-y-auto min-w-0">
-            <h3 className="text-base sm:text-lg font-semibold">Detailed Table</h3>
             <DataTable columns={columns} data={projections} />
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 };

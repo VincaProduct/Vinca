@@ -1,6 +1,131 @@
 
 import { CalculatorInputs, CalculationResults, YearlyProjection } from '@/types/calculator';
 
+// Excel-style Future Value (monthly compounding)
+function FV(rate: number, nper: number, pmt: number, pv: number = 0, type: number = 0): number {
+  if (rate === 0) return -(pv + pmt * nper);
+  const pvFactor = Math.pow(1 + rate, nper);
+  const pmtFactor = ((Math.pow(1 + rate, nper) - 1) / rate) * (1 + rate * type);
+  return -(pv * pvFactor + pmt * pmtFactor);
+}
+
+function CEILING(number: number, significance: number): number {
+  if (significance === 0 || number === 0) return 0;
+  return Math.ceil(number / significance) * significance;
+}
+
+// Simulate full lifecycle for a given SIP amount.
+// Returns the depletion age, or null if corpus lasts until life expectancy.
+function simulateDepletionAge(inputs: CalculatorInputs, trialSIP: number): number | null {
+  const annualReturn = inputs.returnDuringSIPAndWaiting / 100;
+  const swpReturn = inputs.returnDuringSWP / 100;
+  const sipEndYear = inputs.yearsForSIP;
+  const swpStartYear = inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
+
+  const inflatedMonthlyExpenses = CEILING(
+    inputs.currentMonthlyExpenses * Math.pow(1 + inputs.inflation / 100, swpStartYear),
+    1000
+  );
+
+  let corpus = inputs.initialPortfolioValue;
+  let prevSWP = 0;
+
+  for (let year = 1; year <= inputs.lifeExpectancy - inputs.age; year++) {
+    const isInSIPPhase = year <= sipEndYear;
+    const isInWaitingPhase = year > sipEndYear && year <= swpStartYear;
+    const isInSWPPhase = year > swpStartYear;
+
+    let monthlySIP = 0;
+    if (isInSIPPhase) {
+      monthlySIP = trialSIP * Math.pow(1 + inputs.growthInSIP / 100, year - 1);
+    }
+
+    let monthlySWP = 0;
+    if (isInSWPPhase) {
+      if (swpStartYear + 1 === year) {
+        monthlySWP = inflatedMonthlyExpenses;
+      } else {
+        monthlySWP = prevSWP * (1 + inputs.growthInSWP / 100);
+      }
+      prevSWP = monthlySWP;
+    }
+
+    if (isInSIPPhase || isInWaitingPhase) {
+      const rate = Math.pow(1 + annualReturn, 1 / 12) - 1;
+      corpus = FV(rate, 12, -monthlySIP, -corpus, 1);
+    } else {
+      const rate = Math.pow(1 + swpReturn, 1 / 12) - 1;
+      corpus = FV(rate, 12, monthlySWP, -corpus, 1);
+    }
+
+    if (corpus < 0) return inputs.age + year;
+  }
+  return null; // Sustained through life expectancy
+}
+
+// Binary search: find the minimum starting SIP that sustains corpus until life expectancy.
+function calculateRequiredSIP(inputs: CalculatorInputs): number {
+  // If zero SIP already sustains (large initial portfolio), required is 0
+  if (simulateDepletionAge(inputs, 0) === null) return 0;
+
+  let low = 0;
+  let high = Math.max(inputs.sipAmount * 5, 100000);
+
+  // Ensure upper bound is sufficient
+  while (simulateDepletionAge(inputs, high) !== null && high < 1e8) {
+    high *= 2;
+  }
+
+  // 40 iterations gives precision within ₹1
+  for (let i = 0; i < 40; i++) {
+    const mid = (low + high) / 2;
+    if (simulateDepletionAge(inputs, mid) !== null) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+
+  // Round up to nearest ₹500
+  return Math.ceil(high / 500) * 500;
+}
+
+// Binary search: find the minimum corpus at retirement that sustains SWP withdrawals
+// until life expectancy. Uses the same FV-based monthly compounding as the projection table.
+function calculateRequiredCorpus(inputs: CalculatorInputs): number {
+  const yearsToRetirement = inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
+  const retirementYears = inputs.lifeExpectancy - (inputs.age + yearsToRetirement);
+  if (retirementYears <= 0) return 0;
+
+  const swpReturn = inputs.returnDuringSWP / 100;
+  const monthlyRate = Math.pow(1 + swpReturn, 1 / 12) - 1;
+  const firstYearSWP = CEILING(
+    inputs.currentMonthlyExpenses * Math.pow(1 + inputs.inflation / 100, yearsToRetirement),
+    1000
+  );
+
+  // Helper: does a given corpus sustain through retirement?
+  function sustains(startingCorpus: number): boolean {
+    let corpus = startingCorpus;
+    let monthlySWP = firstYearSWP;
+    for (let year = 0; year < retirementYears; year++) {
+      corpus = FV(monthlyRate, 12, monthlySWP, -corpus, 1);
+      if (corpus < 0) return false;
+      monthlySWP *= (1 + inputs.growthInSWP / 100);
+    }
+    return true;
+  }
+
+  let low = 0;
+  let high = firstYearSWP * 12 * retirementYears; // no-return upper bound
+
+  for (let i = 0; i < 40; i++) {
+    const mid = (low + high) / 2;
+    if (sustains(mid)) high = mid; else low = mid;
+  }
+
+  return Math.ceil(high / 100000) * 100000; // Round up to nearest lakh
+}
 
 export const calculateFinancialFreedom = (inputs: CalculatorInputs): CalculationResults => {
   const {
@@ -19,52 +144,28 @@ export const calculateFinancialFreedom = (inputs: CalculatorInputs): Calculation
   } = inputs;
 
   const currentAge = age;
-  const yearsToLifeExpectancy = lifeExpectancy - currentAge;
-  const currentAnnualExpenses = currentMonthlyExpenses * 12;
+  const yearsToRetirement = yearsForSIP + waitingYearsBeforeSWP;
+
+  // Required corpus at retirement — uses same FV-based simulation as projection table
+  const requiredCorpus = calculateRequiredCorpus(inputs);
+
+  // Present value of required corpus (discounted back to today)
+  const requiredCorpusToday = requiredCorpus / Math.pow(1 + inflation / 100, yearsToRetirement);
+
+  // Freedom age (when SWP can start)
+  const freedomAge = currentAge + yearsToRetirement;
+  const actualYearsToFreedom = yearsToRetirement;
+
+  // Future annual expenses at retirement (for reporting)
+  const futureAnnualExpenses = currentMonthlyExpenses * 12 *
+    Math.pow(1 + inflation / 100, yearsToRetirement);
+
+  // Check if current plan is sufficient (will be validated by depletion check below)
+  const currentProgress = Math.min(100, (initialPortfolioValue / Math.max(requiredCorpusToday, 1)) * 100);
   
-  // Calculate future annual expenses (adjusted for inflation)
-  const futureAnnualExpenses = currentAnnualExpenses * Math.pow(1 + inflation / 100, yearsToLifeExpectancy);
-  
-  // Calculate SIP growth over time
-  const monthlyGrowthRate = growthInSIP / 100 / 12;
-  const sipMonths = yearsForSIP * 12;
-  let totalSIPValue = 0;
-  
-  if (monthlyGrowthRate > 0) {
-    totalSIPValue = sipAmount * ((Math.pow(1 + monthlyGrowthRate, sipMonths) - 1) / monthlyGrowthRate);
-  } else {
-    totalSIPValue = sipAmount * sipMonths;
-  }
-  
-  // Calculate portfolio growth during SIP period
-  const portfolioAfterSIP = initialPortfolioValue * Math.pow(1 + returnDuringSIPAndWaiting / 100, yearsForSIP);
-  
-  // Total portfolio value after SIP period
-  const totalPortfolioAfterSIP = portfolioAfterSIP + totalSIPValue;
-  
-  // Calculate portfolio growth during waiting period
-  const portfolioAfterWaiting = totalPortfolioAfterSIP * Math.pow(1 + returnDuringSIPAndWaiting / 100, waitingYearsBeforeSWP);
-  
-  // Calculate required corpus for SWP period
-  const swpPeriodYears = lifeExpectancy - (currentAge + yearsForSIP + waitingYearsBeforeSWP);
-  const requiredCorpus = futureAnnualExpenses * swpPeriodYears;
-  
-  // Calculate today's value of required corpus
-  const requiredCorpusToday = requiredCorpus / Math.pow(1 + inflation / 100, yearsToLifeExpectancy);
-  
-  // Calculate if current plan is sufficient
-  const canAchieveGoal = portfolioAfterWaiting >= requiredCorpus;
-  
-  // Calculate current progress
-  const currentProgress = Math.min(100, (initialPortfolioValue / requiredCorpusToday) * 100);
-  
-  // Calculate freedom age (when SWP can start)
-  const freedomAge = currentAge + yearsForSIP + waitingYearsBeforeSWP;
-  const actualYearsToFreedom = yearsForSIP + waitingYearsBeforeSWP;
-  
-  // Calculate required monthly SIP (simplified calculation)
-  const requiredMonthlySIP = sipAmount;
-  const currentMonthlySurplus = sipAmount; // Using SIP amount as surplus for now
+  // Binary-search for the minimum starting SIP that sustains corpus until life expectancy
+  const requiredMonthlySIP = calculateRequiredSIP(inputs);
+  const currentMonthlySurplus = sipAmount - requiredMonthlySIP;
   
   // Emergency fund calculation
   const emergencyFundRequired = currentMonthlyExpenses * 6;
@@ -110,77 +211,12 @@ export const calculateFinancialFreedom = (inputs: CalculatorInputs): Calculation
   // Calculate SWP start age
   const swpStartAge = freedomAge;
   
-  // Calculate corpus depletion using detailed table logic
-  let corpusDepletionAge: number | null = null;
-  let corpusDepletesBeforeLifeExpectancy = false;
-  
-  // Generate detailed projections to find first negative corpus
-  let currentCorpus = initialPortfolioValue;
-  const monthlyReturn = returnDuringSIPAndWaiting / 100 / 12;
-  const annualReturn = returnDuringSIPAndWaiting / 100;
-  const swpReturnRate = returnDuringSWP / 100;
-  
-  // Calculate inflated monthly expenses for SWP period
-  const inflatedMonthlyExpenses = currentMonthlyExpenses * 
-    Math.pow(1 + inflation / 100, yearsForSIP + waitingYearsBeforeSWP);
-  
-  // Check from year 1 onwards
-  for (let year = 1; year <= Math.min(50, lifeExpectancy - currentAge); year++) {
-    const age = currentAge + year;
-    
-    // Determine phase
-    const isInSIPPhase = year <= yearsForSIP;
-    const isInWaitingPhase = year > yearsForSIP && year <= (yearsForSIP + waitingYearsBeforeSWP);
-    const isInSWPPhase = year > (yearsForSIP + waitingYearsBeforeSWP);
-    
-    // Calculate SIP amount (with growth if applicable)
-    let monthlySIP = 0;
-    if (isInSIPPhase) {
-      const sipGrowthRate = growthInSIP / 100;
-      monthlySIP = sipAmount * Math.pow(1 + sipGrowthRate, year - 1);
-    }
-    
-    // Calculate returns
-    const returnRate = isInSWPPhase ? swpReturnRate : annualReturn;
-    
-    // Calculate SWP amount
-    let monthlySWP = 0;
-    if (isInSWPPhase) {
-      const swpGrowthRate = growthInSWP / 100;
-      monthlySWP = inflatedMonthlyExpenses * Math.pow(1 + swpGrowthRate, year - (yearsForSIP + waitingYearsBeforeSWP));
-    }
-    
-    // Calculate corpus at beginning of year
-    let beginningCorpus = currentCorpus;
-    
-    // Add SIP contributions throughout the year and calculate compounding
-    if (isInSIPPhase) {
-      for (let month = 1; month <= 12; month++) {
-        beginningCorpus += monthlySIP;
-        beginningCorpus *= (1 + monthlyReturn);
-      }
-    } else {
-      // Apply annual return
-      beginningCorpus *= (1 + returnRate);
-    }
-    
-    // Subtract SWP withdrawals
-    if (isInSWPPhase) {
-      beginningCorpus -= (monthlySWP * 12);
-    }
-    
-    // Calculate expected corpus at end of year
-    const expectedCorpus = beginningCorpus;
-    
-    // Check if this is the first negative corpus
-    if (expectedCorpus < 0 && corpusDepletionAge === null) {
-      corpusDepletionAge = age;
-      corpusDepletesBeforeLifeExpectancy = true;
-      break;
-    }
-    
-    currentCorpus = expectedCorpus;
-  }
+  // Depletion check — uses the same Excel-accurate FV simulation as calculateRequiredSIP,
+  // replacing the old approximation loop (annualReturn/12 monthly rate + annual lump SWP).
+  const depletionAge = simulateDepletionAge(inputs, sipAmount);
+  const corpusDepletesBeforeLifeExpectancy = depletionAge !== null;
+  const corpusDepletionAge: number | null = depletionAge;
+  const canAchieveGoal = !corpusDepletesBeforeLifeExpectancy;
 
   return {
     requiredCorpus,

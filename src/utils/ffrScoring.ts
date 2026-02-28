@@ -1,7 +1,40 @@
 import type { FFRFoundationsChecklist, FFRUserAction, FFRScore } from '@/types/ffr';
+import type { CalculatorInputs, CalculationResults } from '@/types/calculator';
 
 // FFR Scoring Engine (Client-side calculations)
 export class FFRScoringEngine {
+  // Derive habit metrics from financial planning data
+  static deriveHabitMetrics(
+    inputs: CalculatorInputs | null,
+    results: CalculationResults | null
+  ): { sipReliability: number; savingConsistency: number } {
+    if (!inputs || !results) {
+      return { sipReliability: 0, savingConsistency: 0 };
+    }
+
+    // SIP Reliability (0-100): How adequate is the user's SIP vs what's required?
+    let sipReliability: number;
+    if (results.requiredMonthlySIP <= 0) {
+      // No additional SIP needed (large initial portfolio covers everything)
+      sipReliability = 100;
+    } else {
+      sipReliability = Math.min(100, (inputs.sipAmount / results.requiredMonthlySIP) * 100);
+    }
+
+    // Saving Consistency (0-100): Overall financial planning health
+    let consistencyPoints = 0;
+    // Has completed a financial plan (30 pts)
+    consistencyPoints += 30;
+    // Has an active SIP contribution (20 pts)
+    if (inputs.sipAmount > 0) consistencyPoints += 20;
+    // Plan is sustainable through life expectancy (30 pts)
+    if (results.canAchieveGoal) consistencyPoints += 30;
+    // Has existing portfolio/savings (20 pts)
+    if (inputs.initialPortfolioValue > 0) consistencyPoints += 20;
+
+    return { sipReliability, savingConsistency: consistencyPoints };
+  }
+
   // Foundation Score (0-40): Based on checklist completions
   static calculateFoundationScore(checklist: FFRFoundationsChecklist): number {
     const items = [
@@ -84,7 +117,7 @@ export class FFRScoringEngine {
     } else if (score >= 60) {
       return {
         band: 'Good',
-        color: 'text-blue-600',
+        color: 'text-primary',
         description: 'You are on track with some areas to improve'
       };
     } else if (score >= 40) {

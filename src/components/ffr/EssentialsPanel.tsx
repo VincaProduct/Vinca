@@ -66,7 +66,7 @@ export const EssentialsPanel = ({ checklist, calculatorResults, inputs, projecti
     // Start from year 1 (first investment year)
     for (
       let year = 1;
-      year <= Math.min(50, testInputs.lifeExpectancy - currentAge);
+      year <= testInputs.lifeExpectancy - currentAge;
       year++
     ) {
       const age = currentAge + year;

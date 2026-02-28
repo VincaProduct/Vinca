@@ -26,9 +26,12 @@ import { FV, CEILING } from "@/pages/FinancialFreedomCalculator";
 export default function FFRHome() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { ffrProgress, checklist, loading, initializeUserData, getCurrentScores } = useFFR();
   const [calculatorInputs, setCalculatorInputs] = useState<CalculatorInputs | null>(null);
   const [calculatorResults, setCalculatorResults] = useState<CalculationResults | null>(null);
+  const { ffrProgress, checklist, loading, initializeUserData, getCurrentScores } = useFFR({
+    inputs: calculatorInputs,
+    results: calculatorResults,
+  });
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editedInputs, setEditedInputs] = useState<CalculatorInputs | null>(null);
 
@@ -131,7 +134,7 @@ export default function FFRHome() {
 
     let previousMonthlySWP = 0;
 
-    for (let year = 1; year <= Math.min(50, calculatorInputs.lifeExpectancy - currentAge); year++) {
+    for (let year = 1; year <= calculatorInputs.lifeExpectancy - currentAge; year++) {
       const age = currentAge + year;
       const yearNumber = year;
 
