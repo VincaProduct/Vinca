@@ -74,7 +74,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               
               {/* FFR Module Routes */}
-              <Route path="ffr" element={<FFRHome />} />
+              <Route path="ffr" element={<UnifiedFFRPage />} />
               <Route path="ffr/checklist" element={<FFRChecklist />} />
               <Route path="ffr/opportunities" element={<FFROpportunities />} />
               <Route path="ffr/unified" element={<UnifiedFFRPage />} />

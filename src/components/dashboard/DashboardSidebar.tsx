@@ -37,7 +37,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 const baseMenuItems = [
   {
     title: 'Financial Freedom Readiness',
-    url: '/dashboard/ffr/unified',
+    url: '/dashboard/ffr',
     icon: TrendingUp,
   },
   {
