@@ -57,9 +57,15 @@ function FFRContent() {
   const editButton = (
     <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="cursor-pointer gap-2" onClick={handleOpenEdit}>
+        {/* Desktop: icon + text, Mobile: icon only */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="cursor-pointer gap-2"
+          onClick={handleOpenEdit}
+        >
           <Settings2 className="w-4 h-4" />
-          {hasCalculated ? 'Edit Inputs' : 'Enter Inputs'}
+          <span className="hidden md:inline">{hasCalculated ? 'Edit Inputs' : 'Enter Inputs'}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[90vh] overflow-y-auto">
