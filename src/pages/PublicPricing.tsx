@@ -68,23 +68,23 @@ export default function PublicPricing() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             <div className="flex flex-col md:justify-center h-full min-h-[320px]">
               <div>
-                <div className="text-xl sm:text-2xl font-bold text-foreground mb-1 text-left">Membership fees & inclusions</div>
-                <div className="flex items-end gap-2 sm:gap-3 mb-2">
+                <div className="text-xl sm:text-2xl font-bold text-foreground mb-5 text-left">Membership fees & inclusions</div>
+                <div className="flex items-end gap-2 sm:gap-3 mb-5 justify-center text-center">
                   <span className="text-3xl sm:text-4xl font-bold text-foreground">₹2500</span>
                   <span className="text-base sm:text-lg font-medium text-muted-foreground">/ year</span>
                 </div>
-                <button
-                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md mt-4"
-                  onClick={() => window.location.href = '/buy-membership'}
-                >
-                  Join Membership
-                </button>
-                <div className="my-4 border-t border-border w-12" />
+                <div className="flex justify-center w-full mt-4">
+                  <button
+                    className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
+                  >
+                    Join Membership
+                  </button>
+                </div>
               </div>
             </div>
-            <div>
-              <div className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Full membership includes</div>
-              <ul className="space-y-2 sm:space-y-3">
+            <div className="flex flex-col justify-center h-full min-h-[320px]">
+              <div className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 text-left">Full membership includes</div>
+              <ul className="space-y-2 sm:space-y-3 flex flex-col items-start">
                 <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
                   <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">Tools to understand your financial reality</span>

@@ -27,7 +27,7 @@ export default function DashboardPricingPage() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
-      <CanonicalPageHeader title="Membership Plans" />
+      <CanonicalPageHeader title="Get Financially Ready With Vinca" />
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         {/* Unified Membership Card */}
         <div
@@ -38,50 +38,50 @@ export default function DashboardPricingPage() {
             {/* LEFT COLUMN: Title, Price, Button */}
             <div className="flex flex-col md:justify-center h-full min-h-[320px]">
               <div>
-                <div className="text-xl sm:text-2xl font-bold text-foreground mb-1 text-left">Membership fees & inclusions</div>
-                <div className="flex items-end gap-2 sm:gap-3 mb-2">
+                <div className="text-xl sm:text-2xl font-bold text-foreground mb-5  text-center">Membership fees & inclusions</div>
+                <div className="flex items-end gap-2 sm:gap-3 mb-5 justify-center text-center">
                   <span className="text-3xl sm:text-4xl font-bold text-foreground">₹2500</span>
                   <span className="text-base sm:text-lg font-medium text-muted-foreground">/ year</span>
                 </div>
-                <button
-                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md mt-4"
-                  onClick={() => window.location.href = '/dashboard/buy-membership'}
-                >
-                  Join Membership
-                </button>
-                <div className="my-4 border-t border-border w-12" />
+                <div className="flex justify-center w-full mt-4">
+                  <button
+                    className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
+                  >
+                    Join Membership
+                  </button>
+                </div>
               </div>
             </div>
             {/* RIGHT COLUMN: Inclusions */}
-            <div>
-              <div className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Full membership includes</div>
-              <ul className="space-y-2 sm:space-y-3">
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Tools to understand your financial reality</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                  <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Sprints for consistent, focused progress</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                  <Footprints className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Footprints to share and learn together</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                  <Compass className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Curated resources to support your journey</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Learning modules for financial clarity</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                  <HeartHandshake className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Elevate: optional 1:1 guidance sessions</span>
-                </li>
-              </ul>
-            </div>
+              <div className="flex flex-col justify-center h-full min-h-[320px]">
+                <div className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4 text-left">Full membership includes</div>
+                <ul className="space-y-2 sm:space-y-3 flex flex-col items-start">
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">Tools to understand your financial reality</span>
+                  </li>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                    <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">Sprints for consistent, focused progress</span>
+                  </li>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                    <Footprints className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">Footprints to share and learn together</span>
+                  </li>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                    <Compass className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">Curated resources to support your journey</span>
+                  </li>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                    <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">Learning modules for financial clarity</span>
+                  </li>
+                  <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                    <HeartHandshake className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground">Elevate: optional 1:1 guidance sessions</span>
+                  </li>
+                </ul>
+              </div>
           </div>
         </div>
         {/* FEATURE BREAKDOWN SECTIONS */}
