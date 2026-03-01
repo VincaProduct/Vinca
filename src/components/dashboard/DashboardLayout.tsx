@@ -19,11 +19,11 @@ const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       <SidebarProvider open={open} onOpenChange={setOpen}>
-        <div className="min-h-screen flex w-full bg-background">
+        <div className="min-h-screen flex w-full max-w-full overflow-x-hidden bg-background">
           <DashboardSidebar />
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 max-w-full overflow-x-hidden">
             <DashboardHeader />
-            <main className="flex-1 overflow-auto bg-background min-w-0">
+            <main className="flex-1 min-w-0 max-w-full overflow-x-hidden bg-background">
               <Outlet />
             </main>
           </div>

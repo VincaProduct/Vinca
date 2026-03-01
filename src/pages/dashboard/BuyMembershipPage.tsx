@@ -457,21 +457,7 @@ export default function DashboardBuyMembershipPage() {
               </Button>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground py-4">
-              <div className="flex items-center gap-1"><Lock className="w-3 h-3" /><span>Secure checkout</span></div>
-              <div className="w-1 h-1 bg-border rounded-full" />
-              <div className="flex items-center gap-1"><Shield className="w-3 h-3" /><span>Money-back guarantee</span></div>
-              <div className="w-1 h-1 bg-border rounded-full" />
-              <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /><span>Verified</span></div>
-            </div>
-
-            {/* Help Link */}
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                Need help? <a href="#" className="text-emerald-600 hover:text-emerald-700 font-medium">Contact support</a>
-              </p>
-            </div>
+            {/* Removed Secure checkout, Money-back guarantee, Verified, and Contact support as requested */}
           </div>
         </div>
       </div>

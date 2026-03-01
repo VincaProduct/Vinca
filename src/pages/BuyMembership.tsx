@@ -333,17 +333,17 @@ export default function BuyMembership() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground w-full max-w-full overflow-x-hidden">
       <CanonicalPageHeader title="Get Financially Ready with Vinca" />
-      <div className="w-full px-6 sm:px-8 lg:px-12 py-10">
-        <div className="w-full max-w-7xl mx-auto space-y-10">
-          <Card className="w-full p-8 border border-border bg-card dark:bg-card shadow-sm">
-            <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+      <div className="w-full px-6 sm:px-8 lg:px-12 py-10 max-w-full overflow-x-hidden">
+        <div className="w-full max-w-7xl mx-auto space-y-10 max-w-full overflow-x-hidden">
+          <Card className="w-full p-8 border border-border bg-card dark:bg-card shadow-sm max-w-full overflow-x-hidden">
+            <div className="flex flex-col lg:flex-row lg:items-start gap-6 max-w-full overflow-x-hidden">
               <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Sparkles className="w-6 h-6 text-emerald-600" />
               </div>
-              <div className="flex-1">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex-1 min-w-0 max-w-full overflow-x-hidden">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 max-w-full overflow-x-hidden">
                   <div>
                     <h2 className="text-2xl font-semibold text-foreground mb-1">Vinca Premium</h2>
                     <p className="text-base text-muted-foreground">Yearly subscription • Save 20%</p>
@@ -353,7 +353,7 @@ export default function BuyMembership() {
                     <span className="text-base text-muted-foreground">/year</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-4 mt-8 pt-4 border-t border-border">
+                <div className="flex flex-wrap gap-4 mt-8 pt-4 border-t border-border max-w-full overflow-x-hidden">
                   {benefits.map((benefit, index) => (
                     <div key={index} className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full">
                       <span className="text-emerald-600">{benefit.icon}</span>
@@ -375,8 +375,8 @@ export default function BuyMembership() {
               </div>
             </div>
           </Card>
-          <div className="w-full">
-            <div className="flex items-center justify-center max-w-2xl mx-auto">
+          <div className="w-full max-w-full overflow-x-hidden">
+            <div className="flex items-center justify-center max-w-2xl mx-auto max-w-full overflow-x-hidden">
               {steps.map((step, index) => (
                 <React.Fragment key={step.number}>
                   <div className="flex flex-col items-center relative">
@@ -414,7 +414,7 @@ export default function BuyMembership() {
               ))}
             </div>
           </div>
-          <div className="w-full space-y-8">
+          <div className="w-full space-y-8 max-w-full overflow-x-hidden">
             {renderStepContent()}
             <div className="flex items-center gap-4">
               {currentStep > 1 && (
@@ -447,18 +447,7 @@ export default function BuyMembership() {
                 )}
               </Button>
             </div>
-            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground py-4">
-              <div className="flex items-center gap-1"><Lock className="w-3 h-3" /><span>Secure checkout</span></div>
-              <div className="w-1 h-1 bg-border rounded-full" />
-              <div className="flex items-center gap-1"><Shield className="w-3 h-3" /><span>Money-back guarantee</span></div>
-              <div className="w-1 h-1 bg-border rounded-full" />
-              <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /><span>Verified</span></div>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                Need help? <a href="#" className="text-emerald-600 hover:text-emerald-700 font-medium">Contact support</a>
-              </p>
-            </div>
+            {/* Removed Secure checkout, Money-back guarantee, Verified, and Contact support as requested */}
           </div>
         </div>
       </div>
