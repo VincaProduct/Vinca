@@ -1,4 +1,17 @@
 import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import CanonicalPageHeader from "@/components/ui/CanonicalPageHeader";
 import {
   CheckCircle,
@@ -24,7 +37,18 @@ import {
 } from "lucide-react";
 
 export default function DashboardPricingPage() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [signupModalOpen, setSignupModalOpen] = useState(false);
+  const [referralModalOpen, setReferralModalOpen] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+
+  // This should trigger Razorpay as before
+  const handleJoinMembership = (code?: string) => {
+    setIsJoining(true);
+    // TODO: Insert Razorpay trigger here, pass referral code if needed
+    // window.openRazorpayCheckout(code); // Example
+    setIsJoining(false);
+  };
   return (
     <div className="min-h-screen bg-background">
       <CanonicalPageHeader title="Get Financially Ready With Vinca" />
@@ -40,14 +64,24 @@ export default function DashboardPricingPage() {
               <div>
                 <div className="text-xl sm:text-2xl font-bold text-foreground mb-5  text-center">Membership fees & inclusions</div>
                 <div className="flex items-end gap-2 sm:gap-3 mb-5 justify-center text-center">
-                  <span className="text-3xl sm:text-4xl font-bold text-foreground">₹2500</span>
+                  <span className="text-3xl sm:text-4xl font-bold text-emerald-600 dark:text-foreground">₹2500</span>
                   <span className="text-base sm:text-lg font-medium text-muted-foreground">/ year</span>
                 </div>
-                <div className="flex justify-center w-full mt-4">
-                  <button
+                <div className="flex flex-col items-center w-full mt-4 gap-2">
+                  <Button
                     className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
+                    onClick={() => handleJoinMembership()}
+                    disabled={isJoining}
                   >
                     Join Membership
+                  </Button>
+                  <button
+                    type="button"
+                    className="text-xs font-semibold text-emerald-700 hover:underline transition-all"
+                    style={{ marginTop: 4, cursor: "pointer" }}
+                    onClick={() => setReferralModalOpen(true)}
+                  >
+                    Join with a referral
                   </button>
                 </div>
               </div>
@@ -312,6 +346,38 @@ export default function DashboardPricingPage() {
           SEBI-safe. Education-only platform. No product recommendations.
         </div>
       </div>
+      <Dialog open={referralModalOpen} onOpenChange={setReferralModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Join with a Referral 🎉</DialogTitle>
+            <DialogDescription>
+              We’re glad someone motivated you to get financially ready.<br />
+              Add your referral code below and continue joining Vinca Premium.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-4">
+            <Label htmlFor="referral-code">Referral Code</Label>
+            <Input
+              id="referral-code"
+              placeholder="Enter referral code"
+              value={referralCode}
+              onChange={e => setReferralCode(e.target.value)}
+              autoFocus
+            />
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  handleJoinMembership(referralCode);
+                  setReferralModalOpen(false);
+                }}
+                disabled={!referralCode || isJoining}
+              >
+                Join Membership
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
