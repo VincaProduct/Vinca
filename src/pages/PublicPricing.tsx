@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CheckCircle,
   Zap,
@@ -50,55 +50,67 @@ function SignupModal({ open, onClose }) {
 }
 
 export default function PublicPricing() {
+  // Force theme sync on every render
+  useEffect(() => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  });
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 py-8">
-        {/* HERO CARD: PRICING & INCLUSIONS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start mb-10">
-          {/* Left: Pricing */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 flex flex-col justify-between">
-            <div className="text-xl sm:text-2xl font-bold text-foreground mb-2">Membership fees & inclusions</div>
-            <div className="flex items-end gap-2 sm:gap-3 mb-4">
-              <span className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400">₹2500</span>
-              <span className="text-base sm:text-lg font-medium text-muted-foreground">/ year</span>
+      <div className="mx-auto w-full max-w-6xl px-6 py-10">
+        {/* Unified Membership Card - matches dashboard layout */}
+        <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm px-6 sm:px-8 py-8 mb-10 w-full max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="flex flex-col md:justify-center h-full min-h-[320px]">
+              <div>
+                <div className="text-xl sm:text-2xl font-bold text-foreground mb-1 text-left">Membership fees & inclusions</div>
+                <div className="flex items-end gap-2 sm:gap-3 mb-2">
+                  <span className="text-3xl sm:text-4xl font-bold text-foreground">₹2500</span>
+                  <span className="text-base sm:text-lg font-medium text-muted-foreground">/ year</span>
+                </div>
+                <button
+                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md mt-4"
+                  onClick={() => window.location.href = '/buy-membership'}
+                >
+                  Join Membership
+                </button>
+                <div className="my-4 border-t border-border w-12" />
+              </div>
             </div>
-            <button
-              className="w-full md:w-auto px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl bg-emerald-600 text-white font-semibold text-base sm:text-lg hover:bg-emerald-700 transition shadow-sm hover:shadow-md"
-              onClick={() => window.location.href = '/buy-membership'}
-            >
-              Join Membership
-            </button>
-          </div>
-          {/* Right: Inclusions Checklist */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8">
-            <div className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Full membership includes</div>
-            <ul className="space-y-2 sm:space-y-3">
-              <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                <span className="text-muted-foreground">Tools to understand your financial reality</span>
-              </li>
-              <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                <span className="text-muted-foreground">Sprints for consistent, focused progress</span>
-              </li>
-              <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                <Footprints className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                <span className="text-muted-foreground">Footprints to share and learn together</span>
-              </li>
-              <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                <Compass className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                <span className="text-muted-foreground">Curated resources to support your journey</span>
-              </li>
-              <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                <span className="text-muted-foreground">Learning modules for financial clarity</span>
-              </li>
-              <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
-                <HeartHandshake className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                <span className="text-muted-foreground">Elevate: optional 1:1 guidance sessions</span>
-              </li>
-            </ul>
+            <div>
+              <div className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">Full membership includes</div>
+              <ul className="space-y-2 sm:space-y-3">
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Tools to understand your financial reality</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                  <Rocket className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Sprints for consistent, focused progress</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                  <Footprints className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Footprints to share and learn together</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                  <Compass className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Curated resources to support your journey</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Learning modules for financial clarity</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
+                  <HeartHandshake className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Elevate: optional 1:1 guidance sessions</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         {/* FEATURE BREAKDOWN SECTIONS */}
