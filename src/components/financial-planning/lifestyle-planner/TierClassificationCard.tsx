@@ -45,7 +45,10 @@ export function TierClassificationCard({ tier, adjustedExpenses, lifestyleShift 
             <div className="p-2 rounded-lg bg-muted">
               <Layers className="w-5 h-5 text-muted-foreground" />
             </div>
-            <CardTitle className="text-lg">Lifestyle Tier</CardTitle>
+            <div>
+              <CardTitle className="text-lg">Lifestyle Tier</CardTitle>
+              <p className="text-sm text-muted-foreground mt-0.5">The lifestyle you are aiming for</p>
+            </div>
           </div>
           <Badge variant="outline">
             {lifestyleShift >= 0 ? `+${lifestyleShift}%` : `${lifestyleShift}%`}
