@@ -93,7 +93,7 @@ export default function PublicPricing() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             <div className="flex flex-col md:justify-center h-full min-h-[320px]">
               <div>
-                <div className="text-xl sm:text-2xl font-bold text-foreground mb-5 text-left">Membership fees & inclusions</div>
+                  <div className="text-xl sm:text-2xl font-bold text-foreground mb-5 text-center">Membership fees & inclusions</div>
                 <div className="flex items-end gap-2 sm:gap-3 mb-5 justify-center text-center">
                   <span className="text-3xl sm:text-4xl font-bold text-emerald-600 dark:text-foreground">₹2500</span>
                   <span className="text-base sm:text-lg font-medium text-muted-foreground">/ year</span>
