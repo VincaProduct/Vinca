@@ -55,6 +55,9 @@ import AchieversClubDashboard from "./pages/dashboard/AchieversClubDashboard";
 import UpgradePage from "./pages/dashboard/UpgradePage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
+import PublicPricing from "./pages/PublicPricing";
+import BuyMembership from "./pages/BuyMembership";
+import DashboardBuyMembershipPage from "./pages/dashboard/BuyMembershipPage";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +80,8 @@ const App = () => (
             <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
             <Route path="/achievers-club" element={<PublicRoute><AchieversClubLanding /></PublicRoute>} />
             <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
+            <Route path="/pricing" element={<PublicRoute><PublicPricing /></PublicRoute>} />
+            <Route path="/buy-membership" element={<PublicRoute><BuyMembership /></PublicRoute>} />
             
             {/* FFR Module Routes - moved to dashboard/tools */}
             
@@ -128,6 +133,7 @@ const App = () => (
               {/* Achievers Club - Currently in progress, hidden for production */}
               {/* <Route path="achievers-club" element={<AchieversClubDashboard />} /> */}
               <Route path="upgrade" element={<UpgradePage />} />
+              <Route path="buy-membership" element={<DashboardBuyMembershipPage />} />
               
               {/* Admin Routes */}
               <Route path="blog-cms" element={<BlogCMSDashboard />} />
