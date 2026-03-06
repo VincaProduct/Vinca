@@ -29,6 +29,7 @@ import CTAPlacementPage from "./pages/dashboard/CTAPlacementPage";
 import CTAAnalyticsPage from "./pages/dashboard/CTAAnalyticsPage";
 import BookingsDashboard from "./pages/dashboard/BookingsDashboard";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import ElevatePage from "./pages/dashboard/ElevatePage";
 import FFRHome from "./pages/ffr/FFRHome";
 import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
@@ -80,6 +81,7 @@ const App = () => (
               <Route path="ffr/unified" element={<UnifiedFFRPage />} />
               
               {/* Main Navigation Routes */}
+              <Route path="elevate" element={<ElevatePage />} />
               <Route path="calculator" element={<FinancialCalculatorPage />} />
               <Route path="book-wealth-manager" element={<BookWealthManager />} />
               <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
