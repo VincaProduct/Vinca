@@ -15,6 +15,7 @@ import {
   Layout,
   Shield,
   Lightbulb,
+  ShieldCheck,
   Footprints,
   BookOpen,
   Hand,
@@ -109,6 +110,11 @@ const baseMenuItems = [
     title: 'Readiness Fit',
     url: '/dashboard/readiness-fit',
     icon: Sparkles,
+  },
+  {
+    title: 'Insurance',
+    url: '/dashboard/insurance',
+    icon: ShieldCheck,
   },
 ];
 

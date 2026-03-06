@@ -58,6 +58,7 @@ import NotFound from "./pages/NotFound";
 import PublicPricing from "./pages/PublicPricing";
 import BuyMembership from "./pages/BuyMembership";
 import DashboardBuyMembershipPage from "./pages/dashboard/BuyMembershipPage";
+import InsurancePage from "./pages/dashboard/InsurancePage";
 
 const queryClient = new QueryClient();
 
@@ -134,6 +135,7 @@ const App = () => (
               {/* <Route path="achievers-club" element={<AchieversClubDashboard />} /> */}
               <Route path="upgrade" element={<UpgradePage />} />
               <Route path="buy-membership" element={<DashboardBuyMembershipPage />} />
+              <Route path="insurance" element={<InsurancePage />} />
               
               {/* Admin Routes */}
               <Route path="blog-cms" element={<BlogCMSDashboard />} />
