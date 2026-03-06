@@ -13,7 +13,8 @@ import {
   MapPin,
   BarChart3,
   Layout,
-  Shield
+  Shield,
+  Lightbulb
 } from 'lucide-react';
 import {
   Sidebar,
@@ -49,6 +50,11 @@ const baseMenuItems = [
     title: 'Refer a Friend',
     url: '/dashboard/refer',
     icon: UserPlus,
+  },
+  {
+    title: 'Elevate',
+    url: '/dashboard/elevate',
+    icon: Lightbulb,
   },
 ];
 
