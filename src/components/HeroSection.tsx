@@ -64,14 +64,21 @@ const HeroSection = () => {
               </Badge>
             </div>
 
-            {/* CTA Button */}
-            <div className="pt-4">
+            {/* CTA Buttons */}
+            <div className="pt-4 flex gap-4 justify-center lg:justify-start">
               <Button
                 onClick={() => navigate('/auth')}
                 size="lg"
                 className="text-lg font-semibold px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 📅 Get My Free Portfolio
+              </Button>
+              <Button
+                onClick={() => navigate('/pricing')}
+                size="lg"
+                className="text-lg font-semibold px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Join Membership
               </Button>
             </div>
 
