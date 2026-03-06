@@ -14,7 +14,16 @@ import {
   BarChart3,
   Layout,
   Shield,
-  Lightbulb
+  Lightbulb,
+  Footprints,
+  BookOpen,
+  Hand,
+  MessageSquare,
+  Globe,
+  Gift,
+  DollarSign,
+  Sparkles,
+  Clock4
 } from 'lucide-react';
 import {
   Sidebar,
@@ -55,6 +64,51 @@ const baseMenuItems = [
     title: 'Elevate',
     url: '/dashboard/elevate',
     icon: Lightbulb,
+  },
+  {
+    title: 'Footprints',
+    url: '/dashboard/footprints',
+    icon: Footprints,
+  },
+  {
+    title: 'Learning',
+    url: '/dashboard/learning',
+    icon: BookOpen,
+  },
+  {
+    title: 'Sprint',
+    url: '/dashboard/sprintb',
+    icon: Clock4,
+  },
+  {
+    title: 'Raise',
+    url: '/dashboard/raise',
+    icon: Hand,
+  },
+  {
+    title: 'Reflections',
+    url: '/dashboard/reflections',
+    icon: MessageSquare,
+  },
+  {
+    title: 'Know Your Market',
+    url: '/dashboard/know-your-market',
+    icon: Globe,
+  },
+  {
+    title: 'Curations',
+    url: '/dashboard/curations',
+    icon: Gift,
+  },
+  {
+    title: 'Pricing',
+    url: '/dashboard/investor-hub/pricing',
+    icon: DollarSign,
+  },
+  {
+    title: 'Readiness Fit',
+    url: '/dashboard/readiness-fit',
+    icon: Sparkles,
   },
 ];
 
