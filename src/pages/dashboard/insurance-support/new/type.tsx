@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CanonicalPageHeader from "@/components/ui/CanonicalPageHeader";
+import img01 from "@/assets/01-is.png";
+import img02 from "@/assets/02-is.png";
+import img03 from "@/assets/03-is.png";
+import img04 from "@/assets/04-is.png";
+import img05 from "@/assets/05-is.png";
+import img06 from "@/assets/case1.png";
+import img07 from "@/assets/case2.png";
+import img08 from "@/assets/case3.png";
+import img09 from "@/assets/case4.png";
+import img10 from "@/assets/case5.png";
+
 import {
   XCircle,
   FileUp,
@@ -8,11 +19,10 @@ import {
   BookOpen,
   AlertCircle,
   ChevronLeft,
-  ChevronDown,
-  ArrowRight,
   Scale,
   Shield,
-  Sparkles
+  Sparkles,
+  X
 } from "lucide-react";
 
 // Issue type configuration with case studies - using only palette colors
@@ -21,12 +31,19 @@ const issueTypes = [
     key: "claim-rejected",
     icon: <XCircle className="w-5 h-5 text-primary" />,
     title: "Claim Rejected",
-    shortDescription: "Claim rejected citing policy exclusions. We helped challenge the insurer.",
-    summary: "A policyholder's health insurance claim was rejected citing policy exclusions. After reviewing the documents, our team worked with Insurance Samadhan to challenge the rejection with the insurer.",
-    outcome: "The case was escalated with proper documentation and the insurer eventually approved the claim amount.",
-    fullCaseStudy: `In this case the policyholder's hospitalization claim was rejected citing a policy clause. After reviewing the policy wording and medical records, the team identified that the rejection interpretation was incorrect.
-    
-Insurance Samadhan raised the dispute with the insurer and escalated the case through formal communication channels. After review, the insurer reconsidered the claim and processed the payment.`,
+    shortDescription: "Your claim was rejected citing policy clauses or exclusions.",
+    image: img01,
+    detailImage: img06,
+    caseStudy: `A policyholder was hospitalized after suffering a sudden heart attack only a few months after purchasing a health insurance policy. When the hospitalization claim was submitted with all medical records, the insurer rejected the claim stating that the condition was linked to a previous illness.
+
+However, the treating doctors had never medically connected the two conditions.
+
+Confused and financially stressed after the hospitalization, the policyholder sought professional assistance.
+
+After reviewing the medical reports and hospital documentation, it became clear that the rejection was based on an incorrect interpretation of the policy.
+
+The case was formally escalated through grievance channels and later presented before the Insurance Ombudsman.`,
+    outcome: "The Ombudsman directed the insurer to reassess the claim and the full claim amount was approved and paid.",
     bgColor: "bg-destructive/5",
     borderColor: "border-destructive/20",
     iconBg: "bg-destructive/10"
@@ -35,12 +52,21 @@ Insurance Samadhan raised the dispute with the insurer and escalated the case th
     key: "claim-partially-settled",
     icon: <FileUp className="w-5 h-5 text-primary" />,
     title: "Claim Partially Settled",
-    shortDescription: "Only part of your claim was paid, with unexpected deductions applied.",
-    summary: "A customer received only partial settlement of their claim amount. After reviewing the settlement calculation, the dispute was raised with the insurer.",
-    outcome: "The insurer reviewed the calculation and processed the remaining amount.",
-    fullCaseStudy: `The insurer approved the claim but deducted a large portion citing policy limits. Our partner team reviewed the settlement sheet and identified incorrect deductions.
-    
-After raising a dispute with supporting documentation, the insurer re-evaluated the claim and paid the balance amount.`,
+    shortDescription: "Your insurer paid only part of the claim amount with unexpected deductions.",
+    image: img02,
+    detailImage: img07,
+    caseStudy: `A policyholder undergoing breast cancer treatment filed a claim after hospitalization. Although all documents were submitted, the insurer approved the claim with a deduction of ₹47,468.
+
+The insurer stated that the treatment exceeded the policy's immunotherapy limit.
+
+However, the hospital records clearly showed that the treatment administered was chemotherapy, not immunotherapy.
+
+Despite multiple grievance requests, the insurer continued to maintain the deduction.
+
+After a detailed review of the medical reports and policy terms, the error in treatment classification was identified.
+
+The dispute was escalated to the Insurance Ombudsman with supporting documentation.`,
+    outcome: "The Ombudsman ruled in favour of the policyholder and the deducted amount was released.",
     bgColor: "bg-warning/5",
     borderColor: "border-warning/20",
     iconBg: "bg-warning/10"
@@ -49,12 +75,19 @@ After raising a dispute with supporting documentation, the insurer re-evaluated 
     key: "claim-delay",
     icon: <Clock className="w-5 h-5 text-primary" />,
     title: "Claim Delay",
-    shortDescription: "Claim pending beyond expected timelines despite follow-ups.",
-    summary: "A claim remained pending for months without resolution. The case was escalated through formal grievance channels.",
-    outcome: "The insurer processed the claim after escalation.",
-    fullCaseStudy: `The customer's claim remained pending beyond the expected processing period. Multiple follow-ups had not resolved the issue.
-    
-Through formal escalation and structured communication with the insurer, the claim was reviewed and processed.`,
+    shortDescription: "Your claim remains pending beyond expected timelines.",
+    image: img03,
+    detailImage: img08,
+    caseStudy: `A policyholder filed a hospitalization claim for his wife who was undergoing treatment for advanced ovarian cancer.
+
+Even after submitting all documents, the claim remained unresolved for several months.
+
+The insurer continued raising additional queries and follow-up requests despite receiving complete documentation.
+
+During this time, the family was dealing with emotional stress along with rising medical expenses.
+
+After reviewing the case, the claim was escalated through formal grievance channels.`,
+    outcome: "Before the Ombudsman hearing took place, the insurer reviewed the case again and released the full claim amount.",
     bgColor: "bg-growing/5",
     borderColor: "border-growing/20",
     iconBg: "bg-growing/10"
@@ -63,12 +96,19 @@ Through formal escalation and structured communication with the insurer, the cla
     key: "policy-issue",
     icon: <BookOpen className="w-5 h-5 text-primary" />,
     title: "Policy Issue",
-    shortDescription: "Incorrect policy details, issuance, or documentation problems.",
-    summary: "The policyholder faced issues related to incorrect policy details and discrepancies.",
-    outcome: "After review and coordination with the insurer, the policy details were corrected.",
-    fullCaseStudy: `In this case the customer discovered discrepancies in the issued policy document.
-    
-The case was reviewed and the insurer updated the policy records to reflect the correct details.`,
+    shortDescription: "Policy details issued incorrectly or mis-selling by agents.",
+    image: img04,
+    detailImage: img09,
+    caseStudy: `A small business owner approached an insurance agent during the COVID lockdown seeking help to secure a ₹10 lakh loan.
+
+Instead, the agent persuaded him to purchase four life insurance policies which resulted in premiums of nearly ₹1.5 lakh.
+
+Later the policyholder discovered multiple irregularities including lack of income verification and incorrect disclosures during policy issuance.
+
+When the policyholder raised a complaint, the insurer refused to acknowledge any wrongdoing.
+
+The case was escalated to the Insurance Ombudsman where these discrepancies were formally presented.`,
+    outcome: "The policies were cancelled and the premiums paid by the policyholder were refunded.",
     bgColor: "bg-living/5",
     borderColor: "border-living/20",
     iconBg: "bg-living/10"
@@ -77,63 +117,91 @@ The case was reviewed and the insurer updated the policy records to reflect the 
     key: "other",
     icon: <AlertCircle className="w-5 h-5 text-primary" />,
     title: "Other Insurance Dispute",
-    shortDescription: "Unique insurance disputes not covered by standard categories.",
-    summary: "Some disputes do not fall under standard categories and require individual review.",
-    outcome: "Such cases are reviewed individually and escalated when required.",
-    fullCaseStudy: `Certain insurance issues involve unique situations not covered by standard categories.
-    
-In such cases, the complaint is reviewed individually and appropriate escalation channels are used to resolve the dispute.`,
+    shortDescription: "Unique insurance disputes requiring specialized review.",
+    image: img05,
+    detailImage: img10,
+    caseStudy: `After the death of a retired defence serviceman, the nominee submitted all required documents to claim the life insurance benefit.
+
+Despite receiving the complete documentation including official records and certificates, the insurer delayed the claim for over a year.
+
+The insurer repeatedly raised doubts suggesting the death might have been suicide but failed to present supporting evidence.
+
+The case was escalated to the Insurance Ombudsman with full documentation.`,
+    outcome: "The Ombudsman ruled in favour of the nominee and directed the insurer to settle the claim.",
     bgColor: "bg-muted",
     borderColor: "border-border",
     iconBg: "bg-accent"
   }
 ];
 
-// Expandable Case Study Component - Redesigned premium version with mobile improvements
-const ExpandableCaseStudy: React.FC<{ 
-  content: string; 
-  summary: string;
-  outcome: string;
-}> = ({ content, summary, outcome }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+// Case Study Modal Component
+const CaseStudyModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  caseStudy: {
+    title: string;
+    caseStudy: string;
+    outcome: string;
+    detailImage: string;
+  };
+}> = ({ isOpen, onClose, caseStudy }) => {
+  if (!isOpen) return null;
 
   return (
-    <div className="w-full">
-      {/* Case study toggle - always visible with improved touch target */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-primary/70 hover:text-primary transition-all group py-2 -ml-1 px-1"
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div 
+        className="relative w-full max-w-2xl mx-auto rounded-xl bg-card border shadow-xl p-6 animate-in fade-in zoom-in duration-200"
+        onClick={(e) => e.stopPropagation()}
       >
-        <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-        <span>View successful case study</span>
-        <ChevronDown 
-          className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 ${
-            isExpanded ? 'rotate-180' : ''
-          }`} 
-        />
-      </button>
-      {/* Expandable drawer - full width below */}
-      <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-[1000px] opacity-100 mt-2 sm:mt-3' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <div className="w-full bg-muted/40 border border-border rounded-lg p-3 sm:p-4">
-          <div className="space-y-2 sm:space-y-3">
-            {/* Summary */}
-            <p className="text-xs sm:text-sm text-foreground/80 leading-relaxed">
-              {summary}
-            </p>
-            {/* Outcome - now in destructive color */}
-            <div>
-              <span className="text-xs sm:text-sm font-medium text-destructive">
-                Outcome: {outcome}
-              </span>
-            </div>
-            {/* Full case study */}
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-              {content}
-            </p>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
+        >
+          <X className="w-5 h-5 text-muted-foreground" />
+        </button>
+
+        {/* Modal content */}
+        <div className="max-h-[80vh] overflow-y-auto pr-2">
+          {/* Image */}
+          <div className="aspect-video rounded-lg bg-muted mb-4 overflow-hidden">
+            <img 
+              src={caseStudy.detailImage} 
+              alt={caseStudy.title}
+              className="object-cover w-full h-full"
+              onError={(e) => {
+                // Fallback for missing images - show a colored div with first letter
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  parent.classList.add('flex', 'items-center', 'justify-center', 'bg-primary/10');
+                  const fallback = document.createElement('span');
+                  fallback.className = 'text-4xl font-bold text-primary/30';
+                  fallback.textContent = caseStudy.title.charAt(0);
+                  parent.appendChild(fallback);
+                }
+              }}
+            />
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg font-semibold mb-3">
+            {caseStudy.title}
+          </h3>
+
+          {/* Case study narrative */}
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line mb-4">
+            {caseStudy.caseStudy}
+          </p>
+
+          {/* Outcome */}
+          <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+            <span className="text-sm font-medium text-green-600">
+              Outcome: {caseStudy.outcome}
+            </span>
           </div>
         </div>
       </div>
@@ -141,75 +209,83 @@ const ExpandableCaseStudy: React.FC<{
   );
 };
 
-// Issue Section Component - Restructured with mobile-first approach
-const IssueSection: React.FC<{
+// Card Component - Vertical design with 3-column layout
+const IssueCard: React.FC<{
   issue: typeof issueTypes[0];
   onRaiseComplaint: () => void;
-}> = ({ issue, onRaiseComplaint }) => {
+  onExploreCase: () => void;
+}> = ({ issue, onRaiseComplaint, onExploreCase }) => {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <div 
       className={`
-        w-full rounded-xl border bg-card
-        hover:shadow-lg hover:border-primary/20
-        hover:-translate-y-[1px] transition-all duration-200 p-3 sm:p-4
-        relative overflow-hidden
+        group relative rounded-xl border bg-card overflow-hidden
+        hover:shadow-xl hover:border-primary/20
+        hover:-translate-y-[2px] transition-all duration-200
         before:absolute before:inset-0 before:rounded-xl before:pointer-events-none
         before:bg-gradient-to-r before:from-transparent before:via-primary/5 before:to-transparent
         before:opacity-0 before:transition-opacity before:duration-500
         hover:before:opacity-100
       `}
     >
-      {/* Main row - stacked on mobile, row on larger screens */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-6">
-        {/* Left side: Icon + Title + Description - improved mobile layout */}
-        <div className="flex items-start gap-3 sm:items-center sm:gap-4 flex-1 min-w-0">
-          {/* Icon container with gradient */}
-          <div className={`
-            relative p-2 sm:p-2.5 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5
-            ring-1 ring-primary/10 group-hover:ring-primary/20 transition-all shrink-0
-          `}>
+      {/* Square image container */}
+      <div className="aspect-square rounded-t-xl bg-muted overflow-hidden">
+        {!imageError ? (
+          <img 
+            src={issue.image} 
+            alt={issue.title}
+            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-primary/5">
             {React.cloneElement(issue.icon, { 
-              className: "w-4 h-4 sm:w-5 sm:h-5 text-primary" 
+              className: "w-12 h-12 text-primary/40" 
             })}
           </div>
-          {/* Title and description - improved text wrapping */}
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm sm:text-base font-semibold text-foreground break-words">
-              {issue.title}
-            </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground break-words leading-snug sm:leading-relaxed">
-              {issue.shortDescription}
-            </p>
-          </div>
-        </div>
-        {/* Right side: Raise Complaint button - full width on mobile */}
-        <button
-          onClick={onRaiseComplaint}
-          className={`
-            inline-flex items-center justify-center sm:justify-start gap-2 
-            px-4 sm:px-5 py-2.5 sm:py-2.5 
-            text-sm font-medium rounded-lg
-            bg-primary text-primary-foreground 
-            hover:bg-primary/90 hover:shadow-md hover:shadow-primary/25
-            active:scale-[0.98] transition-all duration-150
-            shrink-0 relative overflow-hidden group/btn
-            before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent
-            before:translate-x-[-200%] hover:before:translate-x-[200%]
-            before:transition-transform before:duration-700
-            w-full sm:w-auto
-          `}
-        >
-          <span className="relative z-10">Raise Complaint</span>
-          <ArrowRight className="w-4 h-4 relative z-10 group-hover/btn:translate-x-0.5 transition-transform" />
-        </button>
+        )}
       </div>
-      {/* Case study section - inside card, below the row - mobile optimized */}
-      <div className="w-full mt-2 sm:mt-3 pl-0 sm:pl-12">
-        <ExpandableCaseStudy 
-          content={issue.fullCaseStudy}
-          summary={issue.summary}
-          outcome={issue.outcome}
-        />
+
+      {/* Content container */}
+      <div className="p-4">
+        {/* Title */}
+        <h3 className="text-base font-semibold mb-1">
+          {issue.title}
+        </h3>
+
+        {/* Short description */}
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+          {issue.shortDescription}
+        </p>
+
+        {/* Two CTAs */}
+        <div className="flex gap-3">
+          <button
+            onClick={onRaiseComplaint}
+            className={`
+              flex-1 bg-primary text-primary-foreground rounded-lg py-2 text-sm font-medium
+              hover:bg-primary/90 hover:shadow-md hover:shadow-primary/25
+              active:scale-[0.98] transition-all duration-150
+              relative overflow-hidden group/btn
+              before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent
+              before:translate-x-[-200%] hover:before:translate-x-[200%]
+              before:transition-transform before:duration-700
+            `}
+          >
+            <span className="relative z-10">Raise Complaint</span>
+          </button>
+          <button
+            onClick={onExploreCase}
+            className={`
+              flex-1 border border-border rounded-lg py-2 text-sm font-medium
+              hover:bg-muted hover:border-primary/30
+              active:scale-[0.98] transition-all duration-150
+            `}
+          >
+            Explore Case
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -217,44 +293,41 @@ const IssueSection: React.FC<{
 
 const IssueTypeSelectionPage: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedCase, setSelectedCase] = useState<typeof issueTypes[0] | null>(null);
 
   const handleRaiseComplaint = (issueKey: string) => {
     navigate(`/dashboard/insurance-support/new/form?type=${issueKey}`);
   };
 
+  const handleExploreCase = (issue: typeof issueTypes[0]) => {
+    setSelectedCase(issue);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCase(null);
+  };
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <CanonicalPageHeader title="Raise New Insurance Complaint" />
-      {/* Subtle background pattern - adjusted for mobile */}
+      <CanonicalPageHeader title="Choose your case" />
+      {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-grid-primary/[0.02] -z-10" />
       <div className="w-full px-4 sm:px-6 py-4 sm:py-6 relative max-w-full overflow-x-hidden">
-        {/* Header Section with premium styling - mobile optimized */}
-        <div className="w-full mb-6 sm:mb-8">
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl">
-            Choose your insurance issue below. Each type includes a real case study showing how we've helped customers resolve similar disputes.
-          </p>
-        </div>
         
-        {/* Issue Sections Stack - Compact vertical spacing with mobile improvements */}
-        <div className="w-full space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-          {issueTypes.map((issue, index) => (
-            <React.Fragment key={issue.key}>
-              <IssueSection
-                issue={issue}
-                onRaiseComplaint={() => handleRaiseComplaint(issue.key)}
-              />
-              {/* Subtle separator except for last item - hidden on very small screens */}
-              {index < issueTypes.length - 1 && (
-                <div className="relative flex justify-center">
-                  <div className="h-3 sm:h-4 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
-                </div>
-              )}
-            </React.Fragment>
+        {/* 3-Column Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+          {issueTypes.map((issue) => (
+            <IssueCard
+              key={issue.key}
+              issue={issue}
+              onRaiseComplaint={() => handleRaiseComplaint(issue.key)}
+              onExploreCase={() => handleExploreCase(issue)}
+            />
           ))}
         </div>
         
-        {/* Back Link with premium styling - mobile optimized */}
-        <div className="w-full mt-6 sm:mt-8 flex justify-center">
+        {/* Back Link */}
+        <div className="w-full mt-8 flex justify-center">
           <button
             className="group inline-flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-primary transition-colors relative px-4 py-2 -mx-4"
             onClick={() => navigate("/dashboard/insurance-support")}
@@ -266,6 +339,20 @@ const IssueTypeSelectionPage: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Case Study Modal */}
+      {selectedCase && (
+        <CaseStudyModal
+          isOpen={!!selectedCase}
+          onClose={handleCloseModal}
+          caseStudy={{
+            title: selectedCase.title,
+            caseStudy: selectedCase.caseStudy,
+            outcome: selectedCase.outcome,
+            detailImage: selectedCase.detailImage
+          }}
+        />
+      )}
     </div>
   );
 };
