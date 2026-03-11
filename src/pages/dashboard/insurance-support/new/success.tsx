@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import CanonicalPageHeader from "@/components/ui/CanonicalPageHeader";
 import { CheckCircle2, FileText, Calendar, Building2, Hash, User, IndianRupee, Clock, ArrowRight, ListChecks, Copy, ExternalLink } from "lucide-react";
@@ -13,8 +13,9 @@ const SuccessScreen: React.FC = () => {
     return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
-  // Generate mock complaint ID
-  const complaintId = `VINCA-INS-2026-${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}`;
+  // Generate complaint ID (stable across re-renders)
+  const complaintIdRef = useRef(`VINCA-INS-2026-${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}`);
+  const complaintId = complaintIdRef.current;
 
   // Get current date for submission timestamp
   const submissionDate = new Date().toLocaleDateString('en-US', {
@@ -24,6 +25,36 @@ const SuccessScreen: React.FC = () => {
     hour: '2-digit',
     minute: '2-digit'
   });
+
+  // Persist complaint to localStorage on mount
+  useEffect(() => {
+    if (form && issueType) {
+      const complaint = {
+        id: complaintId,
+        insurer: form.insurer || '',
+        issueType: issueType,
+        status: "Registered",
+        complaintDate: new Date().toISOString().split('T')[0],
+        lastUpdated: new Date().toISOString().split('T')[0],
+        policyNumber: form.policyNumber || '',
+        policyType: form.policyType || '',
+        policyHolder: form.policyHolder || '',
+        claimNumber: form.claimNumber || '',
+        claimAmount: form.claimAmount || '',
+        claimStatus: form.claimStatus || '',
+        description: form.reasonForClaim || '',
+      };
+      try {
+        const existing = JSON.parse(localStorage.getItem('insurance-complaints') || '[]');
+        if (!existing.find((c: any) => c.id === complaint.id)) {
+          existing.push(complaint);
+          localStorage.setItem('insurance-complaints', JSON.stringify(existing));
+        }
+      } catch {
+        localStorage.setItem('insurance-complaints', JSON.stringify([complaint]));
+      }
+    }
+  }, []);
 
   const handleCopyComplaintId = () => {
     navigator.clipboard.writeText(complaintId);

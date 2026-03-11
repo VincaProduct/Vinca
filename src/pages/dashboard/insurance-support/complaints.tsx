@@ -1,43 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const mockComplaints = [
-  {
-    id: "VINCA-INS-2026-0001",
-    company: "HDFC Life",
-    issueType: "Claim Rejected",
-    status: "Registered",
-    lastUpdated: "2026-03-05",
-  },
-  {
-    id: "VINCA-INS-2026-0002",
-    company: "ICICI Prudential",
-    issueType: "Claim Delay",
-    status: "Under Review",
-    lastUpdated: "2026-03-06",
-  },
-  {
-    id: "VINCA-INS-2026-0003",
-    company: "Max Bupa",
-    issueType: "Policy Issue",
-    status: "Resolved",
-    lastUpdated: "2026-03-07",
-  },
-  {
-    id: "VINCA-INS-2026-0004",
-    company: "Tata AIG",
-    issueType: "Claim Partially Settled",
-    status: "Dispute Filed",
-    lastUpdated: "2026-03-08",
-  },
-  {
-    id: "VINCA-INS-2026-0005",
-    company: "LIC",
-    issueType: "Other Insurance Dispute",
-    status: "Closed",
-    lastUpdated: "2026-03-04",
-  },
-];
+const formatIssueType = (type: string): string => {
+  if (!type) return "";
+  return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
+
+const loadComplaints = () => {
+  try {
+    const stored = JSON.parse(localStorage.getItem('insurance-complaints') || '[]');
+    return stored.map((c: any) => ({
+      id: c.id,
+      company: c.insurer,
+      issueType: formatIssueType(c.issueType),
+      status: c.status,
+      lastUpdated: c.lastUpdated,
+    }));
+  } catch {
+    return [];
+  }
+};
 
 const statusColors = {
   Registered: "bg-blue-100 text-blue-700",
@@ -54,7 +36,9 @@ const ComplaintListPage: React.FC = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const filtered = mockComplaints.filter(c => {
+  const complaints = loadComplaints();
+
+  const filtered = complaints.filter(c => {
     const matchesSearch =
       c.id.toLowerCase().includes(search.toLowerCase()) ||
       c.company.toLowerCase().includes(search.toLowerCase());

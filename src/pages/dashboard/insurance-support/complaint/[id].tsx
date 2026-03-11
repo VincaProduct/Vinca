@@ -1,40 +1,58 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-const mockComplaints = [
-  {
-    id: "VINCA-INS-2026-0001",
-    company: "HDFC Life",
-    issueType: "Claim Rejected",
-    status: "Registered",
-    lastUpdated: "2026-03-05",
-    policyNumber: "HL123456",
-    policyType: "Life",
-    policyHolder: "Amit Sharma",
-    claimNumber: "CLM001",
-    claimAmount: "500000",
-    description: "Claim rejected due to missing documents. All documents were submitted on time.",
-    files: [
-      { name: "policy.pdf", size: 204800, date: "2026-03-01" },
-      { name: "rejection-letter.pdf", size: 102400, date: "2026-03-05" }
-    ],
-    timeline: [
-      { step: "Complaint Registered", date: "2026-03-05", status: "Completed" },
-      { step: "Case Review by Vinca Team", date: "2026-03-06", status: "Completed" },
-      { step: "Client Verification Call", date: "2026-03-06", status: "Completed" },
-      { step: "Documents Submitted to Insurance Samadhan", date: "2026-03-07", status: "Completed" },
-      { step: "Case Review by Insurance Samadhan", status: "In Progress" },
-      { step: "Dispute Raised with Insurance Company", status: "Pending" },
-      { step: "Escalation to Insurance Ombudsman", status: "Pending" },
-      { step: "Resolution", status: "Pending" }
-    ],
-    messages: [
-      { sender: "System", text: "Your case is under review.", date: "2026-03-06" },
-      { sender: "Support", text: "Please upload missing documents.", date: "2026-03-07" }
-    ]
-  },
-  // ...other mock complaints
-];
+const formatIssueType = (type: string): string => {
+  if (!type) return "";
+  return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
+
+const loadComplaint = (id: string) => {
+  try {
+    const stored = JSON.parse(localStorage.getItem('insurance-complaints') || '[]');
+    const found = stored.find((c: any) => c.id === id);
+    if (!found) return null;
+    return {
+      id: found.id,
+      company: found.insurer,
+      issueType: formatIssueType(found.issueType),
+      status: found.status,
+      lastUpdated: found.lastUpdated,
+      policyNumber: found.policyNumber || '',
+      policyType: found.policyType || '',
+      policyHolder: found.policyHolder || '',
+      claimNumber: found.claimNumber || '',
+      claimAmount: found.claimAmount || '',
+      description: found.description || '',
+      complaintDate: found.complaintDate || '',
+      files: [],
+      timeline: generateTimeline(found.status, found.complaintDate),
+      messages: [],
+    };
+  } catch {
+    return null;
+  }
+};
+
+const generateTimeline = (status: string, complaintDate: string) => {
+  const steps = [
+    { step: "Complaint Registered", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Case Review by Vinca Team", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Client Verification Call", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Documents Submitted to Insurance Samadhan", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Case Review by Insurance Samadhan", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Dispute Raised with Insurance Company", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Escalation to Insurance Ombudsman", status: "Pending" as string, date: undefined as string | undefined },
+    { step: "Resolution", status: "Pending" as string, date: undefined as string | undefined },
+  ];
+
+  // Only mark steps as completed based on the actual status
+  if (status === "Registered") {
+    steps[0].status = "Completed";
+    steps[0].date = complaintDate;
+  }
+
+  return steps;
+};
 
 const statusColors = {
   Registered: "bg-blue-100 text-blue-700",
@@ -49,7 +67,7 @@ const statusColors = {
 const ComplaintDetailPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const complaint = mockComplaints.find(c => c.id === id);
+  const complaint = id ? loadComplaint(id) : null;
 
   if (!complaint) {
     return (

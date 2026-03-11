@@ -80,51 +80,30 @@ interface ProcessStep {
   resolution?: boolean;
 }
 
-// Mock complaints data
-const mockComplaints: Complaint[] = [
-  {
-    id: "VINCA-INS-2026-0001",
-    company: "HDFC Life",
-    issueType: "Claim Rejected",
-    status: "Registered",
-    lastUpdated: "2026-03-05",
-    complaintDate: "2026-03-05",
-  },
-  {
-    id: "VINCA-INS-2026-0002",
-    company: "ICICI Prudential",
-    issueType: "Claim Delay",
-    status: "Under Review",
-    lastUpdated: "2026-03-06",
-    complaintDate: "2026-03-06",
-  },
-  {
-    id: "VINCA-INS-2026-0003",
-    company: "Max Bupa",
-    issueType: "Policy Issue",
-    status: "Resolved",
-    lastUpdated: "2026-03-07",
-    complaintDate: "2026-03-07",
-  },
-  {
-    id: "VINCA-INS-2026-0004",
-    company: "Tata AIG",
-    issueType: "Claim Partially Settled",
-    status: "Dispute Filed",
-    lastUpdated: "2026-03-08",
-    complaintDate: "2026-03-08",
-  },
-  {
-    id: "VINCA-INS-2026-0005",
-    company: "LIC",
-    issueType: "Other Insurance Dispute",
-    status: "Closed",
-    lastUpdated: "2026-03-04",
-    complaintDate: "2026-03-04",
-  },
-];
+// Helper: format issue type from kebab-case
+const formatIssueType = (type: string): string => {
+  if (!type) return "";
+  return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
 
-// Timeline steps configuration - FIXED SEQUENCE
+// Helper: load complaints from localStorage
+const loadComplaintsFromStorage = (): Complaint[] => {
+  try {
+    const stored = JSON.parse(localStorage.getItem('insurance-complaints') || '[]');
+    return stored.map((c: any) => ({
+      id: c.id,
+      company: c.insurer,
+      issueType: formatIssueType(c.issueType),
+      status: c.status,
+      lastUpdated: c.lastUpdated,
+      complaintDate: c.complaintDate,
+    }));
+  } catch {
+    return [];
+  }
+};
+
+// Timeline steps configuration - FIXED SEQUENCE (dates populated dynamically)
 const timelineSteps: TimelineStep[] = [
   {
     key: "final-resolution",
@@ -132,7 +111,7 @@ const timelineSteps: TimelineStep[] = [
     icon: Award,
     description: "Case resolved in your favour",
     completedDate: null,
-    expectedDate: "2026-03-30"
+    expectedDate: null
   },
   {
     key: "ombudsman",
@@ -140,46 +119,46 @@ const timelineSteps: TimelineStep[] = [
     icon: Gavel,
     description: "Case escalated for independent review (if required)",
     completedDate: null,
-    expectedDate: "2026-03-22"
+    expectedDate: null
   },
   {
     key: "dispute-raised",
     title: "Dispute Raised with Insurance Company",
     icon: Mail,
     description: "Formal dispute has been raised with the insurer",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-18"
+    completedDate: null,
+    expectedDate: null
   },
   {
     key: "expert-review",
     title: "Expert Case Review",
     icon: BookOpen,
     description: "Insurance experts are reviewing your case",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-15"
+    completedDate: null,
+    expectedDate: null
   },
   {
     key: "documents-forwarded",
     title: "Documents Forwarded for Expert Review",
     icon: FileUp,
     description: "Your case documents are being reviewed by our partner",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-12"
+    completedDate: null,
+    expectedDate: null
   },
   {
     key: "verification-call",
     title: "Client Verification Call",
     icon: Phone,
     description: "We'll call you to verify the case details",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-10"
+    completedDate: null,
+    expectedDate: null
   },
   {
     key: "initial-review",
     title: "Initial Case Review",
     icon: Users,
     description: "Our team is reviewing your complaint details",
-    completedDate: "2026-03-09",
+    completedDate: null,
     expectedDate: null
   },
   {
@@ -187,7 +166,7 @@ const timelineSteps: TimelineStep[] = [
     title: "Complaint Registered",
     icon: FileText,
     description: "Your complaint has been registered in our system",
-    completedDate: "2026-03-08",
+    completedDate: null,
     expectedDate: null
   }
 ];
@@ -391,26 +370,6 @@ const HorizontalTimeline: React.FC<{ steps: TimelineStep[]; currentComplaint: Co
 
   return (
     <div className="w-full">
-      {/* Timeline Legend - Responsive */}
-      <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-6 mb-4 sm:mb-6 text-[10px] sm:text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-primary"></span>
-          <span>Completed</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <span>In Progress</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-muted-foreground/30"></span>
-          <span>Pending</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <Hourglass className="w-2.5 h-2.5" />
-          <span>Expected</span>
-        </div>
-      </div>
-
       {/* Timeline Container */}
       <div className="relative w-full overflow-x-auto scroll-smooth pb-6" ref={scrollContainerRef}>
         {/* Steps Container */}
@@ -446,7 +405,8 @@ const ComplaintTrackingDrawer: React.FC<{ complaint: Complaint | null; navigate:
   };
 
   const handleIdSave = () => {
-    const foundComplaint = mockComplaints.find(c => c.id === editedId);
+    const complaints = loadComplaintsFromStorage();
+    const foundComplaint = complaints.find(c => c.id === editedId);
     if (foundComplaint) {
       setSearchError("");
       setIsEditing(false);
@@ -474,7 +434,16 @@ const ComplaintTrackingDrawer: React.FC<{ complaint: Complaint | null; navigate:
   const getReorderedTimelineSteps = (): TimelineStep[] => {
     if (!currentComplaint) return timelineSteps;
     
-    return [...timelineSteps].sort((a, b) => {
+    // Populate dates dynamically based on complaint status
+    const updatedSteps = timelineSteps.map(step => {
+      const status = getStepStatus(currentComplaint, step.key);
+      if (status === "completed" || status === "active") {
+        return { ...step, completedDate: currentComplaint.complaintDate };
+      }
+      return step;
+    });
+
+    return [...updatedSteps].sort((a, b) => {
       const statusA = getStepStatus(currentComplaint, a.key);
       const statusB = getStepStatus(currentComplaint, b.key);
       
@@ -693,8 +662,9 @@ const ComplaintTrackingDrawer: React.FC<{ complaint: Complaint | null; navigate:
 const InsurancePage: React.FC = () => {
   const navigate = useNavigate();
 
-  const latestComplaint: Complaint | null = mockComplaints.length > 0 
-    ? [...mockComplaints].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())[0]
+  const complaints = loadComplaintsFromStorage();
+  const latestComplaint: Complaint | null = complaints.length > 0 
+    ? [...complaints].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())[0]
     : null;
 
   // Process steps data
