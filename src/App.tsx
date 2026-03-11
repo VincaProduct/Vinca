@@ -32,6 +32,23 @@ import CTAPlacementPage from "./pages/dashboard/CTAPlacementPage";
 import CTAAnalyticsPage from "./pages/dashboard/CTAAnalyticsPage";
 import BookingsDashboard from "./pages/dashboard/BookingsDashboard";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import ElevatePage from "./pages/dashboard/ElevatePage";
+import FootprintsPage from "./pages/dashboard/FootprintsPage";
+import RaisePage from "./pages/dashboard/RaisePage";
+import ReflectionsPage from "./pages/dashboard/ReflectionsPage";
+import KnowYourMarketPage from "./pages/dashboard/KnowYourMarketPage";
+import CurationsPage from "./pages/dashboard/CurationsPage";
+import PricingPage from "./pages/dashboard/PricingPage";
+import ReadinessFitPage from "./pages/dashboard/ReadinessFitPage";
+import NewReferralPage from "./pages/dashboard/NewReferralPage";
+import SprintHomePage from "./pages/dashboard/SprintHomePage";
+import SprintDetailPage from "./pages/dashboard/SprintDetailPage";
+import SprintBPage from "./pages/sprintb/index";
+import LearningHome from "./pages/learning/LearningHome";
+import LearningSeriesDetail from "./pages/learning/LearningSeriesDetail";
+import LearningPlayer from "./pages/learning/LearningPlayer";
+import LearningAchievements from "./pages/learning/LearningAchievements";
+import LearningLibrary from "./pages/learning/LearningLibrary";
 import FFRHome from "./pages/ffr/FFRHome";
 import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
@@ -57,6 +74,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <Routes>
+
                   {/* PUBLIC ROUTES */}
                   <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
                   <Route path="/blog" element={<BlogsPage />} />
@@ -71,13 +89,16 @@ const App = () => (
 
                   {/* DASHBOARD ROUTES */}
                   <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+
                     <Route index element={<Dashboard />} />
                     <Route path="pricing" element={<DashboardPricingPage />} />
                     <Route path="buy-membership" element={<DashboardBuyMembershipPage />} />
+
                     <Route path="ffr" element={<UnifiedFFRPage />} />
                     <Route path="ffr/checklist" element={<FFRChecklist />} />
                     <Route path="ffr/opportunities" element={<FFROpportunities />} />
                     <Route path="ffr/unified" element={<UnifiedFFRPage />} />
+
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
                     <Route path="book-wealth-manager" element={<BookWealthManager />} />
                     <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
@@ -85,15 +106,27 @@ const App = () => (
                     <Route path="support" element={<SupportPage />} />
                     <Route path="upgrade" element={<UpgradePage />} />
                     <Route path="achievers-club" element={<AchieversClubDashboard />} />
+
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
                     <Route path="cta-dashboard" element={<CTADashboardPage />} />
                     <Route path="cta-placements" element={<CTAPlacementPage />} />
                     <Route path="cta-analytics" element={<CTAAnalyticsPage />} />
-                    <Route path="bookings" element={<RoleProtectedRoute requiredRole="super_admin"><BookingsDashboard /></RoleProtectedRoute>} />
+
+                    <Route
+                      path="bookings"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <BookingsDashboard />
+                        </RoleProtectedRoute>
+                      }
+                    />
+
                   </Route>
+
                   {/* FALLBACK */}
                   <Route path="*" element={<NotFound />} />
+
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
