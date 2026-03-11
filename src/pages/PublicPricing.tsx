@@ -86,12 +86,12 @@ export default function PublicPricing() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-6xl px-6 py-10">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+      <div className="mx-auto w-full max-w-6xl px-6 py-10 flex flex-col items-center justify-center">
         {/* Unified Membership Card - matches dashboard layout */}
-        <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm px-6 sm:px-8 py-8 mb-10 w-full max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            <div className="flex flex-col md:justify-center h-full min-h-[320px]">
+        <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm px-6 sm:px-8 py-8 mb-10 w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="flex flex-col md:justify-center h-full min-h-[320px] items-center">
               <div>
                   <div className="text-xl sm:text-2xl font-bold text-foreground mb-5 text-center">Membership fees & inclusions</div>
                 <div className="flex items-end gap-2 sm:gap-3 mb-5 justify-center text-center">
@@ -151,7 +151,7 @@ export default function PublicPricing() {
         {/* FEATURE BREAKDOWN SECTIONS */}
         <div className="space-y-8">
           {/* Sprints */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -177,9 +177,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Progress through regular participation</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Footprints */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Footprints className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -205,9 +205,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Community-driven learning</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Reflections */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -233,9 +233,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Help shape our learning content</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Learning */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -261,9 +261,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Conceptual maturity tracking</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Know Your Market */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -289,9 +289,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Aligning market participation with goals</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Referral Program */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Gift className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -317,9 +317,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Rewards apply after successful membership</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Curations */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Compass className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -345,9 +345,9 @@ export default function PublicPricing() {
                 <span className="text-primary">Focused on relevance, never promotion</span>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Elevate */}
-          <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <HeartHandshake className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
@@ -369,7 +369,7 @@ export default function PublicPricing() {
                 <span className="text-primary">Add confidence and perspective</span>
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
         {/* FOOTER NOTE */}
         <div className="text-[10px] sm:text-xs text-muted-foreground mt-10 text-center">
