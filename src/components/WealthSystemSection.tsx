@@ -47,6 +47,7 @@ const WealthSystemSection = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -60,7 +61,7 @@ const WealthSystemSection = () => {
           </h2>
           
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Transform your financial future with our systematic approach that has helped 500+ families achieve their wealth goals.
+            Transform your financial future with our systematic approach that has helped 60+ families achieve their wealth goals.
           </p>
         </div>
 
@@ -119,14 +120,10 @@ const WealthSystemSection = () => {
         {/* Results & CTA */}
         <div className="text-center animate-fade-in" style={{ animationDelay: "0.8s" }}>
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
-            <div className="grid sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid sm:grid-cols-2 gap-4 mb-6">
               <div>
-                <div className="text-2xl font-bold text-primary">500+</div>
+                <div className="text-2xl font-bold text-primary">60+</div>
                 <div className="text-sm text-muted-foreground">Families Served</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-primary">15%</div>
-                <div className="text-sm text-muted-foreground">Avg. Annual Returns</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-primary">₹50L+</div>

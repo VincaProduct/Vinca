@@ -16,6 +16,9 @@ import FinancialFreedomCalculator from "./pages/FinancialFreedomCalculator";
 import AuthPage from "./components/auth/AuthPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import CanonicalPageHeader from "./components/ui/CanonicalPageHeader";
+import DashboardPricingPage from "./pages/dashboard/PricingPage";
+import BuyMembership from "./pages/BuyMembership";
 
 import InvestmentOpportunities from "./pages/dashboard/InvestmentOpportunities";
 import ReferFriend from "./pages/dashboard/ReferFriend";
@@ -29,7 +32,23 @@ import CTAPlacementPage from "./pages/dashboard/CTAPlacementPage";
 import CTAAnalyticsPage from "./pages/dashboard/CTAAnalyticsPage";
 import BookingsDashboard from "./pages/dashboard/BookingsDashboard";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
-import FFRHome from "./pages/ffr/FFRHome";
+// import ElevatePage from "./pages/dashboard/ElevatePage";
+// import FootprintsPage from "./pages/dashboard/FootprintsPage";
+// import RaisePage from "./pages/dashboard/RaisePage";
+// import ReflectionsPage from "./pages/dashboard/ReflectionsPage";
+// import KnowYourMarketPage from "./pages/dashboard/KnowYourMarketPage";
+// import CurationsPage from "./pages/dashboard/CurationsPage";
+// import PricingPage from "./pages/dashboard/PricingPage";
+// import ReadinessFitPage from "./pages/dashboard/ReadinessFitPage";
+// import NewReferralPage from "./pages/dashboard/NewReferralPage";
+// import SprintHomePage from "./pages/dashboard/SprintHomePage";
+// import SprintDetailPage from "./pages/dashboard/SprintDetailPage";
+// import SprintBPage from "./pages/sprintb/index";
+// import LearningHome from "./pages/learning/LearningHome";
+// import LearningSeriesDetail from "./pages/learning/LearningSeriesDetail";
+// import LearningPlayer from "./pages/learning/LearningPlayer";
+// import LearningAchievements from "./pages/learning/LearningAchievements";
+// import LearningLibrary from "./pages/learning/LearningLibrary";
 import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
 import UnifiedFFRPage from "./pages/ffr/UnifiedFFRPage";
@@ -38,6 +57,8 @@ import AchieversClubDashboard from "./pages/dashboard/AchieversClubDashboard";
 import UpgradePage from "./pages/dashboard/UpgradePage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
+import PublicPricing from "./pages/PublicPricing";
+import DashboardBuyMembershipPage from "./pages/dashboard/BuyMembershipPage";
 
 const queryClient = new QueryClient();
 
@@ -48,67 +69,68 @@ const App = () => (
         <ReferralProvider>
           <RazorpayProvider>
             <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
-            <Route path="/blog" element={<BlogsPage />} />
-            <Route path="/blog/:slug" element={<BlogsPage />} />
-            <Route path="/thank-you" element={<PublicRoute><ThankYou /></PublicRoute>} />
-            <Route path="/financial-freedom-calculator" element={<PublicRoute><FinancialFreedomCalculator /></PublicRoute>} />
-            <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
-            <Route path="/achievers-club" element={<PublicRoute><AchieversClubLanding /></PublicRoute>} />
-            <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
-            
-            {/* FFR Module Routes - moved to dashboard/tools */}
-            
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<Dashboard />} />
-              
-              {/* FFR Module Routes */}
-              <Route path="ffr" element={<UnifiedFFRPage />} />
-              <Route path="ffr/checklist" element={<FFRChecklist />} />
-              <Route path="ffr/opportunities" element={<FFROpportunities />} />
-              <Route path="ffr/unified" element={<UnifiedFFRPage />} />
-              
-              {/* Main Navigation Routes */}
-              <Route path="calculator" element={<FinancialCalculatorPage />} />
-              <Route path="book-wealth-manager" element={<BookWealthManager />} />
-              <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
-              <Route path="refer" element={<ReferFriend />} />
-              <Route path="support" element={<SupportPage />} />
-              {/* Achievers Club - Currently in progress, hidden for production */}
-              {/* <Route path="achievers-club" element={<AchieversClubDashboard />} /> */}
-              <Route path="upgrade" element={<UpgradePage />} />
-              
-              {/* Admin Routes */}
-              <Route path="blog-cms" element={<BlogCMSDashboard />} />
-              <Route path="authors" element={<AuthorsDashboard />} />
-              <Route path="cta-dashboard" element={<CTADashboardPage />} />
-              <Route path="cta-placements" element={<CTAPlacementPage />} />
-              <Route path="cta-analytics" element={<CTAAnalyticsPage />} />
-              <Route path="bookings" element={
-                <RoleProtectedRoute requiredRole="super_admin">
-                  <BookingsDashboard />
-                </RoleProtectedRoute>
-              } />
-            </Route>
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-        </RazorpayProvider>
-      </ReferralProvider>
-    </AuthProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+
+                  {/* PUBLIC ROUTES */}
+                  <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
+                  <Route path="/blog" element={<BlogsPage />} />
+                  <Route path="/blog/:slug" element={<BlogsPage />} />
+                  <Route path="/thank-you" element={<PublicRoute><ThankYou /></PublicRoute>} />
+                  <Route path="/financial-freedom-calculator" element={<PublicRoute><FinancialFreedomCalculator /></PublicRoute>} />
+                  <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+                  <Route path="/achievers-club" element={<PublicRoute><AchieversClubLanding /></PublicRoute>} />
+                  <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
+                  <Route path="/pricing" element={<PublicRoute><PublicPricing /></PublicRoute>} />
+                  <Route path="/buy-membership" element={<PublicRoute><BuyMembership /></PublicRoute>} />
+
+                  {/* DASHBOARD ROUTES */}
+                  <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+
+                    <Route index element={<Dashboard />} />
+                    <Route path="pricing" element={<DashboardPricingPage />} />
+                    <Route path="buy-membership" element={<DashboardBuyMembershipPage />} />
+
+                    <Route path="ffr" element={<UnifiedFFRPage />} />
+                    <Route path="ffr/checklist" element={<FFRChecklist />} />
+                    <Route path="ffr/opportunities" element={<FFROpportunities />} />
+
+                    <Route path="calculator" element={<FinancialCalculatorPage />} />
+                    <Route path="book-wealth-manager" element={<BookWealthManager />} />
+                    <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
+                    <Route path="refer" element={<ReferFriend />} />
+                    <Route path="support" element={<SupportPage />} />
+                    <Route path="upgrade" element={<UpgradePage />} />
+                    <Route path="achievers-club" element={<AchieversClubDashboard />} />
+
+                    <Route path="blog-cms" element={<BlogCMSDashboard />} />
+                    <Route path="authors" element={<AuthorsDashboard />} />
+                    <Route path="cta-dashboard" element={<CTADashboardPage />} />
+                    <Route path="cta-placements" element={<CTAPlacementPage />} />
+                    <Route path="cta-analytics" element={<CTAAnalyticsPage />} />
+
+                    <Route
+                      path="bookings"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <BookingsDashboard />
+                        </RoleProtectedRoute>
+                      }
+                    />
+
+                  </Route>
+
+                  {/* FALLBACK */}
+                  <Route path="*" element={<NotFound />} />
+
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </RazorpayProvider>
+        </ReferralProvider>
+      </AuthProvider>
     </HelmetProvider>
   </QueryClientProvider>
 );

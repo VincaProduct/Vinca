@@ -111,7 +111,7 @@ const TestimonialsSection = () => {
         <div className="text-center mt-12 lg:mt-16 animate-fade-in" style={{ animationDelay: "0.8s" }}>
           <div className="inline-flex items-center gap-8 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-2xl px-6 py-4">
             <div className="text-center">
-              <div className="text-xl lg:text-2xl font-bold text-primary">500+</div>
+              <div className="text-xl lg:text-2xl font-bold text-primary">60+</div>
               <div className="text-xs lg:text-sm text-muted-foreground">Happy Clients</div>
             </div>
             <div className="w-px h-8 bg-border"></div>

@@ -17,7 +17,7 @@ const ServicesSection = () => {
       icon: '📈'
     },
     {
-      title: 'Financial Planning',
+      title: 'Financial Freedom Planning',
       description: 'Holistic financial planning covering all aspects of your financial life.',
       features: ['Goal Setting', 'Cash Flow Analysis', 'Insurance Review', 'Estate Planning'],
       icon: '📋'
