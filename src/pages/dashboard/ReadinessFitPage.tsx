@@ -83,15 +83,15 @@ function ReadinessFitPageContent() {
                   const Icon = card.icon;
                   return (
                     <div key={idx} className="w-full flex-shrink-0 px-1">
-                      <Card className="border-emerald-100 shadow-sm min-h-[140px]">
+                      <Card className="border border-border bg-card shadow-sm min-h-[140px]">
                         <CardContent className="p-4">
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                              <Icon className="w-4 h-4 text-emerald-700" />
+                            <div className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
+                              <Icon className="w-4 h-4" />
                             </div>
-                            <h3 className="font-semibold text-sm text-emerald-800 line-clamp-1">{card.title}</h3>
+                            <h3 className="font-semibold text-sm text-foreground line-clamp-1">{card.title}</h3>
                           </div>
-                          <p className="text-xs text-emerald-600/80 leading-relaxed line-clamp-3">
+                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
                             {card.description}
                           </p>
                         </CardContent>
@@ -110,8 +110,8 @@ function ReadinessFitPageContent() {
                   onClick={() => handleDotClick(idx)}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${
                     idx === currentCardIndex 
-                      ? 'bg-emerald-600 w-4' 
-                      : 'bg-emerald-200 hover:bg-emerald-300'
+                      ? 'bg-primary w-4' 
+                      : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                   }`}
                   aria-label={`Go to card ${idx + 1}`}
                 />
@@ -125,15 +125,15 @@ function ReadinessFitPageContent() {
           {infoCards.map((card, idx) => {
             const Icon = card.icon;
             return (
-              <Card key={idx} className="border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
+              <Card key={idx} className="border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-4 h-4 text-emerald-700" />
+                    <div className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-4 h-4" />
                     </div>
-                    <h3 className="font-semibold text-sm text-emerald-800">{card.title}</h3>
+                    <h3 className="font-semibold text-sm text-foreground">{card.title}</h3>
                   </div>
-                  <p className="text-xs text-emerald-600/80 leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {card.description}
                   </p>
                 </CardContent>
@@ -178,22 +178,22 @@ function ReadinessFitPageContent() {
         </div>
 
         {/* Next Steps - Mobile Optimized with better text handling */}
-        <Card className="border-emerald-100 shadow-md">
+        <Card className="border border-border bg-card shadow-md">
           <CardContent className="p-4 sm:p-6">
-            <h2 className="text-base sm:text-lg font-semibold text-emerald-900 mb-3 sm:mb-4">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground mb-3 sm:mb-4">
               Understanding Your Score
             </h2>
             <div className="space-y-3 sm:space-y-4">
               {/* Score 80-100 */}
               <div className="flex gap-2 sm:gap-4">
-                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <span className="text-[9px] sm:text-sm font-semibold text-emerald-700">1</span>
+                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-primary/15 flex items-center justify-center">
+                  <span className="text-[9px] sm:text-sm font-semibold text-primary">1</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-[11px] sm:text-sm text-emerald-800 break-words">
+                  <h3 className="font-medium text-[11px] sm:text-sm text-foreground break-words">
                     80-100: High Improvement Potential
                   </h3>
-                  <p className="text-[9px] sm:text-xs text-emerald-600/70 mt-0.5 leading-relaxed break-words">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed break-words">
                     Your plan has significant gaps. Explore the Financial Readiness and Lifestyle Planner tools to optimize.
                   </p>
                 </div>
@@ -201,14 +201,14 @@ function ReadinessFitPageContent() {
 
               {/* Score 60-79 */}
               <div className="flex gap-2 sm:gap-4">
-                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <span className="text-[9px] sm:text-sm font-semibold text-emerald-700">2</span>
+                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-primary/15 flex items-center justify-center">
+                  <span className="text-[9px] sm:text-sm font-semibold text-primary">2</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-[11px] sm:text-sm text-emerald-800 break-words">
+                  <h3 className="font-medium text-[11px] sm:text-sm text-foreground break-words">
                     60-79: Moderate Optimization Scope
                   </h3>
-                  <p className="text-[9px] sm:text-xs text-emerald-600/70 mt-0.5 leading-relaxed break-words">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed break-words">
                     There are meaningful opportunities to strengthen your plan through adjustments.
                   </p>
                 </div>
@@ -216,14 +216,14 @@ function ReadinessFitPageContent() {
 
               {/* Score 40-59 */}
               <div className="flex gap-2 sm:gap-4">
-                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <span className="text-[9px] sm:text-sm font-semibold text-emerald-700">3</span>
+                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-primary/15 flex items-center justify-center">
+                  <span className="text-[9px] sm:text-sm font-semibold text-primary">3</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-[11px] sm:text-sm text-emerald-800 break-words">
+                  <h3 className="font-medium text-[11px] sm:text-sm text-foreground break-words">
                     40-59: Some Gaps Identified
                   </h3>
-                  <p className="text-[9px] sm:text-xs text-emerald-600/70 mt-0.5 leading-relaxed break-words">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed break-words">
                     Minor adjustments to either financial strategy or lifestyle expectations could help.
                   </p>
                 </div>
@@ -231,14 +231,14 @@ function ReadinessFitPageContent() {
 
               {/* Score 0-39 */}
               <div className="flex gap-2 sm:gap-4">
-                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-emerald-100 flex items-center justify-center">
-                  <span className="text-[9px] sm:text-sm font-semibold text-emerald-700">4</span>
+                <div className="flex-shrink-0 w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-primary/15 flex items-center justify-center">
+                  <span className="text-[9px] sm:text-sm font-semibold text-primary">4</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-[11px] sm:text-sm text-emerald-800 break-words">
+                  <h3 className="font-medium text-[11px] sm:text-sm text-foreground break-words">
                     0-39: Plan Largely Aligned
                   </h3>
-                  <p className="text-[9px] sm:text-xs text-emerald-600/70 mt-0.5 leading-relaxed break-words">
+                  <p className="text-[9px] sm:text-xs text-muted-foreground mt-0.5 leading-relaxed break-words">
                     Your financial and lifestyle expectations are well-balanced. Continue refining as needed.
                   </p>
                 </div>
@@ -246,7 +246,7 @@ function ReadinessFitPageContent() {
             </div>
 
             {/* Upgrade CTA */}
-            <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-emerald-100">
+            <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border">
               <Button
                 onClick={() => navigate('/dashboard/pricing')}
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm py-2 h-auto"
