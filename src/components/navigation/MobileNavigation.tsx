@@ -76,6 +76,16 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
         <div className="relative bg-background/95 backdrop-blur-md border-b border-border/50 shadow-lg">
           <div className="container mx-auto px-3 sm:px-4 py-6">
             <div className="flex flex-col space-y-1">
+              <Link
+                to="/financial-freedom-calculator"
+                className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
+                  Check Your Score
+                </span>
+              </Link>
+
               <button
                 onClick={() => handleMenuItemClick(() => scrollToSection('services'))}
                 className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"

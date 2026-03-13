@@ -24,6 +24,15 @@ const DesktopNavigation = ({ scrollToSection }: DesktopNavigationProps) => {
   return (
     <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
       <nav className="flex items-center space-x-1 xl:space-x-2">
+        <Link
+          to="/financial-freedom-calculator"
+          className="relative px-3 py-2 text-muted-foreground hover:text-primary transition-all duration-300 ease-in-out text-sm xl:text-base whitespace-nowrap group focus:outline-none focus:text-primary rounded-md"
+        >
+          <span className="relative z-10">Check Your Score</span>
+          <div className="absolute inset-0 bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-300 ease-out rounded-md" />
+          <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary group-hover:w-4/5 group-focus:w-4/5 transition-all duration-300 ease-out transform -translate-x-1/2" />
+        </Link>
+
         <button
           onClick={() => scrollToSection('services')}
           className="relative px-3 py-2 text-muted-foreground hover:text-primary transition-all duration-300 ease-in-out text-sm xl:text-base whitespace-nowrap group focus:outline-none focus:text-primary rounded-md"
