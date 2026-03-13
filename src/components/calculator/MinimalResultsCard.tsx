@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import {
   Target,
   Info,
   ArrowRight,
+  Lock,
 } from "lucide-react";
 import {
   Tooltip,
@@ -108,6 +109,33 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
   const { user } = useAuth();
   const navigate = useNavigate();
   console.log(user);
+
+  const publicScore = useMemo(() => {
+    const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
+    const retirementProjection = projections.find((p: any) => p.age === retirementAge);
+    const expectedCorpus = retirementProjection?.expectedCorpus || 0;
+    const corpusProgress = results.requiredCorpus > 0
+      ? Math.min((expectedCorpus / results.requiredCorpus) * 30, 30)
+      : 0;
+    const timeBuffer = results.freedomAge <= retirementAge
+      ? 20
+      : (retirementAge / results.freedomAge) * 20;
+    const sipRate = inputs.monthlyIncome > 0 ? inputs.sipAmount / inputs.monthlyIncome : 0;
+    const savingsRateScore = sipRate >= 0.20 ? 20 : sipRate >= 0.10 ? 10 : 5;
+    const sustainabilityScore = results.corpusDepletesBeforeLifeExpectancy && results.corpusDepletionAge
+      ? (inputs.lifeExpectancy - results.corpusDepletionAge <= 10 ? 5 : 0)
+      : 10;
+    return Math.max(0, Math.min(100, Math.round(corpusProgress + timeBuffer + savingsRateScore + sustainabilityScore)));
+  }, [inputs, results, projections]);
+
+  const publicStatus = publicScore <= 30 ? 'Needs Attention 🔴'
+    : publicScore <= 60 ? 'In Progress 🟡'
+    : publicScore <= 80 ? 'On Track 🟢'
+    : 'Excellent 🌟';
+  const publicStatusColor = publicScore <= 30 ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+    : publicScore <= 60 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
+    : publicScore <= 80 ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+    : 'bg-primary/10 text-primary';
   const isNegativeCorpus = projections.some(
     (projection) => projection.expectedCorpus < 0
   );
@@ -291,6 +319,26 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
       <Card className="relative overflow-hidden bg-gradient-to-br from-background via-background/95 to-muted/40 border-2 border-primary/10 shadow-2xl backdrop-blur-sm">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
         <div className="relative p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
+          {/* Blurred Score Card — public only */}
+          {!user && (
+            <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 to-background p-5 text-center space-y-3">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                Your Financial Freedom Score
+              </p>
+              <div className="flex items-end justify-center gap-1">
+                <span className="text-6xl font-bold text-primary">{publicScore}</span>
+                <span className="text-2xl font-semibold text-muted-foreground mb-2"> / 100</span>
+              </div>
+              <div className="w-full bg-muted rounded-full h-3 max-w-sm mx-auto">
+                <div className="bg-primary h-3 rounded-full transition-all duration-500" style={{ width: `${publicScore}%` }} />
+              </div>
+              <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${publicStatusColor}`}>
+                {publicStatus}
+              </span>
+              <p className="text-sm text-muted-foreground">Sign in to understand what this means and how to improve it</p>
+            </div>
+          )}
+
           {/* Status Header */}
           <div className="text-center space-y-2">
             {needsOptimization ? (
@@ -532,31 +580,40 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
             </div>
           )}
 
-          {/* Action Buttons */}
-          {!user && <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={() => {
-                localStorage.setItem('redirect_after_login', '/dashboard/ffr');
-                window.location.href = '/auth';
-              }}
-              size="lg"
-              className="px-6 py-3 font-semibold flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Get Detailed Analysis
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              onClick={() => {
-                localStorage.setItem('redirect_after_login', '/dashboard/book-wealth-manager');
-                navigate('/auth');
-              }}
-              variant="outline"
-              size="lg"
-              className="px-6 py-3 font-semibold flex-1 sm:flex-none border-primary/30 hover:bg-primary/5 transition-all duration-300"
-            >
-              Schedule Call
-            </Button>
-          </div>}
+          {/* What your score reveals — public only */}
+          {!user && (
+            <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3">
+              <p className="text-sm font-semibold text-foreground">What your score reveals</p>
+              {[
+                'Exactly where you\'re losing points',
+                'Which 2 actions move your score the most',
+                'Your personalised freedom roadmap',
+                'How you compare to people your age',
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3">
+                  <Lock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm text-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CTA — public only */}
+          {!user && (
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                onClick={() => {
+                  localStorage.setItem('redirect_after_login', '/dashboard/ffr');
+                  window.location.href = '/auth';
+                }}
+                size="lg"
+                className="w-full sm:w-auto px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Unlock My Full Plan — Free →
+              </Button>
+              <p className="text-xs text-muted-foreground">Takes 10 seconds. No spam.</p>
+            </div>
+          )}
         </div>
       </Card>
     </TooltipProvider>

@@ -6,6 +6,7 @@ import { useFinancialPlanning } from '../context/FinancialPlanningContext';
 import MinimalResultsCard from '@/components/calculator/MinimalResultsCard';
 import { YearlyCorpusAnalysis } from '@/components/ffr/YearlyCorpusAnalysis';
 import { EssentialsPanel } from '@/components/ffr/EssentialsPanel';
+import { FFRScoreCard } from '@/components/ffr/FFRScoreCard';
 import { useFFR } from '@/hooks/useFFR';
 
 export function FinancialReadinessTab() {
@@ -32,21 +33,11 @@ export function FinancialReadinessTab() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      {/* Financial Freedom Score */}
+      <FFRScoreCard inputs={inputs} results={results} projections={projections} checklist={checklist} />
+
       {/* Calculator Results */}
       <Card className="border-primary/50 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/20 p-2 rounded-lg">
-              <Calculator className="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <CardTitle>Your Calculation Results</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Personalized insights based on your financial goals
-              </p>
-            </div>
-          </div>
-        </CardHeader>
         <CardContent className="pt-6">
           <MinimalResultsCard inputs={inputs} results={results} projections={projections} />
         </CardContent>
