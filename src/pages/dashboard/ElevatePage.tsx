@@ -128,13 +128,13 @@ export default function ElevatePage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [bookingPageOpen, activeStep, isTransitioning]);
 
-  // AUTO-PROGRESSION LOOP - Move to next step every 8s if user inactive
+  // AUTO-PROGRESSION LOOP - Move to next step every 7s if user inactive
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
 
-      // Only progress if user inactive for 8s
-      if (now - lastInteractionTime < 10000) return;
+      // Only progress if user inactive for 7s
+      if (now - lastInteractionTime < 7000) return;
 
       if (bookingPageOpen) return;
       if (!isInStepsSection()) return;
@@ -340,11 +340,11 @@ export default function ElevatePage() {
         <section className="w-full bg-background px-6 sm:px-12 py-8 lg:py-10 mt-0">
           
           {/* Heading */}
-          <div className="max-w-6xl mx-auto mb-10">
+          <div className="max-w-6xl mx-auto mb-10 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
               Why a 1:1 session changes everything
             </h2>
-            <p className="text-muted-foreground mt-3 text-base sm:text-lg max-w-2xl">
+            <p className="text-muted-foreground mt-3 text-base sm:text-lg max-w-2xl mx-auto">
               Calculators give you numbers. An expert helps you act on them.
             </p>
           </div>
