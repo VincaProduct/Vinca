@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CanonicalPageHeader from '@/components/ui/CanonicalPageHeader';
 import { X, BarChart3, Calendar, Video, Clock, CheckCircle, Zap, Brain, TrendingUp, ArrowDown, ChevronLeft, ChevronRight, Users, Target, Award, Shield, Mail, Phone, MessageSquare } from 'lucide-react';
 import financialReadinessImg from '@/assets/fiinancial_readiness_elevate.jpeg';
@@ -7,11 +8,13 @@ import healthStressImg from '@/assets/health_stress_elevate.jpeg';
 import expertGuidanceImg from '@/assets/elevate.jpeg';
 
 export default function ElevatePage() {
+  const navigate = useNavigate();
   const [bookingPageOpen, setBookingPageOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [activeStep, setActiveStep] = useState(1);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
   const [formData, setFormData] = useState({
     selectedDate: '' as string | null,
     selectedTime: '' as string | null,
@@ -50,143 +53,105 @@ export default function ElevatePage() {
     setSuccessModalOpen(false);
   };
 
-  // WHEEL HANDLER - Premium sequential feel
+
+
+  // TOUCH HANDLER - Horizontal swipe (LEFT → next, RIGHT → previous)
   useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      if (bookingPageOpen) return;
-
-      const inSteps = isInStepsSection();
-      if (!inSteps) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      // 🚨 BLOCK while animation running
-      if (isTransitioning) return;
-
-      const direction = e.deltaY > 0 ? 'down' : 'up';
-
-      if (direction === 'down') {
-        if (activeStep === 4) return; // Already at last step
-        setIsTransitioning(true);
-        setActiveStep(prev => Math.min(prev + 1, 4));
-      } else {
-        if (activeStep === 1) return; // Already at first step
-        setIsTransitioning(true);
-        setActiveStep(prev => Math.max(prev - 1, 1));
-      }
-
-      // 🧠 KEY: Longer pause after movement (animation + settle time)
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 1100); // 900ms animation + 200ms pause
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [bookingPageOpen, activeStep, isTransitioning]);
-
-  // TOUCH HANDLER - Mobile swipe with transition lock
-  useEffect(() => {
-    let startY = 0;
-    let isTouching = false;
+    let startX = 0;
 
     const handleTouchStart = (e: TouchEvent) => {
       if (bookingPageOpen) return;
+      if (!isInStepsSection()) return;
 
-      const inSteps = isInStepsSection();
-      if (!inSteps) return;
-
-      startY = e.touches[0].clientY;
-      isTouching = true;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (bookingPageOpen || !isTouching) return;
-
-      const inSteps = isInStepsSection();
-      if (!inSteps) return;
-
-      e.preventDefault();
+      startX = e.touches[0].clientX;
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (bookingPageOpen || !isTouching) return;
-
-      const inSteps = isInStepsSection();
-      if (!inSteps) return;
-
-      // 🚨 BLOCK while animation running
+      if (bookingPageOpen) return;
+      if (!isInStepsSection()) return;
       if (isTransitioning) return;
 
-      const endY = e.changedTouches[0].clientY;
-      const diff = startY - endY;
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
 
-      isTouching = false;
+      setLastInteractionTime(Date.now());
 
-      if (Math.abs(diff) < 80) return;
+      if (Math.abs(diff) < 50) return;
 
       if (diff > 0) {
-        // swipe up → next step
+        // swipe left → next step
         if (activeStep === 4) return;
         setIsTransitioning(true);
-        setActiveStep(prev => Math.min(prev + 1, 4));
+        setActiveStep(prev => prev + 1);
       } else {
-        // swipe down → previous step
+        // swipe right → previous step
         if (activeStep === 1) return;
         setIsTransitioning(true);
-        setActiveStep(prev => Math.max(prev - 1, 1));
+        setActiveStep(prev => prev - 1);
       }
 
-      // 🧠 Same pause after touch movement
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 1100);
+      setTimeout(() => setIsTransitioning(false), 1800);
     };
 
     window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [bookingPageOpen, activeStep, isTransitioning]);
 
-  // KEYBOARD HANDLER - Arrow keys with transition lock
+  // KEYBOARD HANDLER - Arrow keys for navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (bookingPageOpen) return;
-
-      const inSteps = isInStepsSection();
-      if (!inSteps) return;
-
-      // 🚨 BLOCK while animation running
+      if (!isInStepsSection()) return;
       if (isTransitioning) return;
 
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        e.preventDefault();
+      setLastInteractionTime(Date.now());
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (activeStep === 4) return;
         setIsTransitioning(true);
-        setActiveStep(prev => Math.min(prev + 1, 4));
-      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        e.preventDefault();
+        setActiveStep(prev => prev + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         if (activeStep === 1) return;
         setIsTransitioning(true);
-        setActiveStep(prev => Math.max(prev - 1, 1));
+        setActiveStep(prev => prev - 1);
       }
 
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 1100);
+      setTimeout(() => setIsTransitioning(false), 1800);
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [bookingPageOpen, activeStep, isTransitioning]);
+
+  // AUTO-PROGRESSION LOOP - Move to next step every 8s if user inactive
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+
+      // Only progress if user inactive for 8s
+      if (now - lastInteractionTime < 10000) return;
+
+      if (bookingPageOpen) return;
+      if (!isInStepsSection()) return;
+      if (isTransitioning) return;
+
+      setIsTransitioning(true);
+
+      setActiveStep(prev => {
+        if (prev === 4) return 1; // loop back to start
+        return prev + 1;
+      });
+
+      setTimeout(() => setIsTransitioning(false), 1800);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isTransitioning, bookingPageOpen, lastInteractionTime]);
 
   const scrollbarHideStyles = `
     .scrollbar-hide {
@@ -226,23 +191,23 @@ export default function ElevatePage() {
   const steps = [
     {
       id: 1,
-      heading: "Know your numbers. For real.",
-      description: "Not guesses. Not rough estimates.\nSee exactly where you stand — income, expenses, gaps.\n\nThis is your financial baseline."
+      heading: "See where your plan actually stands.",
+      description: "Not just savings — the full picture.\nYour corpus, your gap, your timeline.\nSee when your money runs out.\n\nThis is your financial reality.\nNo assumptions anymore."
     },
     {
       id: 2,
-      heading: "Design the life you actually want.",
-      description: "Money isn't the goal — your life is.\nMap your future lifestyle and what it truly costs.\n\nNow your numbers have direction."
+      heading: "Understand what your life really costs.",
+      description: "Your lifestyle defines your numbers.\nNot the other way around.\nSee what your future actually demands.\n\nNow your plan has context.\nNot just calculations."
     },
     {
       id: 3,
-      heading: "Make your plan sustainable for your health.",
-      description: "Financial decisions affect more than money — they impact your stress and wellbeing.\nAccount for real-life pressure and uncertainty.\n\nNow your plan supports your health."
+      heading: "Test your plan under real pressure.",
+      description: "What happens when life gets expensive?\nHealth costs, income shocks, uncertainty.\nSee where your plan starts breaking.\n\nNow you see the risk clearly.\nNot just the best-case."
     },
     {
       id: 4,
-      heading: "You've seen the numbers. Now make them work.",
-      description: "You've tracked your readiness.\nYou've designed your life.\nYou've understood your stress.\n\nNow it's time to connect the dots.\n\nElevate your financial journey with a 1:1 expert session."
+      heading: "Now fix what actually matters.",
+      description: "You've seen the gaps across everything.\nYour money, your life, your risks.\nBut knowing isn't the same as acting.\n\nNow you need expert direction.\nThis is where plans become real."
     }
   ];
 
@@ -250,24 +215,23 @@ export default function ElevatePage() {
   const leftContent = [
     {
       image: financialReadinessImg,
-      title: "Financial Readiness Score",
-      
-      cta: "Analyze my readiness"
+      title: "Financial Readiness Analysis",
+      cta: "Analyze my financial gaps"
     },
     {
       image: lifestyleImg,
-      title: "Lifestyle Design Planner",
-      cta: "Plan my lifestyle"
+      title: "Lifestyle Cost Planner",
+      cta: "Calculate my lifestyle cost"
     },
     {
       image: healthStressImg,
-      title: "Peace of Mind Check",
-      cta: "Check my balance"
+      title: "Health Stress Test",
+      cta: "Test my plan under stress"
     },
     {
       image: expertGuidanceImg,
-      title: "Expert Guidance Session",
-      cta: "Elevate with an expert"
+      title: "1:1 Wealth Guidance",
+      cta: "Fix my plan with an expert"
     }
   ];
 
@@ -277,50 +241,42 @@ export default function ElevatePage() {
     <>
       <style>{scrollbarHideStyles}</style>
 
-      {/* Main container - now allows normal scrolling */}
-      <div className="min-h-screen w-full bg-background">
+      {/* Main container - allow natural scrolling */}
+      <div className="min-h-screen w-full bg-background flex flex-col">
+        
+        {/* Header */}
+        <CanonicalPageHeader 
+          title="How to elevate your financial readiness journey"
+        />
 
-        {/* SECTION 1: PREMIUM HERO */}
-        <section className="h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
-          {/* Radial glow effect */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px]"></div>
-          <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]"></div>
-          
-          <div className="text-center space-y-8 max-w-3xl px-4 relative z-10">
-            <h1 className="text-5xl sm:text-6xl font-semibold text-foreground leading-tight tracking-tight">
-              You're managing money.
-              <br />
-              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                But are you building your life?
-              </span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Tracking expenses is step one. <span className="text-foreground font-medium">Designing your future</span> is what actually matters.
-            </p>
-
-            <button
-              onClick={() => setBookingPageOpen(true)}
-              className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-4 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105 text-lg"
-            >
-              Start my clarity journey
-            </button>
-          </div>
-        </section>
-
-        {/* SECTION 2: STEPS - Fixed screen, controlled swipe */}
+        {/* SECTION 1: STEPS - Responsive carousel section */}
         <section
           ref={stepsRef}
-          className="h-screen w-full overflow-hidden"
+          className="w-full min-h-screen"
         >
-          <div className="h-full grid grid-cols-1 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
 
             {/* LEFT SIDE - PRODUCT CONTAINER */}
-            <div className="flex items-center justify-center px-4 sm:px-8 py-8 order-2 lg:order-1">
-              <div className="w-full max-w-lg bg-card border border-border shadow-md rounded-2xl p-8 sm:p-10 transition-all duration-500">
+            <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 sm:px-8 py-8 order-2 lg:order-1">
+              
+              {/* Step Content - Visible on mobile and tablet */}
+              <div className="w-full max-w-lg mb-2 lg:hidden text-left">
+                <div className="text-primary text-xs font-medium tracking-wide mb-0.5">
+                  STEP {activeStep}
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-foreground leading-tight mb-1">
+                  {steps[activeStep - 1].heading}
+                </h2>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {steps[activeStep - 1].description}
+                </p>
+              </div>
+
+              {/* Product Card */}
+              <div className="w-full max-w-lg bg-card border border-border shadow-md rounded-2xl p-4 sm:p-6 transition-all duration-500">
                 
                 {/* Image Area */}
-                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden mb-6 bg-muted">
+                <div className="w-full aspect-[16/10] rounded-xl overflow-hidden mb-4 bg-muted">
                   <img
                     src={current.image}
                     alt={current.title}
@@ -329,31 +285,40 @@ export default function ElevatePage() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                   {current.title}
                 </h3>
 
                 {/* CTA Button */}
                 <button
-                  onClick={() => activeStep === 4 ? setBookingPageOpen(true) : null}
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg transition-all transform hover:scale-[1.02]"
+                  onClick={() => {
+                    if (activeStep <= 3) {
+                      navigate('/dashboard/ffr');
+                    } else {
+                      navigate('/dashboard/book-wealth-manager');
+                    }
+                  }}
+                  className={`w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg transition-all transform hover:scale-[1.03] text-sm ${
+                    activeStep === 4 ? 'shadow-lg' : ''
+                  }`}
                 >
-                  {current.cta}
+                  {activeStep === 4 ? 'Book my 1:1 session' : current.cta}
                 </button>
               </div>
             </div>
 
-            {/* RIGHT SIDE - CLEAN STEPS (NO BOX) - Slides with controlled swipe */}
-            <div className="relative overflow-hidden h-full order-1 lg:order-2">
+            {/* RIGHT SIDE - CLEAN STEPS (NO BOX) - Cinematic smooth slide */}
+            <div className="hidden lg:block relative overflow-hidden order-2">
               <div
-                className="absolute inset-0 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+                className="flex transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
                 style={{
-                  transform: `translateY(-${(activeStep - 1) * 100}%)`
+                  transform: `translateX(-${(activeStep - 1) * 100}%)`,
+                  width: '400%'
                 }}
               >
                 {steps.map((step, index) => (
-                  <div key={index} className="h-screen flex items-center px-6 sm:px-12">
-                    <div className="max-w-xl space-y-4">
+                  <div className="w-full flex-shrink-0 flex items-center min-h-[70vh] px-6 sm:px-12 pt-6">
+                    <div className="max-w-xl space-y-3 transition-all duration-700 ease-out opacity-100">
                       <div className="text-primary text-sm font-medium tracking-wide">
                         STEP {index + 1}
                       </div>
@@ -371,27 +336,72 @@ export default function ElevatePage() {
           </div>
         </section>
 
-        {/* Step indicator for swipe */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
-          {[1, 2, 3, 4].map((step) => (
-            <div
-              key={step}
-              className={`h-1.5 rounded-full transition-all duration-300 ${step === activeStep
-                  ? 'w-8 bg-primary'
-                  : 'w-1.5 bg-muted-foreground/30'
-                }`}
-            />
-          ))}
-        </div>
+        {/* Why 1:1 Session Section - Natural flow */}
+        <section className="w-full bg-background px-6 sm:px-12 py-8 lg:py-10 mt-0">
+          
+          {/* Heading */}
+          <div className="max-w-6xl mx-auto mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+              Why a 1:1 session changes everything
+            </h2>
+            <p className="text-muted-foreground mt-3 text-base sm:text-lg max-w-2xl">
+              Calculators give you numbers. An expert helps you act on them.
+            </p>
+          </div>
 
-        <div className="fixed bottom-8 right-8 text-muted-foreground text-sm hidden sm:block z-20">
-          Swipe ↑ ↓
-        </div>
+          {/* Cards */}
+          <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Card 1 */}
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+              <Target className="h-6 w-6 text-primary mb-3" />
+              <h3 className="font-semibold text-foreground mb-1">Clarity on decisions</h3>
+              <p className="text-sm text-muted-foreground">
+                Know exactly what to do next — not just what your numbers say.
+              </p>
+            </div>
 
-        {/* Hero indicator */}
-        <div className="fixed bottom-8 left-8 text-muted-foreground/60 text-sm hidden sm:block z-20">
-          Hero • Steps
-        </div>
+            {/* Card 2 */}
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+              <TrendingUp className="h-6 w-6 text-primary mb-3" />
+              <h3 className="font-semibold text-foreground mb-1">Personalized strategy</h3>
+              <p className="text-sm text-muted-foreground">
+                Your plan, tailored to your income, goals, and real-life constraints.
+              </p>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+              <Shield className="h-6 w-6 text-primary mb-3" />
+              <h3 className="font-semibold text-foreground mb-1">Avoid costly mistakes</h3>
+              <p className="text-sm text-muted-foreground">
+                Catch blind spots early before they impact your financial future.
+              </p>
+            </div>
+
+            {/* Card 4 */}
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+              <Users className="h-6 w-6 text-primary mb-3" />
+              <h3 className="font-semibold text-foreground mb-1">Expert accountability</h3>
+              <p className="text-sm text-muted-foreground">
+                Stay consistent with a plan that actually works for you.
+              </p>
+            </div>
+
+          </div>
+
+          {/* CTA */}
+          <div className="max-w-6xl mx-auto mt-12 text-center">
+            <button
+              onClick={() => navigate('/dashboard/book-wealth-manager')}
+              className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-3 rounded-xl text-base shadow-md hover:shadow-lg transition transform hover:scale-[1.02]"
+            >
+              Book your 1:1 session
+            </button>
+          </div>
+
+        </section>
+
       </div>
 
       {/* BOOKING MODAL */}

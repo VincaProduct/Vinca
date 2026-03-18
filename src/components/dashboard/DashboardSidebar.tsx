@@ -42,11 +42,11 @@ const baseMenuItems = [
     url: '/dashboard/ffr',
     icon: TrendingUp,
   },
-  {
-    title: 'Book a Wealth Manager',
-    url: '/dashboard/book-wealth-manager',
-    icon: Calendar,
-  },
+  // {
+  //   title: 'Book a Wealth Manager',
+  //   url: '/dashboard/book-wealth-manager',
+  //   icon: Calendar,
+  // },
   {
     title: 'Refer a Friend',
     url: '/dashboard/refer',
@@ -57,11 +57,11 @@ const baseMenuItems = [
     url: '/dashboard/elevate',
     icon: Lightbulb,
   },
-  {
-    title: 'Pricing',
-    url: '/dashboard/investor-hub/pricing',
-    icon: DollarSign,
-  },
+  // {
+  //   title: 'Pricing',
+  //   url: '/dashboard/investor-hub/pricing',
+  //   icon: DollarSign,
+  // },
 ];
 
 const upgradeMenuItem = {
