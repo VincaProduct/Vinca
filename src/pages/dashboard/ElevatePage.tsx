@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import CanonicalPageHeader from '@/components/ui/CanonicalPageHeader';
 import { X, BarChart3, Calendar, Video, Clock, CheckCircle, Zap, Brain, TrendingUp, ArrowDown, ChevronLeft, ChevronRight, Users, Target, Award, Shield, Mail, Phone, MessageSquare } from 'lucide-react';
+import financialReadinessImg from '@/assets/fiinancial_readiness_elevate.jpeg';
+import lifestyleImg from '@/assets/lifestyle_elevate.jpeg';
+import healthStressImg from '@/assets/health_stress_elevate.jpeg';
+import expertGuidanceImg from '@/assets/elevate.jpeg';
 
 export default function ElevatePage() {
   const [bookingPageOpen, setBookingPageOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [formData, setFormData] = useState({
     selectedDate: '' as string | null,
     selectedTime: '' as string | null,
@@ -14,6 +20,16 @@ export default function ElevatePage() {
     phone: '',
     notes: '',
   });
+
+  // Ref for steps section
+  const stepsRef = useRef<HTMLDivElement>(null);
+
+  // Helper to detect if user is in steps section
+  const isInStepsSection = () => {
+    if (!stepsRef.current) return false;
+    const rect = stepsRef.current.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+  };
 
   const handleConfirmBooking = () => {
     if (formData.selectedDate && formData.selectedTime && formData.name && formData.email) {
@@ -33,6 +49,144 @@ export default function ElevatePage() {
   const handleCloseSuccess = () => {
     setSuccessModalOpen(false);
   };
+
+  // WHEEL HANDLER - Premium sequential feel
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (bookingPageOpen) return;
+
+      const inSteps = isInStepsSection();
+      if (!inSteps) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 🚨 BLOCK while animation running
+      if (isTransitioning) return;
+
+      const direction = e.deltaY > 0 ? 'down' : 'up';
+
+      if (direction === 'down') {
+        if (activeStep === 4) return; // Already at last step
+        setIsTransitioning(true);
+        setActiveStep(prev => Math.min(prev + 1, 4));
+      } else {
+        if (activeStep === 1) return; // Already at first step
+        setIsTransitioning(true);
+        setActiveStep(prev => Math.max(prev - 1, 1));
+      }
+
+      // 🧠 KEY: Longer pause after movement (animation + settle time)
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 1100); // 900ms animation + 200ms pause
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [bookingPageOpen, activeStep, isTransitioning]);
+
+  // TOUCH HANDLER - Mobile swipe with transition lock
+  useEffect(() => {
+    let startY = 0;
+    let isTouching = false;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (bookingPageOpen) return;
+
+      const inSteps = isInStepsSection();
+      if (!inSteps) return;
+
+      startY = e.touches[0].clientY;
+      isTouching = true;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (bookingPageOpen || !isTouching) return;
+
+      const inSteps = isInStepsSection();
+      if (!inSteps) return;
+
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (bookingPageOpen || !isTouching) return;
+
+      const inSteps = isInStepsSection();
+      if (!inSteps) return;
+
+      // 🚨 BLOCK while animation running
+      if (isTransitioning) return;
+
+      const endY = e.changedTouches[0].clientY;
+      const diff = startY - endY;
+
+      isTouching = false;
+
+      if (Math.abs(diff) < 80) return;
+
+      if (diff > 0) {
+        // swipe up → next step
+        if (activeStep === 4) return;
+        setIsTransitioning(true);
+        setActiveStep(prev => Math.min(prev + 1, 4));
+      } else {
+        // swipe down → previous step
+        if (activeStep === 1) return;
+        setIsTransitioning(true);
+        setActiveStep(prev => Math.max(prev - 1, 1));
+      }
+
+      // 🧠 Same pause after touch movement
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 1100);
+    };
+
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [bookingPageOpen, activeStep, isTransitioning]);
+
+  // KEYBOARD HANDLER - Arrow keys with transition lock
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (bookingPageOpen) return;
+
+      const inSteps = isInStepsSection();
+      if (!inSteps) return;
+
+      // 🚨 BLOCK while animation running
+      if (isTransitioning) return;
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (activeStep === 4) return;
+        setIsTransitioning(true);
+        setActiveStep(prev => Math.min(prev + 1, 4));
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (activeStep === 1) return;
+        setIsTransitioning(true);
+        setActiveStep(prev => Math.max(prev - 1, 1));
+      }
+
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 1100);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [bookingPageOpen, activeStep, isTransitioning]);
 
   const scrollbarHideStyles = `
     .scrollbar-hide {
@@ -72,260 +226,179 @@ export default function ElevatePage() {
   const steps = [
     {
       id: 1,
-      icon: <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />,
-      heading: "Numbers, Sorted",
-      description: "You understand your income, expenses, goals, and timelines with clarity."
+      heading: "Know your numbers. For real.",
+      description: "Not guesses. Not rough estimates.\nSee exactly where you stand — income, expenses, gaps.\n\nThis is your financial baseline."
     },
     {
       id: 2,
-      icon: <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />,
-      heading: "Discipline, Built",
-      description: "You've stayed consistent and committed through structured sprints."
+      heading: "Design the life you actually want.",
+      description: "Money isn't the goal — your life is.\nMap your future lifestyle and what it truly costs.\n\nNow your numbers have direction."
     },
     {
       id: 3,
-      icon: <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />,
-      heading: "Financial Maturity",
-      description: "You understand the 'why' behind your decisions, not just the mechanics."
+      heading: "Make your plan sustainable for your health.",
+      description: "Financial decisions affect more than money — they impact your stress and wellbeing.\nAccount for real-life pressure and uncertainty.\n\nNow your plan supports your health."
     },
     {
-      id: 5,
-      icon: <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />,
-      heading: "Ready to Elevate",
-      description: "Expert guidance adds validation, confidence, and clarity on next steps."
+      id: 4,
+      heading: "You've seen the numbers. Now make them work.",
+      description: "You've tracked your readiness.\nYou've designed your life.\nYou've understood your stress.\n\nNow it's time to connect the dots.\n\nElevate your financial journey with a 1:1 expert session."
     }
   ];
 
-  const whatToExpect = [
+  // Get left side content based on active step
+  const leftContent = [
     {
-      id: 1,
-      icon: <Calendar className="h-5 w-5 text-emerald-600" />,
-      title: "Flexible Scheduling",
-      description: "Choose a time that works best for you"
+      image: financialReadinessImg,
+      title: "Financial Readiness Score",
+      
+      cta: "Analyze my readiness"
     },
     {
-      id: 2,
-      icon: <Video className="h-5 w-5 text-emerald-600" />,
-      title: "Virtual Meeting",
-      description: "Connect via Google Meet from anywhere"
+      image: lifestyleImg,
+      title: "Lifestyle Design Planner",
+      cta: "Plan my lifestyle"
     },
     {
-      id: 3,
-      icon: <Clock className="h-5 w-5 text-emerald-600" />,
-      title: "60-Minute Session",
-      description: "In-depth consultation with our experts"
+      image: healthStressImg,
+      title: "Peace of Mind Check",
+      cta: "Check my balance"
+    },
+    {
+      image: expertGuidanceImg,
+      title: "Expert Guidance Session",
+      cta: "Elevate with an expert"
     }
   ];
 
-  const premiumBenefits = [
-    {
-      icon: <Target className="h-5 w-5 text-emerald-600" />,
-      text: "Personalized wealth strategy"
-    },
-    {
-      icon: <TrendingUp className="h-5 w-5 text-emerald-600" />,
-      text: "Portfolio optimization review"
-    },
-    {
-      icon: <Shield className="h-5 w-5 text-emerald-600" />,
-      text: "Tax-efficient planning"
-    },
-    {
-      icon: <Award className="h-5 w-5 text-emerald-600" />,
-      text: "Retirement roadmap analysis"
-    },
-    {
-      icon: <Users className="h-5 w-5 text-emerald-600" />,
-      text: "Priority support access"
-    }
-  ];
-
-  const timeSlots = [
-    '09:00', '09:30', '10:00', '10:30', '11:00',
-    '14:00', '14:30', '15:00', '15:30', '16:00',
-    '16:30', '17:00'
-  ];
-
-  // Generate calendar days
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
-
-    return { daysInMonth, startingDay };
-  };
-
-  const { daysInMonth, startingDay } = getDaysInMonth(selectedMonth);
-  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  const handlePrevMonth = () => {
-    setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1));
-  };
-
-  const handleNextMonth = () => {
-    setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1));
-  };
-
-  // Check if a date is today
-  const isToday = (day: number) => {
-    const today = new Date();
-    return day === today.getDate() &&
-      selectedMonth.getMonth() === today.getMonth() &&
-      selectedMonth.getFullYear() === today.getFullYear();
-  };
+  const current = leftContent[activeStep - 1];
 
   return (
     <>
       <style>{scrollbarHideStyles}</style>
-      <CanonicalPageHeader
-        title="You've already done the hard work"
-      />
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div className="w-full max-w-6xl mx-auto">
 
-          {/* Horizontal Progress Flow - Mobile Optimized */}
-          <div className="mb-8 sm:mb-10">
-            <div className="relative overflow-hidden">
-              <div className="overflow-x-auto scrollbar-hide pb-2">
-                <div className="flex gap-3 sm:gap-6 py-4 sm:py-8 px-1 min-w-min">
-                  <svg
-                    className="absolute top-0 left-0 w-full h-12 pointer-events-none hidden sm:block"
-                    style={{ minWidth: `${steps.length * 300}px`, height: '48px' }}
-                    preserveAspectRatio="none"
-                  >
-                    <line
-                      x1="30"
-                      y1="24"
-                      x2={steps.length * 300 - 30}
-                      y2="24"
-                      stroke="#e5e7eb"
-                      strokeWidth="2"
-                      strokeDasharray="4 4"
-                    />
-                  </svg>
+      {/* Main container - now allows normal scrolling */}
+      <div className="min-h-screen w-full bg-background">
 
-                  {steps.map((step, index) => (
-                    <div key={step.id} className="shrink-0 w-64 sm:w-72">
-                      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-6 relative hover:shadow-md transition-all duration-300 hover:scale-[1.02] sm:hover:scale-105">
-                        <div className={`absolute -top-4 sm:-top-6 left-4 sm:left-6 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white border-4 ${index === steps.length - 1 ? 'border-emerald-200' : 'border-emerald-200'
-                          } flex items-center justify-center z-10`}>
-                          {index === steps.length - 1 ? (
-                            <ArrowDown className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-600" />
-                          ) : (
-                            <CheckCircle className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-600" />
-                          )}
-                        </div>
+        {/* SECTION 1: PREMIUM HERO */}
+        <section className="h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
+          {/* Radial glow effect */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px]"></div>
+          <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px]"></div>
+          
+          <div className="text-center space-y-8 max-w-3xl px-4 relative z-10">
+            <h1 className="text-5xl sm:text-6xl font-semibold text-foreground leading-tight tracking-tight">
+              You're managing money.
+              <br />
+              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                But are you building your life?
+              </span>
+            </h1>
 
-                        <div className="mt-2 sm:mt-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            {step.icon}
-                            <h3 className="font-semibold text-sm sm:text-base text-slate-900">
-                              {step.heading}
-                            </h3>
-                          </div>
-                          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                            {step.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Tracking expenses is step one. <span className="text-foreground font-medium">Designing your future</span> is what actually matters.
+            </p>
+
+            <button
+              onClick={() => setBookingPageOpen(true)}
+              className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-4 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:scale-105 text-lg"
+            >
+              Start my clarity journey
+            </button>
+          </div>
+        </section>
+
+        {/* SECTION 2: STEPS - Fixed screen, controlled swipe */}
+        <section
+          ref={stepsRef}
+          className="h-screen w-full overflow-hidden"
+        >
+          <div className="h-full grid grid-cols-1 lg:grid-cols-2">
+
+            {/* LEFT SIDE - PRODUCT CONTAINER */}
+            <div className="flex items-center justify-center px-4 sm:px-8 py-8 order-2 lg:order-1">
+              <div className="w-full max-w-lg bg-card border border-border shadow-md rounded-2xl p-8 sm:p-10 transition-all duration-500">
+                
+                {/* Image Area */}
+                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden mb-6 bg-muted">
+                  <img
+                    src={current.image}
+                    alt={current.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+
+                {/* Title */}
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+                  {current.title}
+                </h3>
+
+                {/* CTA Button */}
+                <button
+                  onClick={() => activeStep === 4 ? setBookingPageOpen(true) : null}
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg transition-all transform hover:scale-[1.02]"
+                >
+                  {current.cta}
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* CTA Card - Mobile Optimized */}
-          <div className="bg-gradient-to-br from-emerald-50 via-white to-green-50 rounded-xl sm:rounded-2xl border border-emerald-200 p-6 sm:p-8 md:p-10 relative overflow-hidden mb-8 sm:mb-12">
-            <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-emerald-200 rounded-full filter blur-3xl opacity-20 -mr-32 -mt-32"></div>
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6">
-              <div>
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 mb-2">
-                  Ready to elevate further?
-                </h2>
-                <p className="text-sm sm:text-base text-slate-700 max-w-2xl">
-                  Discuss your journey with a wealth manager, validate your plan, and gain confidence on next steps.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setBookingPageOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg transition-all shadow-md hover:shadow-lg w-full md:w-auto whitespace-nowrap transform hover:scale-105 text-sm sm:text-base"
+            {/* RIGHT SIDE - CLEAN STEPS (NO BOX) - Slides with controlled swipe */}
+            <div className="relative overflow-hidden h-full order-1 lg:order-2">
+              <div
+                className="absolute inset-0 transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{
+                  transform: `translateY(-${(activeStep - 1) * 100}%)`
+                }}
               >
-                Book a Session
-              </button>
-            </div>
-          </div>
-
-          {/* What to Expect & Premium Benefits - Mobile Optimized */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 md:p-10">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mb-6 sm:mb-8 flex items-center gap-2">
-                <span className="bg-emerald-100 p-1.5 sm:p-2 rounded-lg">
-                  <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-                </span>
-                What to Expect
-              </h2>
-
-              <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                {whatToExpect.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white rounded-lg sm:rounded-xl border border-slate-200 shadow-sm p-4 sm:p-6 hover:shadow-md transition-all duration-300 hover:border-emerald-200 group"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
-                      <div className="flex-shrink-0 bg-emerald-50 p-2 rounded-lg group-hover:bg-emerald-100 transition-colors w-fit">
-                        {item.icon}
+                {steps.map((step, index) => (
+                  <div key={index} className="h-screen flex items-center px-6 sm:px-12">
+                    <div className="max-w-xl space-y-4">
+                      <div className="text-primary text-sm font-medium tracking-wide">
+                        STEP {index + 1}
                       </div>
-                      <div>
-                        <h3 className="text-sm sm:text-base font-semibold text-slate-900 mb-1">
-                          {item.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                          {item.description}
-                        </p>
-                      </div>
+                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                        {step.heading}
+                      </h2>
+                      <p className="text-base sm:text-lg text-muted-foreground leading-relaxed transition-all duration-500 delay-150 whitespace-pre-line">
+                        {step.description}
+                      </p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div className="bg-emerald-50 rounded-xl sm:rounded-2xl border border-emerald-200 shadow-sm p-6 sm:p-8 md:p-10">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mb-6 sm:mb-8 flex items-center gap-2">
-                <span className="bg-emerald-100 p-1.5 sm:p-2 rounded-lg">
-                  <Award className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-                </span>
-                Premium Benefits
-              </h2>
-
-              <div className="space-y-2 sm:space-y-3">
-                {premiumBenefits.map((benefit, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-white rounded-lg sm:rounded-xl border border-emerald-100 p-3 sm:p-4 md:p-5 flex items-start gap-2 sm:gap-3 hover:shadow-md transition-all duration-300 hover:border-emerald-200 transform hover:scale-[1.01] sm:hover:scale-[1.02]"
-                  >
-                    <div className="bg-emerald-50 p-1.5 rounded-lg flex-shrink-0">
-                      {benefit.icon}
-                    </div>
-                    <p className="text-sm sm:text-base text-slate-700">{benefit.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
+        </section>
+
+        {/* Step indicator for swipe */}
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+          {[1, 2, 3, 4].map((step) => (
+            <div
+              key={step}
+              className={`h-1.5 rounded-full transition-all duration-300 ${step === activeStep
+                  ? 'w-8 bg-primary'
+                  : 'w-1.5 bg-muted-foreground/30'
+                }`}
+            />
+          ))}
+        </div>
+
+        <div className="fixed bottom-8 right-8 text-muted-foreground text-sm hidden sm:block z-20">
+          Swipe ↑ ↓
+        </div>
+
+        {/* Hero indicator */}
+        <div className="fixed bottom-8 left-8 text-muted-foreground/60 text-sm hidden sm:block z-20">
+          Hero • Steps
         </div>
       </div>
 
-      {/* Enhanced Booking Page - Mobile Optimized */}
+      {/* BOOKING MODAL */}
       {bookingPageOpen && (
         <div className="fixed inset-0 z-50 overflow-auto bg-slate-50">
           <div className="min-h-screen px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-8">
             <div className="max-w-7xl mx-auto">
-              {/* Canonical Header for Booking Modal */}
               <CanonicalPageHeader
                 title="Book Your Session"
                 actions={
@@ -347,7 +420,7 @@ export default function ElevatePage() {
                   </button>
                 }
               />
-              {/* Progress Steps - Mobile Optimized */}
+              {/* Progress Steps */}
               <div className="flex items-center justify-between mb-4 sm:mb-8 bg-white rounded-xl sm:rounded-2xl shadow-sm p-3 sm:p-6">
                 {['Details', 'Schedule', 'Confirm'].map((step, idx) => (
                   <div key={step} className="flex items-center flex-1 last:flex-none">
@@ -364,11 +437,11 @@ export default function ElevatePage() {
                 ))}
               </div>
 
-              {/* Main Content Grid - Mobile Optimized */}
+              {/* Main Content Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
                 {/* LEFT: Booking Form */}
                 <div className="lg:col-span-2 space-y-4 sm:space-y-8">
-                  {/* Personal Information - Mobile Optimized */}
+                  {/* Personal Information */}
                   <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8">
                     <h2 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2">
                       <span className="bg-emerald-100 p-1.5 sm:p-2 rounded-lg">
@@ -427,7 +500,7 @@ export default function ElevatePage() {
                     </div>
                   </div>
 
-                  {/* Date Selection - Mobile Optimized with Improved UI */}
+                  {/* Date Selection */}
                   <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8">
                     <h2 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2">
                       <span className="bg-emerald-100 p-1.5 sm:p-2 rounded-lg">
@@ -439,7 +512,7 @@ export default function ElevatePage() {
                     {/* Month Navigation */}
                     <div className="flex items-center justify-between mb-4 sm:mb-6">
                       <button
-                        onClick={handlePrevMonth}
+                        onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1))}
                         className="p-1.5 sm:p-2 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600" />
@@ -448,31 +521,30 @@ export default function ElevatePage() {
                         {selectedMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
                       </h3>
                       <button
-                        onClick={handleNextMonth}
+                        onClick={() => setSelectedMonth(new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 1))}
                         className="p-1.5 sm:p-2 hover:bg-slate-100 rounded-lg transition-colors"
                       >
                         <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600" />
                       </button>
                     </div>
 
-                    {/* Calendar Grid - Mobile Optimized */}
+                    {/* Calendar Grid */}
                     <div className="date-picker-grid">
-                      {weekdays.map(day => (
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                         <div key={day} className="text-center text-xs sm:text-sm font-medium text-slate-600 py-1 sm:py-2">
                           {day}
                         </div>
                       ))}
 
-                      {Array.from({ length: startingDay }).map((_, index) => (
+                      {Array.from({ length: new Date(selectedMonth.getFullYear(), selectedMonth.getMonth(), 1).getDay() }).map((_, index) => (
                         <div key={`empty-${index}`} className="aspect-square p-1 sm:p-2"></div>
                       ))}
 
-                      {Array.from({ length: daysInMonth }).map((_, index) => {
+                      {Array.from({ length: new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + 1, 0).getDate() }).map((_, index) => {
                         const day = index + 1;
                         const dateStr = `${selectedMonth.getFullYear()}-${String(selectedMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         const isSelected = formData.selectedDate === dateStr;
-                        const isAvailable = day > 2 && day < 28; // Mock availability
-                        const today = isToday(day);
+                        const isAvailable = day > 2 && day < 28;
 
                         return (
                           <button
@@ -480,11 +552,11 @@ export default function ElevatePage() {
                             onClick={() => isAvailable && setFormData({ ...formData, selectedDate: dateStr })}
                             disabled={!isAvailable}
                             className={`aspect-square p-1 sm:p-2 rounded-lg transition-all text-xs sm:text-sm ${isSelected
-                              ? 'bg-emerald-600 text-white font-medium'
-                              : isAvailable
-                                ? 'hover:bg-emerald-50 hover:border-emerald-200 border border-transparent'
-                                : 'text-slate-300 cursor-not-allowed'
-                              } ${today && isAvailable ? 'border border-emerald-300' : ''}`}
+                                ? 'bg-emerald-600 text-white font-medium'
+                                : isAvailable
+                                  ? 'hover:bg-emerald-50 hover:border-emerald-200 border border-transparent'
+                                  : 'text-slate-300 cursor-not-allowed'
+                              }`}
                           >
                             {day}
                           </button>
@@ -493,9 +565,9 @@ export default function ElevatePage() {
                     </div>
                   </div>
 
-                  {/* Time Selection - Mobile Optimized */}
+                  {/* Time Selection */}
                   {formData.selectedDate && (
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8 animate-fadeIn">
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8">
                       <h2 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2">
                         <span className="bg-emerald-100 p-1.5 sm:p-2 rounded-lg">
                           <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600" />
@@ -504,7 +576,7 @@ export default function ElevatePage() {
                       </h2>
 
                       <div className="time-slot-grid">
-                        {timeSlots.map((slot) => {
+                        {['09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'].map((slot) => {
                           const hour = parseInt(slot.split(':')[0]);
                           const min = slot.split(':')[1];
                           const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -516,8 +588,8 @@ export default function ElevatePage() {
                               key={slot}
                               onClick={() => setFormData({ ...formData, selectedTime: slot })}
                               className={`p-2 sm:p-3 rounded-lg border transition-all text-xs sm:text-sm ${isSelected
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'border-slate-200 hover:border-emerald-200 hover:bg-emerald-50'
+                                  ? 'bg-emerald-600 text-white border-emerald-600'
+                                  : 'border-slate-200 hover:border-emerald-200 hover:bg-emerald-50'
                                 }`}
                             >
                               {displayHour}:{min} {ampm}
@@ -528,7 +600,7 @@ export default function ElevatePage() {
                     </div>
                   )}
 
-                  {/* Additional Notes - Mobile Optimized */}
+                  {/* Additional Notes */}
                   <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8">
                     <h2 className="text-base sm:text-lg font-semibold text-slate-900 mb-4 sm:mb-6 flex items-center gap-2">
                       <span className="bg-emerald-100 p-1.5 sm:p-2 rounded-lg">
@@ -547,29 +619,29 @@ export default function ElevatePage() {
                   </div>
                 </div>
 
-                {/* RIGHT: Order Summary - Mobile Optimized (No Gradient, Just Emerald) */}
+                {/* RIGHT: Order Summary */}
                 <div className="lg:col-span-1">
                   <div className="lg:sticky lg:top-8 space-y-4 sm:space-y-6">
-                    <div className="bg-emerald-600 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 text-white">
+                    <div className="bg-primary rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 text-white">
                       <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
                         <Award className="h-4 w-4 sm:h-5 sm:w-5" />
                         Session Summary
                       </h2>
 
                       <div className="space-y-3 sm:space-y-4">
-                        <div className="bg-emerald-500 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                        <div className="bg-primary/80 rounded-lg sm:rounded-xl p-3 sm:p-4">
                           <p className="text-xs opacity-90 mb-1">Session Type</p>
                           <p className="text-sm sm:text-base font-semibold">Financial Readiness Guidance</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                          <div className="bg-emerald-500 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                          <div className="bg-primary/80 rounded-lg sm:rounded-xl p-3 sm:p-4">
                             <Clock className="h-3 w-3 sm:h-4 sm:w-4 mb-1 opacity-90" />
                             <p className="text-xs opacity-90">Duration</p>
                             <p className="text-sm sm:text-base font-semibold">30-45 min</p>
                           </div>
 
-                          <div className="bg-emerald-500 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                          <div className="bg-primary/80 rounded-lg sm:rounded-xl p-3 sm:p-4">
                             <Video className="h-3 w-3 sm:h-4 sm:w-4 mb-1 opacity-90" />
                             <p className="text-xs opacity-90">Platform</p>
                             <p className="text-sm sm:text-base font-semibold">Google Meet</p>
@@ -577,7 +649,7 @@ export default function ElevatePage() {
                         </div>
 
                         {formData.selectedDate && (
-                          <div className="bg-emerald-500 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                          <div className="bg-primary/80 rounded-lg sm:rounded-xl p-3 sm:p-4">
                             <p className="text-xs opacity-90 mb-1">Selected Date</p>
                             <p className="text-sm sm:text-base font-semibold">
                               {new Date(formData.selectedDate).toLocaleDateString('default', {
@@ -590,7 +662,7 @@ export default function ElevatePage() {
                         )}
 
                         {formData.selectedTime && (
-                          <div className="bg-emerald-500 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                          <div className="bg-primary/80 rounded-lg sm:rounded-xl p-3 sm:p-4">
                             <p className="text-xs opacity-90 mb-1">Selected Time</p>
                             <p className="text-sm sm:text-base font-semibold">
                               {(() => {
@@ -606,13 +678,13 @@ export default function ElevatePage() {
                       </div>
                     </div>
 
-                    <button
-                      onClick={handleConfirmBooking}
-                      disabled={!formData.selectedDate || !formData.selectedTime || !formData.name || !formData.email}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all shadow-md hover:shadow-lg text-base sm:text-lg transform hover:scale-[1.02]"
-                    >
-                      Confirm & Book
-                    </button>
+                  <button
+                    onClick={handleConfirmBooking}
+                    disabled={!formData.selectedDate || !formData.selectedTime || !formData.name || !formData.email}
+                    className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all shadow-md hover:shadow-lg text-base sm:text-lg transform hover:scale-[1.02]"
+                  >
+                    Confirm & Book
+                  </button>
 
                     <p className="text-xs text-slate-500 text-center px-2">
                       By booking, you agree to our terms. You'll receive a Google Meet link after confirmation.
@@ -625,7 +697,7 @@ export default function ElevatePage() {
         </div>
       )}
 
-      {/* Enhanced Success Modal - Mobile Optimized */}
+      {/* Enhanced Success Modal */}
       {successModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center transform animate-scaleIn mx-4">
@@ -663,7 +735,7 @@ export default function ElevatePage() {
 
             <button
               onClick={handleCloseSuccess}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl transition-all shadow-md hover:shadow-lg"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl transition-all shadow-md hover:shadow-lg"
             >
               Done
             </button>
@@ -671,7 +743,7 @@ export default function ElevatePage() {
         </div>
       )}
 
-      {/* Add keyframe animations */}
+      {/* Animations */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
