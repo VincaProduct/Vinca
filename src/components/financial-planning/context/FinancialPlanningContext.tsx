@@ -379,6 +379,47 @@ export function FinancialPlanningProvider({ children }: { children: React.ReactN
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
+      // Check sessionStorage for calculator state passed through the login flow
+      const pendingStateRaw = sessionStorage.getItem('ffr_pending_state');
+      if (pendingStateRaw) {
+        sessionStorage.removeItem('ffr_pending_state');
+        const { inputs: pendingInputs } = JSON.parse(pendingStateRaw);
+        const inputs = { ...defaultInputs, ...pendingInputs } as CalculatorInputs;
+        const results = calculateFinancialFreedom(inputs);
+        const projections = generateDetailedProjections(inputs);
+
+        // Persist to localStorage so subsequent loads pick it up
+        localStorage.setItem('financial_calculator_inputs', JSON.stringify(inputs));
+        localStorage.setItem('financial_calculator_results', JSON.stringify(results));
+
+        // Persist to DB if user is already known
+        if (user) {
+          try {
+            await supabase.from('user_calculations').upsert({
+              user_id: user.id,
+              calculation_type: 'financial_freedom',
+              inputs: inputs as unknown as Record<string, unknown>,
+              results: results as unknown as Record<string, unknown>,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id,calculation_type' });
+          } catch (error) {
+            console.error('Error saving pending state to database:', error);
+          }
+        }
+
+        setState(prev => ({
+          ...prev,
+          inputs,
+          results,
+          projections,
+          hasCalculated: true,
+          isLoading: false,
+          lifestyleData: calculateLifestyleData(inputs, projections, prev.lifestyleShift),
+          healthStressData: calculateHealthStressData(inputs, projections, prev.healthCategory),
+        }));
+        return;
+      }
+
       // Try to load from DB first if user is logged in
       if (user) {
         const { data, error } = await supabase

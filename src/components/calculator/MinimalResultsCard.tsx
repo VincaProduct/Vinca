@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/tooltip";
 import { CEILING, FV } from "@/pages/FinancialFreedomCalculator";
 import { useAuth } from "@/contexts/AuthContext";
+import { calculateFFRScore, FFR_SCORE_STATUS } from "@/utils/ffrScore";
 
 interface MinimalResultsCardProps {
   inputs: CalculatorInputs;
@@ -110,32 +111,12 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
   const navigate = useNavigate();
   console.log(user);
 
-  const publicScore = useMemo(() => {
-    const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
-    const retirementProjection = projections.find((p: any) => p.age === retirementAge);
-    const expectedCorpus = retirementProjection?.expectedCorpus || 0;
-    const corpusProgress = results.requiredCorpus > 0
-      ? Math.min((expectedCorpus / results.requiredCorpus) * 30, 30)
-      : 0;
-    const timeBuffer = results.freedomAge <= retirementAge
-      ? 20
-      : (retirementAge / results.freedomAge) * 20;
-    const sipRate = inputs.monthlyIncome > 0 ? inputs.sipAmount / inputs.monthlyIncome : 0;
-    const savingsRateScore = sipRate >= 0.20 ? 20 : sipRate >= 0.10 ? 10 : 5;
-    const sustainabilityScore = results.corpusDepletesBeforeLifeExpectancy && results.corpusDepletionAge
-      ? (inputs.lifeExpectancy - results.corpusDepletionAge <= 10 ? 5 : 0)
-      : 10;
-    return Math.max(0, Math.min(100, Math.round(corpusProgress + timeBuffer + savingsRateScore + sustainabilityScore)));
-  }, [inputs, results, projections]);
-
-  const publicStatus = publicScore <= 30 ? 'Needs Attention 🔴'
-    : publicScore <= 60 ? 'In Progress 🟡'
-    : publicScore <= 80 ? 'On Track 🟢'
-    : 'Excellent 🌟';
-  const publicStatusColor = publicScore <= 30 ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-    : publicScore <= 60 ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
-    : publicScore <= 80 ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-    : 'bg-primary/10 text-primary';
+  // checklist=null — public calculator has no checklist data; essentials coverage scores 0
+  const publicScore = useMemo(
+    () => calculateFFRScore(inputs, results, projections, null),
+    [inputs, results, projections]
+  );
+  const { status: publicStatus, statusColor: publicStatusColor } = FFR_SCORE_STATUS(publicScore);
   const isNegativeCorpus = projections.some(
     (projection) => projection.expectedCorpus < 0
   );
@@ -603,6 +584,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
             <div className="flex flex-col items-center gap-2">
               <Button
                 onClick={() => {
+                  sessionStorage.setItem('ffr_pending_state', JSON.stringify({ inputs, score: publicScore }));
                   localStorage.setItem('redirect_after_login', '/dashboard/ffr');
                   window.location.href = '/auth';
                 }}
