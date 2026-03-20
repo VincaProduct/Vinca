@@ -313,63 +313,43 @@ const FinancialFreedomCalculator = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Prominent Heading */}
-      <div className="bg-gradient-to-br from-primary/10 via-background to-accent/10 border-b">
-        <div className="container mx-auto px-4 lg:px-8 py-8 pt-24">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+      {/* Header */}
+      <div style={{ background: '#FAFAF8', borderBottom: '1px solid #F3F4F6', paddingTop: 96 }}>
+        <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 16px 24px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#111827', marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Financial Freedom Calculator
           </h1>
-          <p className="text-base md:text-lg text-muted-foreground text-center max-w-3xl mx-auto">
-            Calculate how ready are you to achieve financial independence
+          <p style={{ fontSize: 16, color: '#6B7280', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Find out in 2 minutes — free
           </p>
         </div>
       </div>
 
-      {/* Main Calculator Section */}
-      <div className="container mx-auto px-4 lg:px-8 py-8">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center space-y-3">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-                <p className="text-muted-foreground">Loading your financial data...</p>
-              </div>
-            </div>
-          )}
+      {/* Main */}
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 16px 80px' }}>
+        {isLoading && (
+          <div style={{ textAlign: 'center', padding: '48px 0' }}>
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p style={{ color: '#9CA3AF', fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Loading your data...</p>
+          </div>
+        )}
 
-          {/* Calculator Form - Only show when no results or when editing */}
-          {!isLoading && (!results || showForm) && (
-            <div className="animate-fade-in">
-              <TimelineCalculatorForm
-                inputs={inputs}
-                onInputChange={handleInputChange}
-                onCalculate={handleCalculate}
-              />
-            </div>
-          )}
+        {!isLoading && (!results || showForm) && (
+          <TimelineCalculatorForm
+            inputs={inputs}
+            onInputChange={handleInputChange}
+            onCalculate={handleCalculate}
+          />
+        )}
 
-          {/* Results Section with Edit Button */}
-          {!isLoading && results && !showForm && (
-            <div className="animate-fade-in space-y-4">
-              <div className="flex justify-start">
-                <Button
-                  onClick={handleEditDetails}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Edit className="w-4 h-4" />
-                  Edit Details
-                </Button>
-              </div>
-              <MinimalResultsCard
-                inputs={inputs}
-                results={results}
-                projections={projections}
-              />
-            </div>
-          )}
-        </div>
+        {!isLoading && results && !showForm && (
+          <MinimalResultsCard
+            inputs={inputs}
+            results={results}
+            projections={projections}
+            onEditInputs={handleEditDetails}
+          />
+        )}
       </div>
 
       <Footer />

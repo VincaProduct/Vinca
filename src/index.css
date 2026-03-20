@@ -133,6 +133,8 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    background-color: #FAFAF8;
   }
 
   /* Set dark mode as default for dashboard */
