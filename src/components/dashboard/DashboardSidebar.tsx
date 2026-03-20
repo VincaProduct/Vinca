@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Home,
+  Compass,
   User,
   UserPlus,
   TrendingUp,
@@ -42,6 +43,11 @@ const baseMenuItems = [
     url: '/dashboard/ffr',
     icon: TrendingUp,
   },
+   {
+    title: 'Vinca Vector',
+    url: '/dashboard/anchor',
+    icon: Compass,
+  },
   // {
   //   title: 'Book a Wealth Manager',
   //   url: '/dashboard/book-wealth-manager',
@@ -52,11 +58,7 @@ const baseMenuItems = [
     url: '/dashboard/refer',
     icon: UserPlus,
   },
-  {
-    title: 'Elevate',
-    url: '/dashboard/elevate',
-    icon: Lightbulb,
-  },
+ 
   // {
   //   title: 'Pricing',
   //   url: '/dashboard/investor-hub/pricing',

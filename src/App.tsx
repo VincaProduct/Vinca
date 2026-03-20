@@ -16,6 +16,7 @@ import FinancialFreedomCalculator from "./pages/FinancialFreedomCalculator";
 import AuthPage from "./components/auth/AuthPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import AnchorPage from "./pages/dashboard/AnchorPage";
 
 import InvestmentOpportunities from "./pages/dashboard/InvestmentOpportunities";
 import ReferFriend from "./pages/dashboard/ReferFriend";
@@ -105,6 +106,7 @@ const App = () => (
               
               {/* Main Navigation Routes */}
               <Route path="elevate" element={<ElevatePage />} />
+              <Route path="anchor" element={<AnchorPage />} />
               {/* COMMENTED OUT - Removed modules */}
               {/* <Route path="footprints" element={<FootprintsPage />} /> */}
               {/* <Route path="footprints/post" element={<FootprintsPage />} /> */}
