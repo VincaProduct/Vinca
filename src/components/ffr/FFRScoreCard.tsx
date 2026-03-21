@@ -25,6 +25,18 @@ export function FFRScoreCard({ inputs, results, projections, checklist }: FFRSco
 
   const { status, statusColor } = FFR_SCORE_STATUS(score);
 
+  const summarySentence = useMemo(() => {
+    if (score <= 30) {
+      const depletionAge = results.corpusDepletionAge;
+      const yearsEarly = depletionAge ? inputs.lifeExpectancy - depletionAge : null;
+      return yearsEarly != null && yearsEarly > 0
+        ? `Your corpus runs out ${yearsEarly} years before your life expectancy. Action needed.`
+        : 'Your plan needs significant improvement. Action needed.';
+    }
+    if (score <= 60) return 'Your plan is close but has gaps. Small changes make a big difference.';
+    return 'Your current plan reaches your retirement goal. Keep it up.';
+  }, [score, results, inputs]);
+
   return (
     <Card className="border-primary/30 shadow-md">
       <CardContent className="pt-6 pb-6">
@@ -45,6 +57,7 @@ export function FFRScoreCard({ inputs, results, projections, checklist }: FFRSco
           <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold ${statusColor}`}>
             {status}
           </span>
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">{summarySentence}</p>
           <p className="text-xs text-muted-foreground">Last updated: {today}</p>
         </div>
       </CardContent>
