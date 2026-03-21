@@ -32,7 +32,7 @@ import CTAPlacementPage from "./pages/dashboard/CTAPlacementPage";
 import CTAAnalyticsPage from "./pages/dashboard/CTAAnalyticsPage";
 import BookingsDashboard from "./pages/dashboard/BookingsDashboard";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
-// import ElevatePage from "./pages/dashboard/ElevatePage";
+import ElevatePage from "./pages/dashboard/ElevatePage";
 // import FootprintsPage from "./pages/dashboard/FootprintsPage";
 // import RaisePage from "./pages/dashboard/RaisePage";
 // import ReflectionsPage from "./pages/dashboard/ReflectionsPage";
@@ -97,6 +97,7 @@ const App = () => (
                     <Route path="ffr/checklist" element={<FFRChecklist />} />
                     <Route path="ffr/opportunities" element={<FFROpportunities />} />
 
+                    <Route path="elevate" element={<ElevatePage />} />
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
                     <Route path="book-wealth-manager" element={<BookWealthManager />} />
                     <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
