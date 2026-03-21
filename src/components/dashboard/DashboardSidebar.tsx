@@ -43,9 +43,9 @@ const baseMenuItems = [
     url: '/dashboard/ffr',
     icon: TrendingUp,
   },
-   {
-    title: 'Vinca Vector',
-    url: '/dashboard/anchor',
+  {
+    title: 'Elevate',
+    url: '/dashboard/elevate',
     icon: Compass,
   },
   // {
