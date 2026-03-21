@@ -48,11 +48,11 @@ const baseMenuItems = [
     url: '/dashboard/elevate',
     icon: Compass,
   },
-  // {
-  //   title: 'Book a Wealth Manager',
-  //   url: '/dashboard/book-wealth-manager',
-  //   icon: Calendar,
-  // },
+  {
+    title: 'Book a Wealth Manager',
+    url: '/dashboard/book-wealth-manager',
+    icon: Calendar,
+  },
   {
     title: 'Refer a Friend',
     url: '/dashboard/refer',
