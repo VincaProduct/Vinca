@@ -218,7 +218,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           <em>Now let's build<br />the path to get there.</em>
         </h1>
         <p className="intro-sub">
-          Your FFR showed you the target — your corpus gap, the life you can afford, and whether you're protected against a health crisis. Vector gives you the guided path to achieve it.
+          Your FFR showed you the target — your corpus gap, the life you can afford, and whether you're protected against a health crisis. Vinca's Vector gives you the guided path to achieve it.
         </p>
         <div className="intro-divider" />
         <button className="intro-cta" onClick={onStart}>
