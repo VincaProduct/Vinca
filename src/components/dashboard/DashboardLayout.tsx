@@ -17,13 +17,13 @@ const DashboardLayout = () => {
   }, []);
 
   return (
-    <div className="h-screen bg-background overflow-hidden">
+    <div className="min-h-screen bg-background">
       <SidebarProvider open={open} onOpenChange={setOpen}>
-        <div className="h-full flex w-full bg-background">
+        <div className="flex min-h-screen w-full bg-background">
           <DashboardSidebar />
-          <div className="flex-1 flex flex-col min-w-0 min-h-0">
+          <div className="flex-1 flex flex-col min-w-0">
             <DashboardHeader />
-            <main className="flex-1 overflow-y-auto min-h-0 bg-background">
+            <main className="flex-1 bg-background">
               <Outlet />
             </main>
           </div>
