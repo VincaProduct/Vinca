@@ -61,61 +61,61 @@ const baseMenuItems = [
     url: '/dashboard/refer',
     icon: UserPlus,
   },
-  {
-    title: 'Elevate',
-    url: '/dashboard/elevate',
-    icon: Lightbulb,
-  },
-  {
-    title: 'Footprints',
-    url: '/dashboard/footprints',
-    icon: Footprints,
-  },
-  {
-    title: 'Learning',
-    url: '/dashboard/learning',
-    icon: BookOpen,
-  },
-  {
-    title: 'Sprint',
-    url: '/dashboard/sprintb',
-    icon: Clock4,
-  },
-  {
-    title: 'Raise',
-    url: '/dashboard/raise',
-    icon: Hand,
-  },
-  {
-    title: 'Reflections',
-    url: '/dashboard/reflections',
-    icon: MessageSquare,
-  },
-  {
-    title: 'Know Your Market',
-    url: '/dashboard/know-your-market',
-    icon: Globe,
-  },
+  // {
+  //   title: 'Elevate',
+  //   url: '/dashboard/elevate',
+  //   icon: Lightbulb,
+  // },
+  // {
+  //   title: 'Footprints',
+  //   url: '/dashboard/footprints',
+  //   icon: Footprints,
+  // },
+  // {
+  //   title: 'Learning',
+  //   url: '/dashboard/learning',
+  //   icon: BookOpen,
+  // },
+  // {
+  //   title: 'Sprint',
+  //   url: '/dashboard/sprintb',
+  //   icon: Clock4,
+  // },
+  // {
+  //   title: 'Raise',
+  //   url: '/dashboard/raise',
+  //   icon: Hand,
+  // },
+  // {
+  //   title: 'Reflections',
+  //   url: '/dashboard/reflections',
+  //   icon: MessageSquare,
+  // },
+  // {
+  //   title: 'Know Your Market',
+  //   url: '/dashboard/know-your-market',
+  //   icon: Globe,
+  // },
   {
     title: 'Curations',
     url: '/dashboard/curations',
     icon: Gift,
   },
-  {
-    title: 'Pricing',
-    url: '/dashboard/investor-hub/pricing',
-    icon: DollarSign,
-  },
-  {
-    title: 'Readiness Fit',
-    url: '/dashboard/readiness-fit',
-    icon: Sparkles,
-  },
-  {
-    title: 'Insurance',
-    url: '/dashboard/insurance',
-    icon: ShieldCheck,
-  },
+  // {
+  //   title: 'Pricing',
+  //   url: '/dashboard/investor-hub/pricing',
+  //   icon: DollarSign,
+  // },
+  // {
+  //   title: 'Readiness Fit',
+  //   url: '/dashboard/readiness-fit',
+  //   icon: Sparkles,
+  // },
+  // {
+  //   title: 'Insurance',
+  //   url: '/dashboard/insurance',
+  //   icon: ShieldCheck,
+  // },
 ];
 
 const upgradeMenuItem = {
