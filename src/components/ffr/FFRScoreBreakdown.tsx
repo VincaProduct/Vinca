@@ -1,7 +1,9 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import type { CalculatorInputs, CalculationResults } from '@/types/calculator';
 import type { FFRFoundationsChecklist } from '@/types/ffr';
+import { useSprints, type Sprint } from '@/hooks/useSprints';
 
 interface FFRScoreBreakdownProps {
   inputs: CalculatorInputs;
@@ -12,6 +14,7 @@ interface FFRScoreBreakdownProps {
 
 interface ComponentScore {
   name: string;
+  scoreComponent: Sprint['score_component'];
   points: number;
   max: number;
   feedback: string;
@@ -25,6 +28,14 @@ function tileColor(points: number, max: number): { bar: string; border: string; 
 }
 
 export function FFRScoreBreakdown({ inputs, results, projections, checklist }: FFRScoreBreakdownProps) {
+  const navigate = useNavigate();
+  const { getActiveSprint } = useSprints();
+  const [activeSprint, setActiveSprint] = useState<Sprint | null>(null);
+
+  useEffect(() => {
+    getActiveSprint().then(({ data }) => setActiveSprint(data));
+  }, []);
+
   const components = useMemo((): ComponentScore[] => {
     // Component 1: Corpus Progress (30 pts)
     const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
@@ -58,7 +69,7 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
         : yearsEarly >= 1
           ? `You reach financial freedom ${yearsEarly} year${yearsEarly !== 1 ? 's' : ''} early. Aim for 5+ years early for more points.`
           : yearsEarly === 0
-            ? `You reach financial freedom exactly at your retirement target age.`
+            ? 'You reach financial freedom exactly at your retirement target age.'
             : `Freedom age (${freedomAge}) is ${-yearsEarly} year${-yearsEarly !== 1 ? 's' : ''} after your retirement target (${retirementAge}). Boost SIP to retire earlier.`;
 
     // Component 3: Savings Rate (20 pts)
@@ -100,15 +111,16 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
         : 'Corpus may not last through life expectancy. Review your withdrawal plan.';
 
     return [
-      { name: 'Corpus Progress', points: Math.round(corpusProgress), max: 30, feedback: corpusFeedback },
-      { name: 'Time Buffer', points: Math.round(timeBuffer), max: 20, feedback: timeBufferFeedback },
-      { name: 'Savings Rate', points: savingsRateScore, max: 20, feedback: savingsRateFeedback },
-      { name: 'Essentials Coverage', points: essentialsCoverage, max: 20, feedback: essentialsFeedback },
-      { name: 'Lifestyle Sustainability', points: sustainabilityScore, max: 10, feedback: sustainabilityFeedback },
+      { name: 'Corpus Progress', scoreComponent: 'corpus_progress', points: Math.round(corpusProgress), max: 30, feedback: corpusFeedback },
+      { name: 'Time Buffer', scoreComponent: 'time_buffer', points: Math.round(timeBuffer), max: 20, feedback: timeBufferFeedback },
+      { name: 'Savings Rate', scoreComponent: 'savings_rate', points: savingsRateScore, max: 20, feedback: savingsRateFeedback },
+      { name: 'Essentials Coverage', scoreComponent: 'essentials_coverage', points: essentialsCoverage, max: 20, feedback: essentialsFeedback },
+      { name: 'Lifestyle Sustainability', scoreComponent: 'lifestyle_sustainability', points: sustainabilityScore, max: 10, feedback: sustainabilityFeedback },
     ];
   }, [inputs, results, projections, checklist]);
 
   const total = components.reduce((sum, c) => sum + c.points, 0);
+  const hasActiveSprint = activeSprint !== null;
 
   return (
     <Card className="border-primary/20 shadow-md">
@@ -122,6 +134,9 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
             const { bar, border, label } = tileColor(c.points, c.max);
             const barPct = Math.round((c.points / c.max) * 100);
             const isLast = i === components.length - 1;
+            const isIncomplete = c.points < c.max;
+            const isActiveSprintTile = activeSprint?.score_component === c.scoreComponent;
+
             return (
               <div key={c.name} className={`rounded-xl border ${border} bg-card p-4 space-y-2${isLast ? ' sm:col-span-2' : ''}`}>
                 <div className="flex items-center justify-between">
@@ -137,6 +152,27 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
                   />
                 </div>
                 <p className="text-xs text-muted-foreground leading-snug">{c.feedback}</p>
+
+                {isIncomplete && (
+                  isActiveSprintTile ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                      Sprint in progress
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={hasActiveSprint}
+                      onClick={() => navigate('/dashboard/book-wealth-manager')}
+                      className="text-xs font-medium text-primary hover:underline disabled:text-muted-foreground disabled:no-underline disabled:cursor-not-allowed transition-colors"
+                    >
+                      {c.scoreComponent === 'corpus_progress' && 'Increase my SIP →'}
+                      {c.scoreComponent === 'time_buffer' && 'Retire earlier →'}
+                      {c.scoreComponent === 'essentials_coverage' && 'Get protected →'}
+                      {c.scoreComponent === 'lifestyle_sustainability' && 'Fix my withdrawal plan →'}
+                    </button>
+                  )
+                )}
               </div>
             );
           })}
