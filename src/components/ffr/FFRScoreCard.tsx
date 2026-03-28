@@ -23,7 +23,17 @@ export function FFRScoreCard({ inputs, results, projections, checklist }: FFRSco
     year: 'numeric',
   });
 
-  const { status, statusColor } = FFR_SCORE_STATUS(score);
+  const essentialsCoverage = checklist
+    ? (checklist.insurance_evidence ? 10 : 0) +
+      (checklist.emergency_fund_baseline ? 5 : 0) +
+      (checklist.sip_mandate_active ? 5 : 0)
+    : undefined;
+
+  const sustainabilityScore = results.corpusDepletesBeforeLifeExpectancy && results.corpusDepletionAge
+    ? (inputs.lifeExpectancy - results.corpusDepletionAge <= 10 ? 5 : 0)
+    : 10;
+
+  const { status, statusColor } = FFR_SCORE_STATUS(score, essentialsCoverage, sustainabilityScore);
 
   const summarySentence = useMemo(() => {
     if (score <= 30) {
@@ -59,6 +69,9 @@ export function FFRScoreCard({ inputs, results, projections, checklist }: FFRSco
           </span>
           <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">{summarySentence}</p>
           <p className="text-xs text-muted-foreground">Last updated: {today}</p>
+          <p className="text-xs text-muted-foreground text-center mt-1">
+            Score recalibrated on 28 March 2026 to reflect a more accurate assessment.
+          </p>
         </div>
       </CardContent>
     </Card>

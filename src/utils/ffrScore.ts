@@ -22,9 +22,13 @@ export function calculateFFRScore(
 
   // Component 2: Time Buffer (20 pts)
   const freedomAge = results.freedomAge;
-  const timeBuffer = freedomAge <= retirementAge
-    ? 20
-    : (retirementAge / freedomAge) * 20;
+  const yearsEarlyBuffer = retirementAge - freedomAge;
+  let timeBuffer = 0;
+  if (yearsEarlyBuffer >= 10) timeBuffer = 20;
+  else if (yearsEarlyBuffer >= 5) timeBuffer = 15;
+  else if (yearsEarlyBuffer >= 1) timeBuffer = 10;
+  else if (yearsEarlyBuffer === 0) timeBuffer = 5;
+  else timeBuffer = 0;
 
   // Component 3: Savings Rate (20 pts)
   const sipRate = inputs.monthlyIncome > 0 ? inputs.sipAmount / inputs.monthlyIncome : 0;
@@ -50,7 +54,14 @@ export function calculateFFRScore(
   return Math.max(0, Math.min(100, Math.round(total)));
 }
 
-export const FFR_SCORE_STATUS = (score: number): { status: string; statusColor: string } => {
+export const FFR_SCORE_STATUS = (
+  score: number,
+  essentialsCoverage?: number,
+  sustainabilityScore?: number
+): { status: string; statusColor: string } => {
+  if (essentialsCoverage === 0 || sustainabilityScore === 0) {
+    return { status: 'Needs Attention 🔴', statusColor: 'bg-red-500/10 text-red-600 dark:text-red-400' };
+  }
   if (score <= 30) return { status: 'Needs Attention 🔴', statusColor: 'bg-red-500/10 text-red-600 dark:text-red-400' };
   if (score <= 60) return { status: 'In Progress 🟡', statusColor: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' };
   if (score <= 80) return { status: 'On Track 🟢', statusColor: 'bg-green-500/10 text-green-600 dark:text-green-400' };

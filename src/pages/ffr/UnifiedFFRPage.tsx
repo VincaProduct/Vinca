@@ -13,6 +13,7 @@ import TimelineCalculatorForm from '@/components/calculator/TimelineCalculatorFo
 import { toast } from 'sonner';
 import { CalculatorInputs } from '@/types/calculator';
 import { FFRScoreCard } from '@/components/ffr/FFRScoreCard';
+import { FFRScoreBreakdown } from '@/components/ffr/FFRScoreBreakdown';
 import { useFFR } from '@/hooks/useFFR';
 import { HEALTH_COSTS, HealthCategory } from '@/types/financial-planning';
 import {
@@ -1020,8 +1021,9 @@ function FFRContent() {
         {/* Chapter 1 — Score */}
         <section ref={chapterRefs[0] as any} style={sectionStyle}>
           {hasCalculated && inputs && results && projections.length > 0 ? (
-            <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24 }}>
+            <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <FFRScoreCard inputs={inputs} results={results} projections={projections} checklist={checklist} />
+              <FFRScoreBreakdown inputs={inputs} results={results} projections={projections} checklist={checklist} />
             </div>
           ) : (
             <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 40, textAlign: 'center' }}>
