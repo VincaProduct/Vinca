@@ -17,6 +17,14 @@ import {
   Shield,
   Lightbulb,
   DollarSign,
+  BookOpen,
+  LineChart,
+  Zap,
+  Layers,
+  Footprints,
+  ArrowUpCircle,
+  MessageSquare,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -42,6 +50,46 @@ const baseMenuItems = [
     title: 'Financial Freedom Readiness',
     url: '/dashboard/ffr',
     icon: TrendingUp,
+  },
+  {
+    title: 'Know Your Market',
+    url: '/dashboard/know-your-market',
+    icon: LineChart,
+  },
+  {
+    title: 'Learning',
+    url: '/dashboard/learning',
+    icon: BookOpen,
+  },
+  {
+    title: 'Sprint',
+    url: '/dashboard/sprints',
+    icon: Zap,
+  },
+  {
+    title: 'Curations',
+    url: '/dashboard/curations',
+    icon: Layers,
+  },
+  {
+    title: 'Footprints',
+    url: '/dashboard/footprints',
+    icon: Footprints,
+  },
+  {
+    title: 'Raise',
+    url: '/dashboard/raise',
+    icon: ArrowUpCircle,
+  },
+  {
+    title: 'Reflections',
+    url: '/dashboard/reflections',
+    icon: MessageSquare,
+  },
+  {
+    title: 'Insurance',
+    url: '/dashboard/insurance',
+    icon: ShieldCheck,
   },
   {
     title: 'Elevate',

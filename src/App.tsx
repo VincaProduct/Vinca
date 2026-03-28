@@ -33,22 +33,23 @@ import CTAAnalyticsPage from "./pages/dashboard/CTAAnalyticsPage";
 import BookingsDashboard from "./pages/dashboard/BookingsDashboard";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import ElevatePage from "./pages/dashboard/ElevatePage";
-// import FootprintsPage from "./pages/dashboard/FootprintsPage";
-// import RaisePage from "./pages/dashboard/RaisePage";
-// import ReflectionsPage from "./pages/dashboard/ReflectionsPage";
-// import KnowYourMarketPage from "./pages/dashboard/KnowYourMarketPage";
-// import CurationsPage from "./pages/dashboard/CurationsPage";
+import FootprintsPage from "./pages/dashboard/FootprintsPage";
+import RaisePage from "./pages/dashboard/RaisePage";
+import ReflectionsPage from "./pages/dashboard/ReflectionsPage";
+import KnowYourMarketPage from "./pages/dashboard/KnowYourMarketPage";
+import CurationsPage from "./pages/dashboard/CurationsPage";
+import InsurancePage from "./pages/dashboard/InsurancePage";
 // import PricingPage from "./pages/dashboard/PricingPage";
 // import ReadinessFitPage from "./pages/dashboard/ReadinessFitPage";
 // import NewReferralPage from "./pages/dashboard/NewReferralPage";
 // import SprintHomePage from "./pages/dashboard/SprintHomePage";
 // import SprintDetailPage from "./pages/dashboard/SprintDetailPage";
 // import SprintBPage from "./pages/sprintb/index";
-// import LearningHome from "./pages/learning/LearningHome";
-// import LearningSeriesDetail from "./pages/learning/LearningSeriesDetail";
-// import LearningPlayer from "./pages/learning/LearningPlayer";
-// import LearningAchievements from "./pages/learning/LearningAchievements";
-// import LearningLibrary from "./pages/learning/LearningLibrary";
+import LearningHome from "./pages/learning/LearningHome";
+import LearningSeriesDetail from "./pages/learning/LearningSeriesDetail";
+import LearningPlayer from "./pages/learning/LearningPlayer";
+import LearningAchievements from "./pages/learning/LearningAchievements";
+import LearningLibrary from "./pages/learning/LearningLibrary";
 import FFRChecklist from "./pages/ffr/FFRChecklist";
 import FFROpportunities from "./pages/ffr/FFROpportunities";
 import UnifiedFFRPage from "./pages/ffr/UnifiedFFRPage";
@@ -98,6 +99,17 @@ const App = () => (
                     <Route path="ffr/checklist" element={<FFRChecklist />} />
                     <Route path="ffr/opportunities" element={<FFROpportunities />} />
                     <Route path="sprints" element={<SprintPage />} />
+                    <Route path="know-your-market" element={<KnowYourMarketPage />} />
+                    <Route path="curations" element={<CurationsPage />} />
+                    <Route path="footprints" element={<FootprintsPage />} />
+                    <Route path="raise" element={<RaisePage />} />
+                    <Route path="reflections" element={<ReflectionsPage />} />
+                    <Route path="insurance" element={<InsurancePage />} />
+                    <Route path="learning" element={<LearningHome />} />
+                    <Route path="learning/library" element={<LearningLibrary />} />
+                    <Route path="learning/series/:seriesId/video/:videoId" element={<LearningPlayer />} />
+                    <Route path="learning/series/:id" element={<LearningSeriesDetail />} />
+                    <Route path="learning/achievements" element={<LearningAchievements />} />
 
                     <Route path="elevate" element={<ElevatePage />} />
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
