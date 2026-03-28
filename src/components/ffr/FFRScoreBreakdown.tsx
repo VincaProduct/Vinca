@@ -163,7 +163,7 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
                     <button
                       type="button"
                       disabled={hasActiveSprint}
-                      onClick={() => navigate('/dashboard/book-wealth-manager')}
+                      onClick={() => navigate(`/dashboard/sprints?component=${c.scoreComponent}`)}
                       className="text-xs font-medium text-primary hover:underline disabled:text-muted-foreground disabled:no-underline disabled:cursor-not-allowed transition-colors"
                     >
                       {c.scoreComponent === 'corpus_progress' && 'Increase my SIP →'}

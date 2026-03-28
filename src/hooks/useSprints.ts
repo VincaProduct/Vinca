@@ -61,7 +61,7 @@ export function useSprints() {
       .from('sprints')
       .insert({
         user_id: user.id,
-        score_component: scoreComponent,
+        score_component: scoreComponent.trim().replace(/\.$/, '') as Sprint['score_component'],
         sprint_type: sprintType,
         status: 'active',
         sip_amount_committed: sipAmountCommitted ?? null,
