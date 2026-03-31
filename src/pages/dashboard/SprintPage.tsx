@@ -3,9 +3,19 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Clock } from 'lucide-react';
 import ComfortLevelScale from '@/components/sprint/ComfortLevelScale';
 import SprintSummaryCardRow from '@/components/sprint/SprintSummaryCardRow';
 import { useSprints, type Sprint, type SprintReflection } from '@/hooks/useSprints';
+import {
+  FinancialPlanningProvider,
+  useFinancialPlanning,
+} from '@/components/financial-planning/context/FinancialPlanningContext';
+
+// ── constants ─────────────────────────────────────────────────────────────────
+
+const DARK_BG = '#0D2818';
+const GREEN   = '#06A969';
 
 const COMPONENT_META: Record<Sprint['score_component'], { label: string; preview: string }> = {
   corpus_progress: {
@@ -30,28 +40,47 @@ const COMPONENT_META: Record<Sprint['score_component'], { label: string; preview
   },
 };
 
-export default function SprintPage() {
+const COMPONENT_MONTHS: Record<Sprint['score_component'], number> = {
+  corpus_progress:       6,
+  time_buffer:          12,
+  savings_rate:          4,
+  essentials_coverage:   3,
+  lifestyle_sustainability: 2,
+};
+
+const COMPONENT_KEYS = Object.keys(COMPONENT_META) as Sprint['score_component'][];
+
+// ── inner component ───────────────────────────────────────────────────────────
+
+function SprintPageContent() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { getActiveSprint, startSprint, completeSprint, abandonSprint, addReflection, getReflections } = useSprints();
+  const { inputs, hasCalculated } = useFinancialPlanning();
 
   const scoreComponent = searchParams.get('component') as Sprint['score_component'] | null;
-  const meta = scoreComponent ? COMPONENT_META[scoreComponent] : null;
 
-  const [loading, setLoading] = useState(true);
-  const [activeSprint, setActiveSprint] = useState<Sprint | null>(null);
-  const [reflections, setReflections] = useState<SprintReflection[]>([]);
+  const [loading, setLoading]               = useState(true);
+  const [activeSprint, setActiveSprint]     = useState<Sprint | null>(null);
+  const [reflections, setReflections]       = useState<SprintReflection[]>([]);
+  const [selectedComponent, setSelectedComponent] = useState<Sprint['score_component'] | null>(scoreComponent);
 
   // Start sprint form
-  const [sipAmount, setSipAmount] = useState('');
-  const [starting, setStarting] = useState(false);
+  const [sipAmount, setSipAmount]   = useState('');
+  const [starting, setStarting]     = useState(false);
 
   // Reflection form
-  const [comfortLevel, setComfortLevel] = useState<number | null>(null);
-  const [reflectionText, setReflectionText] = useState('');
+  const [comfortLevel, setComfortLevel]         = useState<number | null>(null);
+  const [reflectionText, setReflectionText]     = useState('');
   const [savingReflection, setSavingReflection] = useState(false);
-  const [completing, setCompleting] = useState(false);
-  const [abandoning, setAbandoning] = useState(false);
+  const [completing, setCompleting]             = useState(false);
+  const [abandoning, setAbandoning]             = useState(false);
+
+  // Retirement date (same computation as DashboardHome)
+  const retirementYear = hasCalculated && inputs
+    ? new Date().getFullYear() + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP
+    : null;
+  const retirementLabel = retirementYear ? `January ${retirementYear}` : null;
 
   async function refresh() {
     setLoading(true);
@@ -71,10 +100,10 @@ export default function SprintPage() {
   }, []);
 
   async function handleStart() {
-    if (!scoreComponent) return;
+    if (!selectedComponent) return;
     setStarting(true);
     const amount = parseFloat(sipAmount);
-    await startSprint(scoreComponent, 'monthly', isNaN(amount) ? undefined : amount);
+    await startSprint(selectedComponent, 'monthly', isNaN(amount) ? undefined : amount);
     await refresh();
     setStarting(false);
   }
@@ -105,93 +134,178 @@ export default function SprintPage() {
   }
 
   // Derived sprint progress
-  const daysElapsed = activeSprint
+  const daysElapsed  = activeSprint
     ? Math.floor((Date.now() - new Date(activeSprint.started_at).getTime()) / 86400000)
     : 0;
   const daysRemaining = Math.max(0, 30 - daysElapsed);
-  const progressPct = Math.min(100, Math.round((daysElapsed / 30) * 100));
+  const progressPct   = Math.min(100, Math.round((daysElapsed / 30) * 100));
 
-  const hasMidpoint = reflections.some(r => r.phase === 'midpoint');
+  const hasMidpoint   = reflections.some(r => r.phase === 'midpoint');
   const hasCompletion = reflections.some(r => r.phase === 'completion');
-  const showMidpoint = daysElapsed >= 15 && !hasMidpoint;
+  const showMidpoint  = daysElapsed >= 15 && !hasMidpoint;
   const showCompletion = daysElapsed >= 30 && !hasCompletion;
 
-  // ── State 3: Loading ─────────────────────────────────────────────────────
+  // Active sprint meta lookup (preserving original trim/replace guard)
+  const activeKey = activeSprint?.score_component?.trim().replace(/\.$/, '') as Sprint['score_component'];
+  const activeMeta   = COMPONENT_META[activeKey] ?? { label: 'Your Sprint', preview: '' };
+  const activeMonths = COMPONENT_MONTHS[activeKey] ?? 0;
+
+  // ── Retirement Clock card (always shown) ──────────────────────────────────
+  const clockCard = (
+    <div
+      className="rounded-2xl p-8 relative overflow-hidden"
+      style={{ background: DARK_BG }}
+    >
+      <Clock
+        className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+        style={{ width: 100, height: 100, color: 'rgba(255,255,255,0.06)' }}
+      />
+      <p
+        className="text-xs font-semibold tracking-widest uppercase mb-4"
+        style={{ color: 'rgba(134,239,172,0.75)' }}
+      >
+        Your retirement date
+      </p>
+      {retirementLabel ? (
+        <>
+          <p
+            className="text-5xl font-black text-white leading-tight mb-3"
+            style={{ letterSpacing: '-0.02em' }}
+          >
+            {retirementLabel}
+          </p>
+          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            Every action you take moves this date closer
+          </p>
+        </>
+      ) : (
+        <>
+          <p className="text-xl font-semibold text-white mb-3 max-w-xs leading-snug">
+            Set up your financial plan to see your retirement date.
+          </p>
+          <a
+            href="/dashboard/ffr"
+            className="text-sm font-semibold hover:underline"
+            style={{ color: GREEN }}
+          >
+            Set up your plan →
+          </a>
+        </>
+      )}
+    </div>
+  );
+
+  // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <p className="text-sm text-muted-foreground">Loading your sprint...</p>
+      <div
+        className="max-w-xl mx-auto px-4 py-10 flex flex-col gap-6"
+        style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+      >
+        {clockCard}
+        <div className="flex items-center justify-center py-12">
+          <p className="text-sm text-muted-foreground">Loading your sprint...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-10 flex flex-col gap-6">
+    <div
+      className="max-w-xl mx-auto px-4 py-10 flex flex-col gap-6"
+      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+    >
+      {/* ── Retirement Clock ─────────────────────────────────────────────── */}
+      {clockCard}
 
-      {/* ── State 1: No active sprint ─────────────────────────────────── */}
+      {/* ── No active sprint: pick an action ─────────────────────────────── */}
       {!activeSprint && (
         <>
-          <Card className="border-primary/20 shadow-md">
-            <CardContent className="pt-6 pb-6 space-y-5">
-              {meta ? (
-                <>
-                  <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">
-                      30-Day Sprint
-                    </p>
-                    <h1 className="text-xl font-bold text-foreground">{meta.label}</h1>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Accelerate your retirement date</h2>
+            <p className="text-sm text-muted-foreground mt-1">Pick one commitment to focus on this month.</p>
+          </div>
+
+          {/* Option cards */}
+          <div className="flex flex-col gap-3">
+            {COMPONENT_KEYS.map((key) => {
+              const meta   = COMPONENT_META[key];
+              const months = COMPONENT_MONTHS[key];
+              const isSelected = selectedComponent === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setSelectedComponent(key)}
+                  className={`text-left w-full p-5 rounded-2xl border-2 transition-all duration-150 ${
+                    isSelected
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-card hover:border-primary/40'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1 flex-1">
+                      <p className="font-semibold text-foreground">{meta.label}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{meta.preview}</p>
+                    </div>
+                    <span
+                      className="text-xs font-semibold whitespace-nowrap px-2.5 py-1 rounded-full flex-shrink-0"
+                      style={{ background: '#F0FDF4', color: GREEN }}
+                    >
+                      ~{months}mo earlier
+                    </span>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{meta.preview}</p>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">Start a 30-day sprint to improve your FFR score.</p>
-              )}
+                </button>
+              );
+            })}
+          </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  How much will you commit to SIP this month? ₹
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  value={sipAmount}
-                  onChange={e => setSipAmount(e.target.value)}
-                  placeholder="e.g. 5000"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-                />
-              </div>
-
-              <Button
-                onClick={handleStart}
-                disabled={starting || !sipAmount}
-                className="w-full"
-              >
-                {starting ? 'Starting...' : 'Start my 30-day sprint'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          <button
-            type="button"
-            onClick={() => navigate('/dashboard/ffr')}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
-          >
-            ← Back to my score
-          </button>
+          {/* SIP commitment form — revealed when an option is selected */}
+          {selectedComponent && (
+            <Card className="border-primary/20 shadow-sm">
+              <CardContent className="pt-6 pb-6 space-y-4">
+                <p className="text-sm font-semibold text-foreground">
+                  Commit to: <span className="text-primary">{COMPONENT_META[selectedComponent].label}</span>
+                </p>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    How much will you commit to SIP this month? ₹
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={sipAmount}
+                    onChange={e => setSipAmount(e.target.value)}
+                    placeholder="e.g. 5000"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                </div>
+                <Button
+                  onClick={handleStart}
+                  disabled={starting || !sipAmount}
+                  className="w-full"
+                >
+                  {starting ? 'Starting...' : 'Start this commitment →'}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
 
-      {/* ── State 2: Active sprint ────────────────────────────────────── */}
+      {/* ── Active sprint ─────────────────────────────────────────────────── */}
       {activeSprint && (
         <>
-          {console.log('[SprintPage] score_component:', activeSprint.score_component)}
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">
-              Active Sprint
+              You are working on
             </p>
-            <h1 className="text-xl font-bold text-foreground">
-              {(COMPONENT_META[activeSprint.score_component?.trim().replace(/\.$/, '') as Sprint['score_component']] ?? { label: 'Your Sprint', preview: '' }).label}
-            </h1>
+            <h2 className="text-xl font-bold text-foreground">{activeMeta.label}</h2>
+            {activeMonths > 0 && (
+              <p className="text-sm mt-1" style={{ color: GREEN }}>
+                Potential date improvement: ~{activeMonths} months earlier
+              </p>
+            )}
           </div>
 
           <SprintSummaryCardRow
@@ -289,5 +403,15 @@ export default function SprintPage() {
         </>
       )}
     </div>
+  );
+}
+
+// ── Export ────────────────────────────────────────────────────────────────────
+
+export default function SprintPage() {
+  return (
+    <FinancialPlanningProvider>
+      <SprintPageContent />
+    </FinancialPlanningProvider>
   );
 }

@@ -1,44 +1,17 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import CanonicalPageHeader from "@/components/ui/CanonicalPageHeader";
-import { 
-  FileText, 
-  Search, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle, 
-  ChevronRight,
-  Pencil,
-  Shield,
-  Users,
-  Mail,
-  Scale,
-  DollarSign,
-  XCircle,
-  PieChart,
-  ArrowRight,
-  Building,
-  FileCheck,
-  MessageSquare,
-  Award,
-  BookOpen,
-  ChevronDown,
-  ChevronUp,
-  Circle,
-  CheckCircle2,
-  Phone,
-  FileUp,
-  Gavel,
-  Home,
-  Calendar,
-  Building2,
-  Tag,
-  Activity,
-  Hourglass,
-  LucideIcon
-} from "lucide-react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CanonicalPageHeader from '@/components/ui/CanonicalPageHeader';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Shield, Heart, AlertTriangle, CheckCircle, Clock, FileText,
+  ArrowRight, ChevronDown, ChevronUp, Phone, FileUp, Gavel,
+  Users, Mail, BookOpen, Award, Tag, Calendar, Activity,
+  Building2, Pencil, CheckCircle2, XCircle, Hourglass,
+  LucideIcon,
+} from 'lucide-react';
 
-// Types
+// ── Types ─────────────────────────────────────────────────────────────────────
+
 interface Complaint {
   id: string;
   company: string;
@@ -57,844 +30,609 @@ interface TimelineStep {
   expectedDate: string | null;
 }
 
-interface StepBadge {
-  text: string;
-  icon: LucideIcon;
-  color: string;
-}
+// ── Timeline config ───────────────────────────────────────────────────────────
 
-interface ProcessStep {
-  number: string;
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  bg: string;
-  border: string;
-  badges?: StepBadge[];
-  resolution?: boolean;
-}
-
-// Mock complaints data
-const mockComplaints: Complaint[] = [
-  {
-    id: "VINCA-INS-2026-0001",
-    company: "HDFC Life",
-    issueType: "Claim Rejected",
-    status: "Registered",
-    lastUpdated: "2026-03-05",
-    complaintDate: "2026-03-05",
-  },
-  {
-    id: "VINCA-INS-2026-0002",
-    company: "ICICI Prudential",
-    issueType: "Claim Delay",
-    status: "Under Review",
-    lastUpdated: "2026-03-06",
-    complaintDate: "2026-03-06",
-  },
-  {
-    id: "VINCA-INS-2026-0003",
-    company: "Max Bupa",
-    issueType: "Policy Issue",
-    status: "Resolved",
-    lastUpdated: "2026-03-07",
-    complaintDate: "2026-03-07",
-  },
-  {
-    id: "VINCA-INS-2026-0004",
-    company: "Tata AIG",
-    issueType: "Claim Partially Settled",
-    status: "Dispute Filed",
-    lastUpdated: "2026-03-08",
-    complaintDate: "2026-03-08",
-  },
-  {
-    id: "VINCA-INS-2026-0005",
-    company: "LIC",
-    issueType: "Other Insurance Dispute",
-    status: "Closed",
-    lastUpdated: "2026-03-04",
-    complaintDate: "2026-03-04",
-  },
-];
-
-// Timeline steps configuration
 const timelineSteps: TimelineStep[] = [
-  {
-    key: "resolution",
-    title: "Final Resolution",
-    icon: Award,
-    description: "Case resolved in your favour",
-    completedDate: null,
-    expectedDate: "2026-03-30"
-  },
-  {
-    key: "ombudsman",
-    title: "Escalation to Insurance Ombudsman",
-    icon: Gavel,
-    description: "Case escalated for independent review (if required)",
-    completedDate: null,
-    expectedDate: "2026-03-22"
-  },
-  {
-    key: "dispute-raised",
-    title: "Dispute Raised with Insurance Company",
-    icon: Mail,
-    description: "Formal dispute has been raised with the insurer",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-18"
-  },
-  {
-    key: "samadhan-review",
-    title: "Case Review by Insurance Samadhan",
-    icon: BookOpen,
-    description: "Insurance experts are reviewing your case",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-15"
-  },
-  {
-    key: "documents-forwarded",
-    title: "Documents Forwarded to Insurance Samadhan",
-    icon: FileUp,
-    description: "Your case documents are being shared with our partner",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-12"
-  },
-  {
-    key: "verification-call",
-    title: "Client Verification Call",
-    icon: Phone,
-    description: "We'll call you to verify the case details",
-    completedDate: "2026-03-10",
-    expectedDate: "2026-03-10"
-  },
-  {
-    key: "vinca-review",
-    title: "Case Review by Vinca Team",
-    icon: Users,
-    description: "Our team is reviewing your complaint details",
-    completedDate: "2026-03-09",
-    expectedDate: null
-  },
-  {
-    key: "registered",
-    title: "Complaint Registered",
-    icon: FileText,
-    description: "Your complaint has been registered in our system",
-    completedDate: "2026-03-08",
-    expectedDate: null
-  }
+  { key: 'resolution',        title: 'Final Resolution',                          icon: Award,     description: 'Case resolved in your favour',                                    completedDate: null,         expectedDate: '2026-03-30' },
+  { key: 'ombudsman',         title: 'Escalation to Insurance Ombudsman',          icon: Gavel,     description: 'Case escalated for independent review (if required)',              completedDate: null,         expectedDate: '2026-03-22' },
+  { key: 'dispute-raised',    title: 'Dispute Raised with Insurance Company',      icon: Mail,      description: 'Formal dispute raised with the insurer',                          completedDate: '2026-03-10', expectedDate: '2026-03-18' },
+  { key: 'samadhan-review',   title: 'Case Review by Grievance Partner',           icon: BookOpen,  description: 'Insurance experts reviewing your case',                           completedDate: '2026-03-10', expectedDate: '2026-03-15' },
+  { key: 'documents-forwarded',title: 'Documents Forwarded to Grievance Partner', icon: FileUp,    description: 'Your case documents are being shared with our grievance partner',  completedDate: '2026-03-10', expectedDate: '2026-03-12' },
+  { key: 'verification-call', title: 'Client Verification Call',                   icon: Phone,     description: "We'll call you to verify the case details",                       completedDate: '2026-03-10', expectedDate: '2026-03-10' },
+  { key: 'vinca-review',      title: 'Case Review by Vinca Team',                  icon: Users,     description: 'Our team is reviewing your complaint details',                     completedDate: '2026-03-09', expectedDate: null },
+  { key: 'registered',        title: 'Complaint Registered',                       icon: FileText,  description: 'Your complaint has been registered in our system',                 completedDate: '2026-03-08', expectedDate: null },
 ];
 
-// Helper functions
-const getStepStatus = (complaint: Complaint | null, stepKey: string): "completed" | "active" | "pending" => {
-  if (!complaint) return "pending";
-  
-  const statusMap: Record<string, string[]> = {
-    "Registered": ["registered"],
-    "Under Review": ["registered", "vinca-review"],
-    "Dispute Filed": ["registered", "vinca-review", "verification-call", "documents-forwarded", "samadhan-review", "dispute-raised"],
-    "Ombudsman Escalation": ["registered", "vinca-review", "verification-call", "documents-forwarded", "samadhan-review", "dispute-raised", "ombudsman"],
-    "Resolved": ["registered", "vinca-review", "verification-call", "documents-forwarded", "samadhan-review", "dispute-raised", "ombudsman", "resolution"],
-    "Closed": ["registered", "vinca-review", "verification-call", "documents-forwarded", "samadhan-review", "dispute-raised", "ombudsman", "resolution"],
-  };
-
-  const completedSteps = statusMap[complaint.status] || ["registered"];
-  
-  if (completedSteps.includes(stepKey)) return "completed";
-  if (stepKey === completedSteps[completedSteps.length - 1]) return "active";
-  return "pending";
-};
-
-const formatDate = (dateString: string | null): string | null => {
-  if (!dateString) return null;
-  return new Date(dateString).toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-};
-
-const formatTimelineDate = (dateString: string | null): string | null => {
-  if (!dateString) return null;
-  return new Date(dateString).toLocaleDateString('en-US', { 
-    month: 'short', 
-    day: 'numeric',
-    year: 'numeric'
-  });
+const statusMap: Record<string, string[]> = {
+  'Registered':             ['registered'],
+  'Under Review':           ['registered', 'vinca-review'],
+  'Dispute Filed':          ['registered', 'vinca-review', 'verification-call', 'documents-forwarded', 'samadhan-review', 'dispute-raised'],
+  'Ombudsman Escalation':   ['registered', 'vinca-review', 'verification-call', 'documents-forwarded', 'samadhan-review', 'dispute-raised', 'ombudsman'],
+  'Resolved':               ['registered', 'vinca-review', 'verification-call', 'documents-forwarded', 'samadhan-review', 'dispute-raised', 'ombudsman', 'resolution'],
+  'Closed':                 ['registered', 'vinca-review', 'verification-call', 'documents-forwarded', 'samadhan-review', 'dispute-raised', 'ombudsman', 'resolution'],
 };
 
 const statusColors: Record<string, string> = {
-  Registered: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 border-green-200 dark:border-green-800",
-  "Under Review": "bg-green-200 text-green-800 dark:bg-green-800/30 dark:text-green-200 border-green-300 dark:border-green-700",
-  "Awaiting Documents": "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 border-amber-200 dark:border-amber-800",
-  "Dispute Filed": "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800",
-  "Ombudsman Escalation": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border-purple-200 dark:border-purple-800",
-  Resolved: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-  Closed: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700",
+  'Registered':           'bg-green-100 text-green-700 border-green-200',
+  'Under Review':         'bg-emerald-100 text-emerald-800 border-emerald-300',
+  'Awaiting Documents':   'bg-amber-100 text-amber-700 border-amber-200',
+  'Dispute Filed':        'bg-orange-100 text-orange-700 border-orange-200',
+  'Ombudsman Escalation': 'bg-purple-100 text-purple-700 border-purple-200',
+  'Resolved':             'bg-teal-100 text-teal-700 border-teal-200',
+  'Closed':               'bg-slate-100 text-slate-600 border-slate-200',
 };
 
-// Responsive Info Card Component
-const InfoCard: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  className?: string;
-}> = ({ icon, label, value, className = "" }) => (
-  <div className={`bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow ${className}`}>
-    <div className="flex items-start gap-2 sm:gap-3">
-      <div className="bg-green-50 dark:bg-green-900/20 p-1.5 sm:p-2 rounded-lg shrink-0">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0.5 sm:mb-1">
-          {label}
-        </p>
-        <p className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white break-words">
-          {value}
-        </p>
-      </div>
-    </div>
-  </div>
-);
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-// Responsive Timeline Step Component
-const TimelineStep: React.FC<{
-  step: TimelineStep;
-  status: "completed" | "active" | "pending";
-  isLast: boolean;
-  date?: string | null;
-  isExpected?: boolean;
-}> = ({ step, status, isLast, date, isExpected }) => {
-  const Icon = step.icon;
-  
-  const getStatusStyles = () => {
-    switch(status) {
-      case "completed":
-        return {
-          icon: "text-green-600 dark:text-green-400",
-          bg: "bg-green-100 dark:bg-green-900/30",
-          border: "border-green-300 dark:border-green-700",
-          text: "text-gray-900 dark:text-white",
-          date: "text-green-600 dark:text-green-400",
-          line: "bg-green-300 dark:bg-green-700",
-        };
-      case "active":
-        return {
-          icon: "text-green-700 dark:text-green-300",
-          bg: "bg-green-200 dark:bg-green-800/50",
-          border: "border-green-400 dark:border-green-600",
-          text: "text-gray-900 dark:text-white font-medium",
-          date: "text-green-700 dark:text-green-300",
-          line: "bg-green-400 dark:bg-green-600",
-        };
-      default:
-        return {
-          icon: "text-gray-400 dark:text-gray-500",
-          bg: "bg-gray-100 dark:bg-gray-800",
-          border: "border-gray-200 dark:border-gray-700",
-          text: "text-gray-500 dark:text-gray-400",
-          date: "text-gray-400 dark:text-gray-500",
-          line: "bg-gray-200 dark:bg-gray-700",
-        };
-    }
-  };
+function getStepStatus(complaint: Complaint | null, stepKey: string): 'completed' | 'active' | 'pending' {
+  if (!complaint) return 'pending';
+  const completed = statusMap[complaint.status] || ['registered'];
+  if (completed.includes(stepKey)) return 'completed';
+  if (stepKey === completed[completed.length - 1]) return 'active';
+  return 'pending';
+}
 
-  const styles = getStatusStyles();
+function fmtDate(d: string | null): string {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function InfoCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex gap-3 sm:gap-4 relative group">
-      {/* Icon with connector */}
-      <div className="flex flex-col items-center">
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${styles.bg} border-2 ${styles.border} flex items-center justify-center z-10 transition-all group-hover:scale-110 shrink-0`}>
-          <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${styles.icon}`} />
-        </div>
-        {!isLast && (
-          <div className={`w-0.5 h-full min-h-[2rem] ${styles.line} mt-1 transition-all`} />
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 min-w-0 pb-4 sm:pb-6">
-        <div className="flex flex-col gap-1.5 sm:gap-2">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h4 className={`font-semibold text-sm sm:text-base ${styles.text} break-words`}>
-                  {step.title}
-                </h4>
-                {status === "active" && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 whitespace-nowrap">
-                    In Progress
-                  </span>
-                )}
-              </div>
-              {step.description && (
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 break-words">
-                  {step.description}
-                </p>
-              )}
-            </div>
-          </div>
-          
-          {/* Date display - Responsive */}
-          {date && (
-            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-              {!isExpected ? (
-                <CheckCircle className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${styles.date} shrink-0`} />
-              ) : (
-                <Hourglass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 dark:text-gray-500 shrink-0" />
-              )}
-              <span className={`${!isExpected ? styles.date : 'text-gray-500 dark:text-gray-400'} break-words`}>
-                {!isExpected ? `Completed: ${formatTimelineDate(date)}` : `Expected: ${formatTimelineDate(date)}`}
-              </span>
-            </div>
-          )}
+    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex items-start gap-3">
+        <div className="bg-emerald-50 p-2 rounded-lg flex-shrink-0">{icon}</div>
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">{label}</p>
+          <p className="text-sm font-semibold text-slate-900 break-words">{value}</p>
         </div>
       </div>
     </div>
   );
-};
+}
 
-// Responsive Drawer Component
-const ComplaintTrackingDrawer: React.FC<{ complaint: Complaint | null; navigate: ReturnType<typeof useNavigate> }> = ({ complaint, navigate }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedId, setEditedId] = useState(complaint?.id || "");
-  const [searchError, setSearchError] = useState("");
-  const [currentComplaint, setCurrentComplaint] = useState<Complaint | null>(complaint);
-
-  const hasComplaint = currentComplaint && Object.keys(currentComplaint).length > 0;
-
-  const handleIdEdit = () => {
-    setIsEditing(true);
-    setEditedId(currentComplaint?.id || "");
-    setSearchError("");
-  };
-
-  const handleIdSave = () => {
-    const foundComplaint = mockComplaints.find(c => c.id === editedId);
-    if (foundComplaint) {
-      setSearchError("");
-      setIsEditing(false);
-      setCurrentComplaint(foundComplaint);
-    } else {
-      setSearchError("Complaint does not exist");
-      setCurrentComplaint(null);
-    }
-  };
-
-  const handleIdCancel = () => {
-    setIsEditing(false);
-    setEditedId(currentComplaint?.id || "");
-    setSearchError("");
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleIdSave();
-    } else if (e.key === 'Escape') {
-      handleIdCancel();
-    }
-  };
-
-  const getReorderedTimelineSteps = (): TimelineStep[] => {
-    if (!currentComplaint) return timelineSteps;
-    
-    return [...timelineSteps].sort((a, b) => {
-      const statusA = getStepStatus(currentComplaint, a.key);
-      const statusB = getStepStatus(currentComplaint, b.key);
-      
-      const order = { pending: 0, active: 1, completed: 2 };
-      return order[statusA] - order[statusB];
-    });
-  };
-
-  const reorderedSteps = getReorderedTimelineSteps();
+function TimelineRow({ step, status, isLast }: { step: TimelineStep; status: 'completed' | 'active' | 'pending'; isLast: boolean }) {
+  const Icon = step.icon;
+  const styles = {
+    completed: { ring: 'bg-emerald-100 border-emerald-400', icon: 'text-emerald-600', text: 'text-slate-900', line: 'bg-emerald-300' },
+    active:    { ring: 'bg-emerald-200 border-emerald-500', icon: 'text-emerald-700', text: 'text-slate-900 font-medium', line: 'bg-emerald-400' },
+    pending:   { ring: 'bg-slate-100 border-slate-200',     icon: 'text-slate-400',   text: 'text-slate-400', line: 'bg-slate-200' },
+  }[status];
 
   return (
-    <div className="bg-muted rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 lg:p-8 overflow-hidden transition-all hover:shadow-xl">
-      {/* Collapsed State Header - Responsive */}
-      <div 
-        className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-all duration-200 p-2 -m-2 rounded-lg"
-        onClick={() => setIsExpanded(!isExpanded)}
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <div className={`w-9 h-9 rounded-full ${styles.ring} border-2 flex items-center justify-center flex-shrink-0 z-10`}>
+          <Icon className={`w-4 h-4 ${styles.icon}`} />
+        </div>
+        {!isLast && <div className={`w-0.5 flex-1 min-h-6 ${styles.line} mt-1`} />}
+      </div>
+      <div className="flex-1 pb-5">
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className={`text-sm ${styles.text}`}>{step.title}</p>
+          {status === 'active' && (
+            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">In Progress</span>
+          )}
+        </div>
+        <p className="text-xs text-slate-400 mt-0.5">{step.description}</p>
+        {step.completedDate && status === 'completed' && (
+          <p className="text-xs text-emerald-600 mt-1 flex items-center gap-1">
+            <CheckCircle className="w-3 h-3" /> Completed {fmtDate(step.completedDate)}
+          </p>
+        )}
+        {step.expectedDate && status !== 'completed' && (
+          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+            <Hourglass className="w-3 h-3" /> Expected {fmtDate(step.expectedDate)}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ComplaintTracker({ complaint }: { complaint: Complaint | null }) {
+  const [expanded, setExpanded]       = useState(false);
+  const [editing, setEditing]         = useState(false);
+  const [editId, setEditId]           = useState(complaint?.id || '');
+  const [searchError, setSearchError] = useState('');
+  const [current, setCurrent]         = useState<Complaint | null>(complaint);
+
+  // Mock lookup — replace with Supabase query when table is live
+  const mockComplaints: Complaint[] = [
+    { id: 'VINCA-INS-2026-0001', company: 'HDFC Life',        issueType: 'Claim Rejected',           status: 'Registered',  lastUpdated: '2026-03-05', complaintDate: '2026-03-05' },
+    { id: 'VINCA-INS-2026-0002', company: 'ICICI Prudential', issueType: 'Claim Delay',              status: 'Under Review', lastUpdated: '2026-03-06', complaintDate: '2026-03-06' },
+    { id: 'VINCA-INS-2026-0003', company: 'Max Bupa',         issueType: 'Policy Issue',             status: 'Resolved',    lastUpdated: '2026-03-07', complaintDate: '2026-03-07' },
+    { id: 'VINCA-INS-2026-0004', company: 'Tata AIG',         issueType: 'Claim Partially Settled',  status: 'Dispute Filed',lastUpdated: '2026-03-08', complaintDate: '2026-03-08' },
+  ];
+
+  function handleSave() {
+    const found = mockComplaints.find(c => c.id === editId);
+    if (found) { setCurrent(found); setEditing(false); setSearchError(''); }
+    else { setSearchError('Complaint ID not found'); setCurrent(null); }
+  }
+
+  const stepsDesc = [...timelineSteps].reverse();
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      {/* Header */}
+      <div
+        className="flex items-center justify-between gap-4 p-6 cursor-pointer hover:bg-slate-50 transition-colors"
+        onClick={() => setExpanded(e => !e)}
       >
-        {/* Icon section */}
-        <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl shadow-lg shrink-0">
-          <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
-        </div>
-        
-        {/* Content section */}
-        <div className="flex-1 min-w-0 w-full">
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 break-words">
-            Track Your Complaint
-          </h3>
-          
-          {hasComplaint && (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-wrap">
-              {isEditing ? (
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <input
-                    type="text"
-                    value={editedId}
-                    onChange={(e) => {
-                      setEditedId(e.target.value);
-                      setSearchError("");
-                    }}
-                    onKeyDown={handleKeyPress}
-                    className="font-mono text-sm bg-white dark:bg-gray-700 border border-green-300 dark:border-green-600 rounded-md px-2 py-1.5 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500 w-full sm:w-auto"
-                    placeholder="Enter Complaint ID"
-                    autoFocus
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleIdSave();
-                      }}
-                      className="p-1.5 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                      aria-label="Save"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleIdCancel();
-                      }}
-                      className="p-1.5 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                      aria-label="Cancel"
-                    >
-                      <XCircle className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <span className="text-sm font-mono text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-md break-all">
-                      {currentComplaint?.id}
-                    </span>
-                    <button
-                      className="p-1.5 text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors shrink-0"
-                      title="Edit Complaint ID"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleIdEdit();
-                      }}
-                      aria-label="Edit Complaint ID"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  {/* Status badge - visible on mobile when collapsed */}
-                  {!isExpanded && currentComplaint && (
-                    <span className={`
-                      ${statusColors[currentComplaint.status] || statusColors.Registered}
-                      px-2.5 py-1 rounded-full text-xs font-medium border
-                      sm:mt-0
-                    `}>
-                      {currentComplaint.status}
-                    </span>
-                  )}
-                </>
-              )}
-              
-              {searchError && (
-                <span className="text-xs text-red-600 dark:text-red-400 font-medium">
-                  {searchError}
-                </span>
-              )}
-            </div>
-          )}
-          
-          {!hasComplaint && !searchError && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-              No complaints raised yet
-            </p>
-          )}
-        </div>
-        
-        {/* Action section - Responsive - Now positioned differently on mobile */}
-        <div className="w-full sm:w-auto flex justify-end mt-2 sm:mt-0">
-          {hasComplaint && !isExpanded ? (
-            /* Mobile: Show View Details button inline with status badge */
-            <div className="flex sm:hidden items-center gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsExpanded(true);
-                }}
-                className="bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg flex items-center gap-2"
-              >
-                <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                  View Details
-                </span>
-                <ChevronDown className="w-3 h-3 text-green-600 dark:text-green-400" />
-              </button>
-            </div>
-          ) : null}
-          
-          {/* Desktop: Original View Details button */}
-          <div className="hidden sm:block">
-            <div className="flex items-center gap-2 sm:gap-3 bg-green-50 dark:bg-green-900/20 px-3 sm:px-4 py-2 rounded-lg">
-              <span className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">
-                {isExpanded ? 'Hide' : 'View Details'}
-              </span>
-              <div className="bg-white dark:bg-gray-800 rounded-full p-1">
-                {isExpanded ? (
-                  <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 dark:text-green-400" />
-                ) : (
-                  <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 dark:text-green-400" />
-                )}
-              </div>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="bg-emerald-50 p-2.5 rounded-xl">
+            <FileText className="w-5 h-5 text-emerald-600" />
           </div>
+          <div>
+            <p className="font-semibold text-slate-900">Track Your Complaint</p>
+            {current ? (
+              <div className="flex items-center gap-2 mt-0.5">
+                {editing ? (
+                  <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
+                    <input
+                      autoFocus
+                      value={editId}
+                      onChange={e => { setEditId(e.target.value); setSearchError(''); }}
+                      onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setEditing(false); }}
+                      className="font-mono text-xs border border-emerald-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                      placeholder="VINCA-INS-2026-XXXX"
+                    />
+                    <button onClick={handleSave}><CheckCircle2 className="w-4 h-4 text-emerald-600" /></button>
+                    <button onClick={() => setEditing(false)}><XCircle className="w-4 h-4 text-red-500" /></button>
+                  </div>
+                ) : (
+                  <>
+                    <span className="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded">{current.id}</span>
+                    <button onClick={e => { e.stopPropagation(); setEditing(true); }} className="text-slate-400 hover:text-emerald-600 transition-colors">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${statusColors[current.status] || statusColors['Registered']}`}>
+                      {current.status}
+                    </span>
+                  </>
+                )}
+                {searchError && <span className="text-xs text-red-500">{searchError}</span>}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 mt-0.5">Enter your complaint ID to track progress</p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-700 flex-shrink-0">
+          {expanded ? 'Hide' : 'View'}
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </div>
 
-      {/* Mobile View Details button when expanded - to hide/show */}
-      {hasComplaint && isExpanded && (
-        <div className="flex sm:hidden justify-end mt-2 mb-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(false);
-            }}
-            className="bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg flex items-center gap-2"
-          >
-            <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-              Hide Details
-            </span>
-            <ChevronUp className="w-3 h-3 text-green-600 dark:text-green-400" />
-          </button>
+      {/* Expanded timeline */}
+      {expanded && (
+        <div className="px-6 pb-6 border-t border-slate-100">
+          {current ? (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5 mb-6">
+                <InfoCard icon={<Tag className="w-4 h-4 text-emerald-600" />}      label="Complaint ID"   value={current.id} />
+                <InfoCard icon={<Calendar className="w-4 h-4 text-emerald-600" />} label="Filed on"       value={fmtDate(current.complaintDate)} />
+                <InfoCard icon={<Activity className="w-4 h-4 text-emerald-600" />} label="Issue"          value={current.issueType} />
+                <InfoCard icon={<Building2 className="w-4 h-4 text-emerald-600" />}label="Insurer"        value={current.company} />
+              </div>
+              <div className="bg-slate-50 rounded-xl p-5">
+                <p className="text-sm font-semibold text-slate-700 mb-4">Complaint Progress</p>
+                {stepsDesc.map((step, i) => (
+                  <TimelineRow
+                    key={step.key}
+                    step={step}
+                    status={getStepStatus(current, step.key)}
+                    isLast={i === stepsDesc.length - 1}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="mt-5 text-center py-8">
+              <p className="text-sm text-slate-500 mb-3">No complaint found. Enter your Complaint ID above.</p>
+            </div>
+          )}
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Expanded Content - Responsive */}
-      <div 
-        className={`transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-[3000px] opacity-100 mt-4' : 'max-h-0 opacity-0 overflow-hidden'
-        }`}
-      >
-        {hasComplaint && !searchError && currentComplaint ? (
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-            {/* Info Cards Grid - Responsive */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
-              <InfoCard
-                icon={<Tag className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                label="Complaint ID"
-                value={currentComplaint.id}
-              />
-              <InfoCard
-                icon={<Calendar className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                label="Complaint Date"
-                value={formatDate(currentComplaint.complaintDate) || 'N/A'}
-              />
-              <InfoCard
-                icon={<Activity className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                label="Issue Type"
-                value={currentComplaint.issueType}
-              />
-              <InfoCard
-                icon={<Building2 className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                label="Filed Against"
-                value={currentComplaint.company}
-              />
-            </div>
+// ── Complaint registration form ───────────────────────────────────────────────
 
-            {/* Timeline Section - Responsive */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="bg-green-100 dark:bg-green-900/30 p-1.5 sm:p-2 rounded-lg">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
-                </div>
-                <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                  Complaint Progress Timeline
-                </h4>
-              </div>
-              
-              <div className="bg-gray-50/50 dark:bg-gray-700/20 p-4 sm:p-6 rounded-xl border border-gray-100 dark:border-gray-800">
-                <div className="space-y-2 sm:space-y-0">
-                  {reorderedSteps.map((step, index) => {
-                    const status = getStepStatus(currentComplaint, step.key);
-                    const isCompleted = status === "completed";
-                    const isActive = status === "active";
-                    
-                    return (
-                      <TimelineStep
-                        key={step.key}
-                        step={step}
-                        status={status}
-                        isLast={index === reorderedSteps.length - 1}
-                        date={isCompleted ? step.completedDate : (isActive ? step.expectedDate : step.expectedDate)}
-                        isExpected={!isCompleted && step.expectedDate !== null}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+const INSURERS = ['HDFC Life', 'ICICI Prudential', 'Max Life', 'SBI Life', 'LIC', 'Tata AIA', 'Bajaj Allianz Life',
+  'Star Health', 'Niva Bupa', 'Care Health', 'HDFC Ergo Health', 'Aditya Birla Health', 'Other'];
+
+const ISSUE_TYPES = ['Claim Rejected', 'Claim Delayed', 'Claim Partially Settled', 'Policy Lapsed Dispute', 'Other'];
+
+function ComplaintForm() {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', insurer: '', policyType: 'life', issueType: '', policyNumber: '', description: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted]   = useState(false);
+  const [error, setError]           = useState('');
+
+  function set(field: string, value: string) {
+    setForm(f => ({ ...f, [field]: value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.phone || !form.insurer || !form.issueType || !form.description) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+    setSubmitting(true);
+    setError('');
+    try {
+      const { error: dbError } = await (supabase.from as any)('insurance_complaints').insert({
+        name:          form.name,
+        email:         form.email,
+        phone:         form.phone,
+        insurer:       form.insurer,
+        policy_type:   form.policyType,
+        issue_type:    form.issueType,
+        policy_number: form.policyNumber || null,
+        description:   form.description,
+        status:        'Registered',
+      });
+      if (dbError) throw dbError;
+      setSubmitted(true);
+    } catch {
+      setError('Something went wrong. Please try again or email us at support@vincawealth.com');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center space-y-3">
+        <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+          <CheckCircle className="w-7 h-7 text-emerald-600" />
+        </div>
+        <p className="text-lg font-bold text-slate-900">Complaint registered</p>
+        <p className="text-sm text-slate-600 max-w-sm mx-auto">
+          Our team will review your case and call you within 2 business days. You'll receive a Complaint ID via email to track progress.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 space-y-5 shadow-sm">
+      <p className="font-semibold text-slate-900">Tell us about your claim issue</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Your name *</label>
+          <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="Full name"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Email *</label>
+          <input type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder="you@example.com"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Phone *</label>
+          <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="10-digit mobile"
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Insurer *</label>
+          <select value={form.insurer} onChange={e => set('insurer', e.target.value)}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white">
+            <option value="">Select insurer</option>
+            {INSURERS.map(i => <option key={i} value={i}>{i}</option>)}
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Policy type *</label>
+          <select value={form.policyType} onChange={e => set('policyType', e.target.value)}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white">
+            <option value="life">Life Insurance</option>
+            <option value="health">Health Insurance</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Issue type *</label>
+          <select value={form.issueType} onChange={e => set('issueType', e.target.value)}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 bg-white">
+            <option value="">Select issue</option>
+            {ISSUE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Policy number <span className="font-normal text-slate-400">(optional)</span></label>
+        <input value={form.policyNumber} onChange={e => set('policyNumber', e.target.value)} placeholder="e.g. HDFC12345678"
+          className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400" />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">What happened? *</label>
+        <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4}
+          placeholder="Describe the claim issue — what was claimed, when it was rejected or delayed, and what the insurer told you..."
+          className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none" />
+      </div>
+
+      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      <button type="submit" disabled={submitting}
+        className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition disabled:opacity-50">
+        {submitting ? 'Submitting...' : 'Register my complaint →'}
+      </button>
+
+      <p className="text-xs text-slate-400 text-center">
+        Our team reviews every complaint within 2 business days. You pay nothing unless we recover your claim.
+      </p>
+    </form>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+
+const HOW_IT_WORKS = [
+  { step: '01', icon: FileText, title: 'Register your complaint', desc: 'Tell us what happened — claim rejected, delayed, or partially settled. Takes 5 minutes.' },
+  { step: '02', icon: Users,    title: 'Vinca reviews your case', desc: 'Our team assesses the merits and calls you within 2 business days. No charge at this stage.' },
+  { step: '03', icon: Gavel,    title: 'We raise the grievance',  desc: 'Formal dispute with the insurer. If needed, we escalate to the Insurance Ombudsman.' },
+  { step: '04', icon: Award,    title: 'You pay only if we win',  desc: 'Our fee is charged only when the claim is recovered. If we lose, you owe us nothing.' },
+];
+
+export default function InsurancePage() {
+  const navigate = useNavigate();
+  const [showForm, setShowForm] = useState(false);
+
+  return (
+    <>
+      <CanonicalPageHeader
+        title="The protection layer your retirement plan can't survive without."
+      />
+
+      <div className="py-12 px-6 lg:px-8 space-y-16 max-w-4xl mx-auto">
+
+        {/* ── Hero ─────────────────────────────────────────────────────────── */}
+        <section className="rounded-2xl overflow-hidden" style={{ background: '#0D2818' }}>
+          <div className="p-8 md:p-12 space-y-6">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-emerald-400" />
+              <p className="text-xs font-semibold tracking-widest uppercase text-emerald-400">Retirement Protection</p>
             </div>
-          </div>
-        ) : (
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-center py-6 sm:py-10">
-              <div className="relative inline-block">
-                <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 rounded-full blur-xl opacity-70"></div>
-                <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 border-4 border-white dark:border-gray-600 shadow-lg">
-                  <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400 dark:text-gray-500" />
-                </div>
-              </div>
-              <h4 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 px-4">
-                {searchError || "No complaints to track"}
-              </h4>
-              <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-4 sm:mb-5 max-w-md mx-auto px-4">
-                {searchError 
-                  ? "The complaint ID you entered does not exist in our system. Please check and try again."
-                  : "Once you raise a complaint, you'll be able to track its progress here with real-time updates."}
-              </p>
+            <h1 className="text-3xl md:text-4xl font-black text-white leading-tight" style={{ letterSpacing: '-0.02em' }}>
+              We fight for your claim.<br />
+              <span className="text-emerald-400">You pay only if we win.</span>
+            </h1>
+            <p className="text-base text-white/60 max-w-xl leading-relaxed">
+              A single rejected insurance claim can undo years of retirement savings. Vinca's claim support team fights rejected and delayed claims — through formal grievance and Insurance Ombudsman escalation — at zero upfront cost to you.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
               <button
-                className="group bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center gap-2 sm:gap-3 text-sm sm:text-base"
-                onClick={() => searchError ? setIsEditing(true) : navigate("/dashboard/insurance-support/new/type")}
+                onClick={() => { setShowForm(true); document.getElementById('claim-support')?.scrollIntoView({ behavior: 'smooth' }); }}
+                className="px-6 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold transition"
               >
-                {searchError ? "Try Again" : "Raise Your First Complaint"}
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
+                I need help with a claim →
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/elevate')}
+                className="px-6 py-3 rounded-lg border border-white/20 text-white/80 hover:text-white hover:border-white/40 text-sm font-semibold transition"
+              >
+                I want to buy insurance
               </button>
             </div>
           </div>
-        )}
-      </div>
-    </div>
-  );
-};
+        </section>
 
-// Main InsurancePage Component - Responsive
-const InsurancePage: React.FC = () => {
-  const navigate = useNavigate();
-  const [trackId, setTrackId] = useState("");
-  const [trackError, setTrackError] = useState("");
+        {/* ── The Stakes ───────────────────────────────────────────────────── */}
+        <section className="space-y-6">
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1">Why this matters for retirement</p>
+            <h2 className="text-2xl font-bold text-slate-900">One bad event can collapse your retirement plan</h2>
+            <p className="text-sm text-slate-500 mt-1">Insurance isn't separate from your retirement plan — it's the safety net underneath it.</p>
+          </div>
 
-  const latestComplaint: Complaint | null = mockComplaints.length > 0 
-    ? [...mockComplaints].sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())[0]
-    : null;
-
-  const handleTrack = () => {
-    const found = mockComplaints.find(c => c.id === trackId);
-    if (found) {
-      setTrackError("");
-      navigate(`/dashboard/insurance-support/complaint/${trackId}`);
-    } else {
-      setTrackError("Complaint ID not found. Please check and try again.");
-    }
-  };
-
-  // Process steps data
-  const processSteps: ProcessStep[] = [
-    {
-      number: "1",
-      icon: Users,
-      title: "You Register Your Claim",
-      description: "You file your insurance claim and submit the required documents.",
-      bg: "bg-green-50 dark:bg-green-950/30",
-      border: "border-green-100 dark:border-green-900/50"
-    },
-    {
-      number: "2",
-      icon: Building,
-      title: "The Insurance Company Reviews the Claim",
-      description: "The insurer evaluates your claim and decides whether it will be approved or rejected.",
-      bg: "bg-green-100 dark:bg-green-900/20",
-      border: "border-green-200 dark:border-green-800/50",
-      badges: [
-        { text: "Approved → Processed", icon: CheckCircle, color: "bg-green-200 dark:bg-green-800" },
-        { text: "Rejected/Partial", icon: XCircle, color: "bg-green-300 dark:bg-green-700" }
-      ]
-    },
-    {
-      number: "3",
-      icon: MessageSquare,
-      title: "You Raise a Complaint Through Vinca Wealth",
-      description: "If the claim is rejected or partially settled, you can raise a complaint through our platform.",
-      bg: "bg-green-50 dark:bg-green-950/30",
-      border: "border-green-100 dark:border-green-900/50"
-    },
-    {
-      number: "4",
-      icon: BookOpen,
-      title: "We Prepare and Forward Your Case",
-      description: "We collect your claim documents and forward the case to our partner Insurance Samadhan for expert review.",
-      bg: "bg-green-100 dark:bg-green-900/20",
-      border: "border-green-200 dark:border-green-800/50"
-    },
-    {
-      number: "5",
-      icon: Search,
-      title: "Experts Review Your Case",
-      description: "Insurance Samadhan reviews the details and checks whether the insurer's decision was fair.",
-      bg: "bg-green-50 dark:bg-green-950/30",
-      border: "border-green-100 dark:border-green-900/50"
-    },
-    {
-      number: "6",
-      icon: Mail,
-      title: "We Raise a Dispute With the Insurer",
-      description: "If the rejection appears unfair, the case is formally raised with the insurance company for reconsideration.",
-      bg: "bg-green-100 dark:bg-green-900/20",
-      border: "border-green-200 dark:border-green-800/50"
-    },
-    {
-      number: "7",
-      icon: Scale,
-      title: "Escalation to the Insurance Ombudsman (If Required)",
-      description: "If the issue is still unresolved, the case may be escalated to the Insurance Ombudsman for independent review.",
-      bg: "bg-green-50 dark:bg-green-950/30",
-      border: "border-green-100 dark:border-green-900/50"
-    },
-    {
-      number: "8",
-      icon: Award,
-      title: "Final Resolution",
-      description: "If the decision is in your favour, the insurer processes the rightful claim amount.",
-      bg: "bg-green-100 dark:bg-green-900/20",
-      border: "border-green-200 dark:border-green-800/50",
-      resolution: true
-    }
-  ];
-
-  // Feature items
-  const features = [
-    { icon: Shield, text: "Expert Case Review" },
-    { icon: Scale, text: "Legal Expertise" },
-    { icon: Clock, text: "Timely Resolution" }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
-      <CanonicalPageHeader
-        title="Insurance Support & Complaint Tracking"
-      />
-      
-      <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6 lg:space-y-8">
-        {/* Raise Complaint Card - Responsive */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6">
-          <div className="bg-muted rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 lg:p-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 lg:gap-8">
-              <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl shadow-lg shrink-0">
-                <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                icon: <Shield className="w-5 h-5 text-red-500" />,
+                bg: 'bg-red-50 border-red-200',
+                title: 'No term cover during accumulation',
+                body: 'You die at 42. SIPs stop. Family loses the income that was building the corpus. Retirement plan for your spouse: gone.',
+              },
+              {
+                icon: <Heart className="w-5 h-5 text-orange-500" />,
+                bg: 'bg-orange-50 border-orange-200',
+                title: 'Major illness without health cover',
+                body: 'Cancer treatment at 48 costs ₹25–50L. That\'s 3–5 years of SIPs wiped out in one hospitalisation. Retirement delayed by a decade.',
+              },
+              {
+                icon: <AlertTriangle className="w-5 h-5 text-amber-500" />,
+                bg: 'bg-amber-50 border-amber-200',
+                title: 'Inadequate cover in retirement',
+                body: 'Medical inflation runs at 14% p.a. ₹5L cover bought in 2010 covers almost nothing in 2035. Your corpus becomes your insurer.',
+              },
+            ].map((card, i) => (
+              <div key={i} className={`rounded-2xl border p-5 space-y-3 ${card.bg}`}>
+                <div className="bg-white rounded-lg w-9 h-9 flex items-center justify-center shadow-sm">{card.icon}</div>
+                <p className="font-semibold text-slate-900 text-sm leading-snug">{card.title}</p>
+                <p className="text-sm text-slate-600 leading-relaxed">{card.body}</p>
               </div>
-              <div className="flex-1 min-w-0 w-full">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 break-words">
-                  Raise New Complaint
-                </h2>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 break-words">
-                  Facing issues with your insurance claim? Start a new complaint and get expert assistance.
-                </p>
+            ))}
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+            <p className="text-sm text-slate-700 leading-relaxed">
+              <strong>Your FFR score includes Essentials Coverage (20 points)</strong> — which checks whether you have adequate life and health insurance in place.
+              A score of 0/20 here is the single biggest gap most investors have.{' '}
+              <button onClick={() => navigate('/dashboard/ffr')} className="text-emerald-700 font-semibold hover:underline">
+                Check your Essentials Coverage score →
+              </button>
+            </p>
+          </div>
+        </section>
+
+        {/* ── What you need ────────────────────────────────────────────────── */}
+        <section className="space-y-6">
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1">Pure protection only</p>
+            <h2 className="text-2xl font-bold text-slate-900">Two products. That's all you need.</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              We only recommend pure protection products — term and health. No ULIPs, no endowments, no money-back plans.
+              <span className="text-slate-700 font-medium"> If a policy mixes insurance with investment, it's bad at both.</span>
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Term Insurance */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="bg-emerald-50 p-3 rounded-xl">
+                  <Shield className="w-6 h-6 text-emerald-600" />
+                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">Pillar 1</span>
               </div>
-              <div className="w-full sm:w-auto flex justify-start sm:justify-end mt-2 sm:mt-0">
-                <button
-                  className="bg-primary text-white px-5 sm:px-6 lg:px-8 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base lg:text-lg shadow-lg hover:bg-primary/80 transition-all transform hover:scale-105 flex items-center justify-center gap-2 w-full sm:w-auto"
-                  onClick={() => navigate("/dashboard/insurance-support/new/type")}
-                >
-                  Raise Complaint
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
+              <div>
+                <p className="font-bold text-slate-900 text-lg">Term Life Insurance</p>
+                <p className="text-sm text-slate-500 mt-1">Pure death cover. Pays your family if you die during the corpus-building years.</p>
               </div>
+              <div className="space-y-2">
+                {[
+                  'Cover = 10–15× annual income',
+                  'Duration = till corpus is built (age 55–60)',
+                  '₹1 Cr cover costs ~₹8,000–12,000/year',
+                  'No surrender value — and that\'s correct',
+                ].map(pt => (
+                  <div key={pt} className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    {pt}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/dashboard/elevate')}
+                className="w-full py-2.5 rounded-lg border-2 border-emerald-600 text-emerald-700 text-sm font-semibold hover:bg-emerald-50 transition flex items-center justify-center gap-2">
+                Get guidance <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Health Insurance */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="bg-rose-50 p-3 rounded-xl">
+                  <Heart className="w-6 h-6 text-rose-500" />
+                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-50 text-rose-600">Pillar 2</span>
+              </div>
+              <div>
+                <p className="font-bold text-slate-900 text-lg">Health Insurance</p>
+                <p className="text-sm text-slate-500 mt-1">Protects your corpus from medical bills — both during accumulation and throughout retirement.</p>
+              </div>
+              <div className="space-y-2">
+                {[
+                  'Family floater: ₹10–20L base cover minimum',
+                  'Super top-up: ₹50–100L additional cover',
+                  'Buy before 35 — premiums spike with age',
+                  'Never let it lapse — reinstatement is hard',
+                ].map(pt => (
+                  <div key={pt} className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    {pt}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => navigate('/dashboard/elevate')}
+                className="w-full py-2.5 rounded-lg border-2 border-emerald-600 text-emerald-700 text-sm font-semibold hover:bg-emerald-50 transition flex items-center justify-center gap-2">
+                Get guidance <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Complaint Tracking Drawer */}
-        <ComplaintTrackingDrawer complaint={latestComplaint} navigate={navigate} />
-
-        {/* How We Support You Section - Responsive */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 lg:p-8 border border-green-200 dark:border-green-900/30">
-          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 lg:mb-8">
-            <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 dark:text-green-400 shrink-0" />
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white break-words">
-              How We Support You With Insurance Claims
-            </h2>
-          </div>
-          
-          <p className="text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 break-words">
-            If your insurance claim gets rejected or partially settled, you don't have to handle the dispute alone.
-            <br className="hidden sm:block" /><br />
-            You raise the complaint through Vinca Wealth, and we guide you through the process. 
-            We collect the required details, coordinate with our partner Insurance Samadhan, and help escalate the case if needed.
-            <br className="hidden sm:block" /><br />
-            Here's how the process works.
+          <p className="text-xs text-slate-400">
+            Insurance distributed via eBix POSP (personal license). Vinca does not hold a corporate insurance license.
+            All guidance is educational — we connect you with the right products, not push commissions.
           </p>
+        </section>
 
-          {/* Process Flow - Responsive */}
-          <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-            {processSteps.map((step, index) => (
-              <div
-                key={index}
-                className={`flex flex-col sm:flex-row gap-3 sm:gap-4 items-start ${step.bg} p-4 sm:p-5 lg:p-6 rounded-xl border ${step.border}`}
-              >
-                <div className="bg-green-600 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg shrink-0">
-                  {step.number}
-                </div>
-                <div className="flex-1 min-w-0 w-full">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
-                    {/* Icons only visible on desktop (sm and above) */}
-                    <div className="hidden sm:flex items-center gap-2">
-                      <step.icon className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 shrink-0" />
-                      <h3 className="font-semibold text-sm sm:text-base lg:text-lg text-gray-900 dark:text-white break-words">
-                        {step.title}
-                      </h3>
+        {/* ── Claim Support ────────────────────────────────────────────────── */}
+        <section id="claim-support" className="space-y-8">
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1">Claim Support</p>
+            <h2 className="text-2xl font-bold text-slate-900">Your insurance only works if the claim gets paid</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Indian insurers reject or delay a significant portion of claims. Vinca fights for you — through formal grievance and Insurance Ombudsman — at zero upfront cost.
+            </p>
+          </div>
+
+          {/* How it works */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {HOW_IT_WORKS.map((s) => {
+              const Icon = s.icon;
+              return (
+                <div key={s.step} className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-black text-slate-100">{s.step}</span>
+                    <div className="bg-emerald-50 p-2 rounded-lg">
+                      <Icon className="w-4 h-4 text-emerald-600" />
                     </div>
-                    {/* Title without icon on mobile */}
-                    <h3 className="sm:hidden font-semibold text-sm sm:text-base lg:text-lg text-gray-900 dark:text-white break-words">
-                      {step.title}
-                    </h3>
-                    {step.badges && (
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                        {step.badges.map((badge, i) => (
-                          <span
-                            key={i}
-                            className={`${badge.color} dark:bg-green-800/50 text-green-700 dark:text-green-200 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm flex items-center gap-1 whitespace-nowrap`}
-                          >
-                            <badge.icon className="w-3 h-3 sm:w-4 sm:h-4" />
-                            {badge.text}
-                          </span>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-400 break-words">
-                    {step.description}
-                  </p>
-                  {step.resolution && (
-                    <div className="mt-2 sm:mt-3 bg-green-200 dark:bg-green-800 text-green-700 dark:text-green-200 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                      <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      <span className="font-semibold">Claim Amount Received</span>
-                    </div>
-                  )}
+                  <p className="font-semibold text-slate-900 text-sm leading-snug">{s.title}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Key Features - Responsive grid */}
-          <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-green-100 dark:bg-green-800/30 rounded-lg border border-green-200 dark:border-green-700/50"
+          {/* USP banner */}
+          <div className="rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4" style={{ background: '#0D2818' }}>
+            <div className="bg-emerald-500/20 p-3 rounded-xl flex-shrink-0">
+              <Award className="w-6 h-6 text-emerald-400" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-white">No recovery, no fee — guaranteed</p>
+              <p className="text-sm text-white/60 mt-0.5">
+                Our success fee is charged only when your claim is recovered. If we cannot get you the money, you owe us nothing. This aligns our interests completely with yours.
+              </p>
+            </div>
+          </div>
+
+          {/* Form or trigger */}
+          {showForm ? (
+            <ComplaintForm />
+          ) : (
+            <div className="rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50 p-8 text-center space-y-4">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm">
+                <FileText className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Has your claim been rejected or delayed?</p>
+                <p className="text-sm text-slate-500 mt-1">Register your complaint and our team will review it within 2 business days.</p>
+              </div>
+              <button
+                onClick={() => setShowForm(true)}
+                className="px-8 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition"
               >
-                <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400 shrink-0" />
-                <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 break-words">
-                  {feature.text}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+                Register a complaint →
+              </button>
+            </div>
+          )}
 
-export default InsurancePage;
+          {/* Tracker */}
+          <ComplaintTracker complaint={null} />
+        </section>
+
+        {/* ── Disclaimer ───────────────────────────────────────────────────── */}
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+          <p className="text-sm text-blue-900 leading-relaxed">
+            <strong>Educational content only:</strong> Insurance product information on this page is for general awareness. Premium figures are indicative.
+            Vinca does not hold a corporate insurance broking license — distribution is via eBix POSP (personal license).
+            Claim support is provided through our grievance assistance service and is not a legal guarantee of claim recovery.
+          </p>
+        </div>
+
+      </div>
+    </>
+  );
+}

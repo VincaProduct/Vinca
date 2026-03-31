@@ -15,7 +15,7 @@ import ThankYou from "./pages/ThankYou";
 import FinancialFreedomCalculator from "./pages/FinancialFreedomCalculator";
 import AuthPage from "./components/auth/AuthPage";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
-import Dashboard from "./pages/Dashboard";
+import DashboardHome from "./pages/dashboard/DashboardHome";
 import CanonicalPageHeader from "./components/ui/CanonicalPageHeader";
 import DashboardPricingPage from "./pages/dashboard/PricingPage";
 import BuyMembership from "./pages/BuyMembership";
@@ -24,7 +24,6 @@ import InvestmentOpportunities from "./pages/dashboard/InvestmentOpportunities";
 import ReferFriend from "./pages/dashboard/ReferFriend";
 import SupportPage from "./pages/dashboard/SupportPage";
 import FinancialCalculatorPage from "./pages/dashboard/FinancialCalculatorPage";
-import BookWealthManager from "./pages/dashboard/BookWealthManager";
 import BlogCMSDashboard from "./pages/dashboard/BlogCMSDashboard";
 import AuthorsDashboard from "./pages/dashboard/AuthorsDashboard";
 import CTADashboardPage from "./pages/dashboard/CTADashboard";
@@ -91,7 +90,7 @@ const App = () => (
                   {/* DASHBOARD ROUTES */}
                   <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
 
-                    <Route index element={<Dashboard />} />
+                    <Route index element={<DashboardHome />} />
                     <Route path="pricing" element={<DashboardPricingPage />} />
                     <Route path="buy-membership" element={<DashboardBuyMembershipPage />} />
 
@@ -113,7 +112,6 @@ const App = () => (
 
                     <Route path="elevate" element={<ElevatePage />} />
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
-                    <Route path="book-wealth-manager" element={<BookWealthManager />} />
                     <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
                     <Route path="refer" element={<ReferFriend />} />
                     <Route path="support" element={<SupportPage />} />

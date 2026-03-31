@@ -9,8 +9,7 @@ const GREEN = '#06A969';
 const DARK_BG = '#0D2818';
 
 // ─── Types ────────────────────────────────────────────────────
-type ModalStep = 'q1' | 'q2' | 'q3' | 'form' | 'ineligible' | 'confirmed';
-type FormData  = { name: string; phone: string; email: string };
+type ModalStep = 'q1' | 'q2' | 'q3' | 'booking' | 'ineligible';
 type Answers   = { income: string; concern: string; goal: string };
 
 // ─── Scroll-reveal hook ───────────────────────────────────────
@@ -143,8 +142,6 @@ export default function ElevatePage() {
   const [step, setStep]             = useState<ModalStep>('q1');
   const [sliding, setSliding]       = useState(false);
   const [answers, setAnswers]       = useState<Answers>({ income: '', concern: '', goal: '' });
-  const [formData, setFormData]     = useState<FormData>({ name: '', phone: '', email: '' });
-  const [submitting, setSubmitting] = useState(false);
 
   // FAQ
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -169,7 +166,6 @@ export default function ElevatePage() {
   const openModal = useCallback(() => {
     setStep('q1');
     setAnswers({ income: '', concern: '', goal: '' });
-    setFormData({ name: '', phone: '', email: '' });
     setModalOpen(true);
   }, []);
 
@@ -190,30 +186,7 @@ export default function ElevatePage() {
     const next = { ...answers, goal };
     setAnswers(next);
     // Eligible if income is not the lowest bracket
-    goTo(next.income !== 'Under ₹1L/month' ? 'form' : 'ineligible');
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from as any)('elevate_leads').insert({
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        income_range: answers.income,
-        investment_habit: answers.concern,
-        financial_goal: answers.goal,
-        ffr_score: ffrScore ?? null,
-        created_at: new Date().toISOString(),
-      });
-      goTo('confirmed');
-    } catch (err) {
-      console.error('Elevate lead submit error:', err);
-    } finally {
-      setSubmitting(false);
-    }
+    goTo(next.income !== 'Under ₹1L/month' ? 'booking' : 'ineligible');
   };
 
   // ── Data ───────────────────────────────────────────────────
@@ -487,10 +460,6 @@ export default function ElevatePage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-bold text-gray-900 text-sm">{s.name}</p>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded"
-                        style={{ background: '#FEF3C7', color: '#92400E' }}>
-                        SAMPLE
-                      </span>
                     </div>
                     <p className="text-gray-500 text-xs">{s.role}</p>
                   </div>
@@ -606,7 +575,7 @@ export default function ElevatePage() {
 
           {/* Modal card */}
           <div
-            className="bg-white rounded-3xl p-12 w-full max-w-lg shadow-2xl max-md:p-8"
+            className={`bg-white rounded-3xl w-full shadow-2xl ${step === 'booking' ? 'max-w-3xl overflow-hidden' : 'max-w-lg p-12 max-md:p-8'}`}
             style={{
               opacity: sliding ? 0 : 1,
               transform: sliding ? 'translateX(20px)' : 'translateX(0)',
@@ -653,41 +622,24 @@ export default function ElevatePage() {
               />
             )}
 
-            {/* Eligible — form */}
-            {step === 'form' && (
+            {/* Eligible — book a session */}
+            {step === 'booking' && (
               <div>
-                <ProgressDots current={2} />
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-5"
-                  style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}
-                >✓</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">You are eligible for Elevate</h2>
-                <p className="text-gray-500 text-sm mb-7 leading-relaxed">
-                  A wealth manager will reach out within 48 hours.
-                </p>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                  {(['name', 'phone', 'email'] as const).map((field) => (
-                    <input
-                      key={field}
-                      type={field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
-                      placeholder={field === 'name' ? 'Your name' : field === 'phone' ? 'Phone number' : 'Email address'}
-                      required
-                      value={formData[field]}
-                      onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                      className="w-full px-5 py-4 rounded-xl border border-gray-200 text-gray-900 text-sm
-                                 focus:outline-none focus:border-green-500 transition-colors"
-                      style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                    />
-                  ))}
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full py-4 rounded-xl text-white font-bold text-base mt-2 transition-opacity"
-                    style={{ background: GREEN, opacity: submitting ? 0.75 : 1, cursor: submitting ? 'not-allowed' : 'pointer' }}
-                  >
-                    {submitting ? 'Submitting…' : 'Confirm My Spot →'}
-                  </button>
-                </form>
+                <div className="px-10 pt-10 pb-6 max-md:px-6 max-md:pt-6">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-lg mb-4"
+                    style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}
+                  >✓</div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">You are eligible for Elevate</h2>
+                  <p className="text-gray-500 text-sm">Pick a time that works for you — a wealth manager will call you at that slot.</p>
+                </div>
+                <iframe
+                  src="https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000000140004"
+                  className="w-full border-0 block"
+                  style={{ minHeight: 600 }}
+                  title="Book a Wealth Manager Consultation"
+                  allowFullScreen
+                />
               </div>
             )}
 
@@ -713,23 +665,6 @@ export default function ElevatePage() {
               </div>
             )}
 
-            {/* Confirmed */}
-            {step === 'confirmed' && (
-              <div className="text-center">
-                <div className="text-5xl mb-4" style={{ color: GREEN }}>✓</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">You are on the list</h2>
-                <p className="text-gray-500 text-sm leading-relaxed mb-8">
-                  We will call you within 48 hours. In the meantime, explore your dashboard.
-                </p>
-                <button
-                  onClick={() => { setModalOpen(false); navigate('/dashboard/ffr'); }}
-                  className="px-8 py-3 rounded-full font-semibold text-white text-sm transition-opacity hover:opacity-90"
-                  style={{ background: GREEN }}
-                >
-                  Go to My Dashboard →
-                </button>
-              </div>
-            )}
           </div>
         </div>
       )}
