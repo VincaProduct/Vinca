@@ -182,7 +182,29 @@ function DashboardHomeContent() {
           )}
         </div>
 
-        {/* ── Card 3: Next Action ──────────────────────────────────────── */}
+        {/* ── Card 3: Portfolio ───────────────────────────────────────── */}
+        <div
+          className="rounded-2xl border border-border bg-card p-8 space-y-4"
+          style={{ borderLeft: '3px solid #0F6E56', borderRadius: '0 12px 12px 0' }}
+        >
+          <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
+            Your Portfolio
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            View and manage your Vinca investments
+          </p>
+          <a
+            href="https://portfolio.vincawealth.com/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-full px-5 py-2.5 rounded-lg text-sm text-white transition-opacity hover:opacity-90"
+            style={{ background: '#0F6E56', fontWeight: 500 }}
+          >
+            Open Vinca Portfolio →
+          </a>
+        </div>
+
+        {/* ── Card 4: Next Action ──────────────────────────────────────── */}
         {firstStep && (
           <div
             className="rounded-2xl border border-border bg-card p-8 space-y-4"
