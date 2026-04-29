@@ -71,15 +71,15 @@ export default async (request: Request, context: Context) => {
 
     if (!response.ok) {
       console.error(`[OG-Tags] Failed to fetch blog post: ${response.status} ${response.statusText}`);
-      return;
+      return new Response('Service Unavailable', { status: 503, headers: { 'Retry-After': '300' } });
     }
 
     const posts = await response.json();
     console.log(`[OG-Tags] Found ${posts?.length || 0} posts for slug: ${slug}`);
 
     if (!posts || posts.length === 0) {
-      console.log('[OG-Tags] No published blog post found, skipping OG tag injection');
-      return;
+      console.log('[OG-Tags] No published blog post found, returning 404');
+      return new Response('Not Found', { status: 404 });
     }
 
     const post = posts[0];
@@ -275,7 +275,8 @@ export default async (request: Request, context: Context) => {
     });
   } catch (error) {
     console.error('[OG-Tags] Error in OG tags edge function:', error);
-    return;
+    // Return 503 so Google retries rather than treating this as a soft 404
+    return new Response('Service Unavailable', { status: 503, headers: { 'Retry-After': '300' } });
   }
 };
 
