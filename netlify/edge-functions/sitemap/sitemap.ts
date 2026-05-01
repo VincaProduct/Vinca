@@ -17,18 +17,17 @@ export default async (request: Request) => {
     console.error('Error fetching posts for sitemap:', error);
     // Return a minimal sitemap with just the homepage if there's an error
     const baseUrl = 'https://vincawealth.com';
-    const currentDate = new Date().toISOString();
     const minimalSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>${baseUrl}/</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>daily</changefreq>
+    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>${baseUrl}/blog</loc>
-    <lastmod>${currentDate}</lastmod>
+    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -42,17 +41,21 @@ export default async (request: Request) => {
   }
 
   const baseUrl = 'https://vincawealth.com';
-  const currentDate = new Date().toISOString();
 
   // Helper function to format dates properly for sitemap
   const formatDate = (dateString: string | null | undefined): string => {
-    if (!dateString) return currentDate;
+    if (!dateString) return '2025-01-01T00:00:00.000Z';
     try {
       return new Date(dateString).toISOString();
     } catch {
-      return currentDate;
+      return '2025-01-01T00:00:00.000Z';
     }
   };
+
+  // Use the most recently published post date for the blog listing page lastmod
+  const latestPostDate = posts && posts.length > 0
+    ? formatDate(posts[0].published_at || posts[0].updated_at)
+    : '2025-01-01T00:00:00.000Z';
 
   // Generate sitemap XML
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -65,15 +68,15 @@ export default async (request: Request) => {
   <!-- Homepage -->
   <url>
     <loc>${baseUrl}/</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>daily</changefreq>
+    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Blog listing page -->
   <url>
     <loc>${baseUrl}/blog</loc>
-    <lastmod>${currentDate}</lastmod>
+    <lastmod>${latestPostDate}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -89,7 +92,7 @@ export default async (request: Request) => {
   <!-- Financial Freedom Calculator -->
   <url>
     <loc>${baseUrl}/financial-freedom-calculator</loc>
-    <lastmod>${currentDate}</lastmod>
+    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -97,7 +100,7 @@ export default async (request: Request) => {
   <!-- Achievers Club -->
   <url>
     <loc>${baseUrl}/achievers-club</loc>
-    <lastmod>${currentDate}</lastmod>
+    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -105,8 +108,8 @@ export default async (request: Request) => {
   <!-- Privacy Policy -->
   <url>
     <loc>${baseUrl}/privacy-policy</loc>
-    <lastmod>${currentDate}</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
+    <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 

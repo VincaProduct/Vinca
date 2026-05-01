@@ -375,6 +375,19 @@ async function handleBlogListing(request: Request, context: Context) {
     const htmlResponse = await context.next();
     const html = await htmlResponse.text();
 
+    const listingMetaTags = `
+    <!-- Blog Listing Meta Tags -->
+    <title>Vinca Wealth Blog | Mutual Funds, Investing &amp; Financial Planning</title>
+    <meta name="description" content="Read expert articles on mutual funds, goal-based investing, wealth management, and financial planning from the Vinca Wealth team.">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <link rel="canonical" href="https://vincawealth.com/blog">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vincawealth.com/blog">
+    <meta property="og:title" content="Vinca Wealth Blog | Mutual Funds, Investing &amp; Financial Planning">
+    <meta property="og:description" content="Read expert articles on mutual funds, goal-based investing, wealth management, and financial planning from the Vinca Wealth team.">
+    <meta property="og:site_name" content="Vinca Wealth">
+    `;
+
     const listingHtml = `
       <main>
         <header style="padding: 40px 20px; text-align: center; border-bottom: 2px solid #eee;">
@@ -411,10 +424,12 @@ async function handleBlogListing(request: Request, context: Context) {
       </main>
     `;
 
-    const modifiedHtml = html.replace(
-      '<div id="root"></div>',
-      `<div id="root">${listingHtml}</div>`
-    );
+    const modifiedHtml = html
+      .replace('<head>', `<head>\n${listingMetaTags}`)
+      .replace(
+        '<div id="root"></div>',
+        `<div id="root">${listingHtml}</div>`
+      );
 
     return new Response(modifiedHtml, {
       headers: {
@@ -430,7 +445,7 @@ async function handleBlogListing(request: Request, context: Context) {
 }
 
 export const config = {
-  path: "/blog/*",
+  path: ["/blog", "/blog/*"],
   // Ensure edge function runs for all user agents including social media crawlers
   excludedPath: ["/blog/cms", "/blog/cms/*"]
 };

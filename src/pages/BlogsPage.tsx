@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 // import BlogHero from "@/components/blog/BlogHero";
@@ -37,6 +38,20 @@ const BlogsPage = () => {
   // Otherwise show the main blogs listing
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Vinca Wealth Blog | Mutual Funds, Investing & Financial Planning</title>
+        <meta name="description" content="Read expert articles on mutual funds, goal-based investing, wealth management, and financial planning from the Vinca Wealth team." />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://vincawealth.com/blog" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://vincawealth.com/blog" />
+        <meta property="og:title" content="Vinca Wealth Blog | Mutual Funds, Investing & Financial Planning" />
+        <meta property="og:description" content="Read expert articles on mutual funds, goal-based investing, wealth management, and financial planning from the Vinca Wealth team." />
+        <meta property="og:site_name" content="Vinca Wealth" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Vinca Wealth Blog | Mutual Funds, Investing & Financial Planning" />
+        <meta name="twitter:description" content="Read expert articles on mutual funds, goal-based investing, wealth management, and financial planning from the Vinca Wealth team." />
+      </Helmet>
       <Header />
       {/* <BlogHero /> */}
       {/* <FeaturedArticle /> */}

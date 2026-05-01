@@ -35,6 +35,10 @@
 
 [[edge_functions]]
 function = "tags"
+path = "/blog"
+
+[[edge_functions]]
+function = "tags"
 path = "/blog/*"
 
 [[edge_functions]]
