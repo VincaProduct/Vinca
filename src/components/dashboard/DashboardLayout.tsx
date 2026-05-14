@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Home, TrendingUp, Shield, Sprout, Star } from 'lucide-react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Home, TrendingUp, Shield, Sprout, Star, User, LogOut, LineChart, UserPlus, ExternalLink } from 'lucide-react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { DashboardSidebar } from './DashboardSidebar';
 import { DashboardHeader } from './DashboardHeader';
@@ -10,6 +10,13 @@ import {
 } from '@/components/financial-planning/context/FinancialPlanningContext';
 import { useFFR } from '@/hooks/useFFR';
 import { calculateFFRScore } from '@/utils/ffrScore';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -21,6 +28,9 @@ const TEAL       = '#5DCAA5';
 function MobileScoreHeader() {
   const { inputs, results, projections, hasCalculated } = useFinancialPlanning();
   const { checklist } = useFFR(inputs && results ? { inputs, results } : undefined);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const retirementYear = hasCalculated && inputs
     ? new Date().getFullYear() + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP
@@ -32,32 +42,99 @@ function MobileScoreHeader() {
       ? calculateFFRScore(inputs, results, projections, checklist)
       : null;
 
+  const handleSignOut = async () => {
+    setMenuOpen(false);
+    await signOut();
+    navigate('/');
+  };
+
+  const handleNavItem = (url: string) => {
+    setMenuOpen(false);
+    navigate(url);
+  };
+
   return (
-    <div
-      className="sticky top-0 z-40 md:hidden px-5 py-3 flex items-center justify-between"
-      style={{ background: DARK_GREEN }}
-    >
-      <div>
-        <p
-          className="text-[9px] font-bold tracking-widest uppercase"
-          style={{ color: TEAL }}
+    <>
+      <div
+        className="sticky top-0 z-40 md:hidden px-4 py-3 flex items-center justify-between"
+        style={{ background: DARK_GREEN }}
+      >
+        {/* Retirement date */}
+        <div>
+          <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: TEAL }}>
+            Retirement Date
+          </p>
+          <p className="text-sm font-bold text-white leading-snug">{retirementLabel}</p>
+        </div>
+
+        {/* FFR Score */}
+        <Link to="/dashboard/ffr" className="text-center" onClick={() => setMenuOpen(false)}>
+          <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: TEAL }}>
+            FFR Score
+          </p>
+          <p className="text-sm font-bold text-white leading-snug">
+            {score !== null ? `${score}/100` : '—/100'}
+          </p>
+        </Link>
+
+        {/* User avatar button */}
+        <button
+          onClick={() => setMenuOpen(true)}
+          className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: 'rgba(255,255,255,0.12)' }}
         >
-          Retirement Date
-        </p>
-        <p className="text-sm font-bold text-white leading-snug">{retirementLabel}</p>
+          <User style={{ width: 16, height: 16, color: 'white' }} />
+        </button>
       </div>
-      <Link to="/dashboard/ffr" className="text-right">
-        <p
-          className="text-[9px] font-bold tracking-widest uppercase"
-          style={{ color: TEAL }}
-        >
-          FFR Score
-        </p>
-        <p className="text-sm font-bold text-white leading-snug">
-          {score !== null ? `${score}/100` : '—/100'}
-        </p>
-      </Link>
-    </div>
+
+      {/* Bottom drawer — profile + nav */}
+      <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
+        <DrawerContent>
+          <DrawerHeader className="pb-0">
+            <DrawerTitle className="text-left text-base">
+              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Account'}
+            </DrawerTitle>
+            <p className="text-xs text-muted-foreground text-left -mt-1">{user?.email}</p>
+          </DrawerHeader>
+
+          <div className="px-4 pb-8 pt-4 space-y-1">
+            <button
+              onClick={() => handleNavItem('/dashboard/ffr')}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
+            >
+              <LineChart className="h-4 w-4 text-muted-foreground" />
+              Financial Freedom
+            </button>
+
+            <button
+              onClick={() => handleNavItem('/dashboard/refer')}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
+            >
+              <UserPlus className="h-4 w-4 text-muted-foreground" />
+              Refer a Friend
+            </button>
+
+            <button
+              onClick={() => handleNavItem('/')}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
+            >
+              <ExternalLink className="h-4 w-4 text-muted-foreground" />
+              Back to Website
+            </button>
+
+            <div className="w-full h-px bg-border my-2" />
+
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-red-50 text-red-600 transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </button>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }
 
