@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useFinancialPlanning } from '@/components/financial-planning/context/FinancialPlanningContext';
+import { useFFR } from '@/hooks/useFFR';
+import { calculateFFRScore } from '@/utils/ffrScore';
 import { User, TrendingUp, Shield, Zap } from 'lucide-react';
 
 // ─── Primary green from Tailwind config ───────────────────────
@@ -134,8 +136,12 @@ export default function ElevatePage() {
   const { user }    = useAuth();
   const navigate    = useNavigate();
 
-  // FFR score
-  const [ffrScore, setFfrScore] = useState<number | null>(null);
+  // FFR score — same live calculation as the header bar
+  const { inputs, results, projections, hasCalculated } = useFinancialPlanning();
+  const { checklist } = useFFR(inputs && results ? { inputs, results } : undefined);
+  const ffrScore = hasCalculated && inputs && results && projections.length > 0
+    ? calculateFFRScore(inputs, results, projections, checklist)
+    : null;
 
   // Modal state
   const [modalOpen, setModalOpen]   = useState(false);
@@ -149,18 +155,6 @@ export default function ElevatePage() {
   // Scroll-reveal refs
   const s2Ref  = useReveal(150);
   const s4Ref  = useRevealRight(200);
-
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('ffr_user_progress')
-      .select('total_score_base')
-      .eq('user_id', user.id)
-      .single()
-      .then(({ data }) => {
-        if (data?.total_score_base) setFfrScore(Math.round(data.total_score_base));
-      });
-  }, [user]);
 
   // ── Modal helpers ──────────────────────────────────────────
   const openModal = useCallback(() => {
