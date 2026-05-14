@@ -84,6 +84,12 @@ const NAV: NavGroup[] = [
     url: '/dashboard',
   },
   {
+    key: 'ffr',
+    title: 'Financial Freedom',
+    icon: LineChart,
+    url: '/dashboard/ffr',
+  },
+  {
     key: 'build',
     title: 'Build',
     icon: TrendingUp,
