@@ -30,8 +30,11 @@ const AuthPage = () => {
     try { return JSON.parse(blogRaw); } catch { return null; }
   })() : null;
 
+  const isConsultation = sessionStorage.getItem('auth_context_consultation') === 'true';
+
   useEffect(() => {
     if (blogContext) sessionStorage.removeItem('auth_context_blog');
+    if (isConsultation) sessionStorage.removeItem('auth_context_consultation');
   }, []);
 
   useEffect(() => {
@@ -107,6 +110,15 @@ const AuthPage = () => {
             </h1>
             <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
               Your numbers are saved. Unlock your month-by-month action plan.
+            </p>
+          </>
+        ) : isConsultation ? (
+          <>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+              Book your free consultation
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+              Sign in to schedule a call with a dedicated wealth manager. No commitment, no sales pitch.
             </p>
           </>
         ) : blogContext ? (

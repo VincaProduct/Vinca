@@ -58,6 +58,7 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
 
     // Redirect all CTAs to auth page
     localStorage.setItem('redirect_after_login', '/dashboard/elevate');
+    sessionStorage.setItem('auth_context_consultation', 'true');
     navigate('/auth');
   }, [cta.id, blogPostId, trackCTAEvent, navigate]);
 

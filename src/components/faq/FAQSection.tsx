@@ -216,6 +216,7 @@ const FAQSection = () => {
             <button
               onClick={() => {
                 localStorage.setItem('redirect_after_login', '/dashboard/elevate');
+                sessionStorage.setItem('auth_context_consultation', 'true');
                 navigate('/auth');
               }}
               className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2"
