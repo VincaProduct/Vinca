@@ -140,7 +140,7 @@ export function HealthStressTab() {
               </div>
               <Button
                 size="sm"
-                onClick={() => window.location.href = '/dashboard/book-wealth-manager'}
+                onClick={() => window.location.href = '/dashboard/elevate'}
                 className="cursor-pointer shrink-0"
               >
                 Book Session

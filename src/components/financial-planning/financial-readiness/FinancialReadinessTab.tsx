@@ -129,7 +129,7 @@ export function FinancialReadinessTab() {
                   variant="outline"
                   size="lg"
                   className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 w-full sm:w-auto"
-                  onClick={() => navigate('/dashboard/book-wealth-manager')}
+                  onClick={() => navigate('/dashboard/elevate')}
                 >
                   Talk to Wealth Manager
                 </Button>
