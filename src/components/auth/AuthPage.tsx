@@ -20,11 +20,19 @@ const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState('');
 
-  // Read pending score from sessionStorage to show in the pill
   const pendingRaw = sessionStorage.getItem('ffr_pending_state');
-  const pendingScore: number | null = pendingRaw ? (() => {
-    try { return JSON.parse(pendingRaw).score ?? null; } catch { return null; }
+  const ffrState: { score: number; retirementYear?: number; gap?: number } | null = pendingRaw ? (() => {
+    try { return JSON.parse(pendingRaw); } catch { return null; }
   })() : null;
+
+  const blogRaw = sessionStorage.getItem('auth_context_blog');
+  const blogContext: { title: string } | null = blogRaw ? (() => {
+    try { return JSON.parse(blogRaw); } catch { return null; }
+  })() : null;
+
+  useEffect(() => {
+    if (blogContext) sessionStorage.removeItem('auth_context_blog');
+  }, []);
 
   useEffect(() => {
     const refCode = searchParams.get('ref');
@@ -76,30 +84,50 @@ const AuthPage = () => {
           style={{ height: 40, width: 'auto', maxWidth: 200, objectFit: 'contain', margin: '0 auto 24px' }}
         />
 
-        {/* Score pill */}
-        {pendingScore !== null && (
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            background: '#F0FDF4',
-            border: '1px solid #BBF7D0',
-            borderRadius: 100,
-            padding: '8px 20px',
-            marginBottom: 24,
-          }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(158 64% 32%)' }}>
-              Your score: {pendingScore}/100
-            </span>
-          </div>
+        {/* Context-aware heading block */}
+        {ffrState ? (
+          <>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              background: '#F0FDF4',
+              border: '1px solid #BBF7D0',
+              borderRadius: 100,
+              padding: '8px 20px',
+              marginBottom: 24,
+            }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(158 64% 32%)' }}>
+                Your score: {ffrState.score}/100
+              </span>
+            </div>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+              {ffrState.retirementYear
+                ? `See exactly how to retire by ${ffrState.retirementYear}`
+                : 'Sign in to see your full plan'}
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+              Your numbers are saved. Unlock your month-by-month action plan.
+            </p>
+          </>
+        ) : blogContext ? (
+          <>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+              Calculate your Financial Freedom Score
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+              You were reading <em>"{blogContext.title.replace(' | Vinca Wealth', '').replace(' - Vinca Wealth', '')}"</em>. Sign in to find out exactly where you stand — free, in 2 minutes.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+              Are you on track to retire when you want?
+            </h1>
+            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+              Find out your Financial Freedom Score in 2 minutes. Free.
+            </p>
+          </>
         )}
-
-        {/* Heading */}
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
-          Sign in to see your full plan
-        </h1>
-        <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
-          Your score is saved. See exactly how to improve it.
-        </p>
 
         {/* Google button */}
         <button

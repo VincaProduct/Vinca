@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -13,6 +13,15 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignInClick = () => {
+    setIsMenuOpen(false);
+    if (window.location.pathname.startsWith('/blog/')) {
+      sessionStorage.setItem('auth_context_blog', JSON.stringify({ title: document.title }));
+    }
+    navigate('/auth');
+  };
 
   const handleMenuItemClick = (action: () => void) => {
     action();
@@ -167,15 +176,12 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                     </Button>
                   </Link>
                 ) : (
-                  <Link to="/auth" onClick={() => setIsMenuOpen(false)} className="block">
-                    <Button 
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg group"
-                    >
-                      <span className="transition-transform duration-200 group-hover:translate-x-1">
-                        Sign In
-                      </span>
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={handleSignInClick}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground w-full transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg"
+                  >
+                    Sign In
+                  </Button>
                 )}
               </div>
             </div>

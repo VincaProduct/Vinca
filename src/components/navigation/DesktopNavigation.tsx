@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -16,6 +16,14 @@ interface DesktopNavigationProps {
 
 const DesktopNavigation = ({ scrollToSection }: DesktopNavigationProps) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignInClick = () => {
+    if (window.location.pathname.startsWith('/blog/')) {
+      sessionStorage.setItem('auth_context_blog', JSON.stringify({ title: document.title }));
+    }
+    navigate('/auth');
+  };
 
   const handlePortfolioLoginClick = () => {
     window.open("https://portfolio.vincawealth.com/login?_gl=1*1c7uhfu*_gcl_au*MTg1NjAzODIzOC4xNzQ5Mjk4MTEy*_ga*MTg1NzI3NTc0MC4xNzQ5Mjk4MTEy*_ga_6MQBMGPXJJ*czE3NDkzNzE3MTkkbzIkZzAkdDE3NDkzNzE3MTkkajYwJGwwJGgw", "_blank", "noopener,noreferrer");
@@ -101,15 +109,14 @@ const DesktopNavigation = ({ scrollToSection }: DesktopNavigationProps) => {
             </Button>
           </Link>
         ) : (
-          <Link to="/auth" className="group">
-            <Button 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg hover:shadow-primary/25"
-            >
-              <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                Sign In
-              </span>
-            </Button>
-          </Link>
+          <Button
+            onClick={handleSignInClick}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm xl:text-base px-4 xl:px-6 h-9 xl:h-10 whitespace-nowrap transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-lg focus:scale-105 focus:shadow-lg hover:shadow-primary/25"
+          >
+            <span className="transition-transform duration-200">
+              Sign In
+            </span>
+          </Button>
         )}
       </div>
     </div>

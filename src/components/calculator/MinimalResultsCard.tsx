@@ -195,7 +195,8 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
         <Button
           onClick={() => {
-            sessionStorage.setItem('ffr_pending_state', JSON.stringify({ inputs, score }));
+            const retirementYear = new Date().getFullYear() + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
+            sessionStorage.setItem('ffr_pending_state', JSON.stringify({ inputs, score, retirementYear, gap }));
             localStorage.setItem('redirect_after_login', '/dashboard/ffr');
             window.location.href = '/auth';
           }}
