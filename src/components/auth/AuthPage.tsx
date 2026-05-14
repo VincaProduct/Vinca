@@ -20,21 +20,17 @@ const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState('');
 
-  const pendingRaw = sessionStorage.getItem('ffr_pending_state');
-  const ffrState: { score: number; retirementYear?: number; gap?: number } | null = pendingRaw ? (() => {
-    try { return JSON.parse(pendingRaw); } catch { return null; }
-  })() : null;
-
-  const blogRaw = sessionStorage.getItem('auth_context_blog');
-  const blogContext: { title: string } | null = blogRaw ? (() => {
-    try { return JSON.parse(blogRaw); } catch { return null; }
-  })() : null;
-
-  const isConsultation = sessionStorage.getItem('auth_context_consultation') === 'true';
+  const [ffrState] = useState<{ score: number; retirementYear?: number; gap?: number } | null>(() => {
+    try { return JSON.parse(sessionStorage.getItem('ffr_pending_state') || 'null'); } catch { return null; }
+  });
+  const [blogContext] = useState<{ title: string } | null>(() => {
+    try { return JSON.parse(sessionStorage.getItem('auth_context_blog') || 'null'); } catch { return null; }
+  });
+  const [isConsultation] = useState(() => sessionStorage.getItem('auth_context_consultation') === 'true');
 
   useEffect(() => {
-    if (blogContext) sessionStorage.removeItem('auth_context_blog');
-    if (isConsultation) sessionStorage.removeItem('auth_context_consultation');
+    sessionStorage.removeItem('auth_context_blog');
+    sessionStorage.removeItem('auth_context_consultation');
   }, []);
 
   useEffect(() => {
