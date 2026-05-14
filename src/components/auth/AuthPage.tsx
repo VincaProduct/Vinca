@@ -29,11 +29,6 @@ const AuthPage = () => {
   const [isConsultation] = useState(() => sessionStorage.getItem('auth_context_consultation') === 'true');
 
   useEffect(() => {
-    sessionStorage.removeItem('auth_context_blog');
-    sessionStorage.removeItem('auth_context_consultation');
-  }, []);
-
-  useEffect(() => {
     const refCode = searchParams.get('ref');
     if (refCode) {
       setReferralCode(refCode);
