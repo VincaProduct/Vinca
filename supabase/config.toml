@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.zoho-booking]
 verify_jwt = false
+
+[functions.sync-to-zoho]
+verify_jwt = false
+
+[functions.zoho-crm-webhook]
+verify_jwt = false
