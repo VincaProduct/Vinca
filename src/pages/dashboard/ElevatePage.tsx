@@ -224,6 +224,37 @@ export default function ElevatePage() {
     goTo(profilePhone ? 'booking' : 'phone');
   };
 
+  // ── Nimbuspop booking embed ────────────────────────────────
+  useEffect(() => {
+    if (step !== 'booking') return;
+
+    const params = new URLSearchParams();
+    if (profileName)  params.set('name', profileName);
+    if (profileEmail) params.set('email', profileEmail);
+    const ph = (profilePhone || phone || '').replace(/\s/g, '');
+    if (ph) params.set('phone_number', ph);
+    const qs = params.toString();
+    const bookingUrl = `https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000000140004${qs ? '?' + qs : ''}`;
+
+    const script = document.createElement('script');
+    script.src = 'https://bookings.nimbuspop.com/assets/embed.js';
+    script.async = true;
+    script.onload = () => {
+      (window as any).Bookings?.inlineEmbed({
+        url: bookingUrl,
+        parent: '#elevate-booking-container',
+        height: '600px',
+      });
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      script.remove();
+      const el = document.getElementById('elevate-booking-container');
+      if (el) el.innerHTML = '';
+    };
+  }, [step, profileName, profileEmail, profilePhone, phone]);
+
   const handlePhone = async () => {
     if (!phone.trim() || !user) return;
     setPhoneLoading(true);
@@ -714,21 +745,7 @@ export default function ElevatePage() {
                   <h2 className="text-2xl font-bold text-gray-900 mb-1">You are eligible for Elevate</h2>
                   <p className="text-gray-500 text-sm">Pick a time that works for you — a wealth manager will call you at that slot.</p>
                 </div>
-                <iframe
-                  src={(() => {
-                    const params = new URLSearchParams();
-                    if (profileName)  params.set('name', profileName);
-                    if (profileEmail) params.set('email', profileEmail);
-                    const ph = (profilePhone || phone || '').replace(/\s/g, '');
-                    if (ph) params.set('phone_number', ph);
-                    const qs = params.toString();
-                    return `https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000000140004${qs ? '?' + qs : ''}`;
-                  })()}
-                  className="w-full border-0 block"
-                  style={{ minHeight: 600 }}
-                  title="Book a Wealth Manager Consultation"
-                  allowFullScreen
-                />
+                <div id="elevate-booking-container" style={{ minHeight: 600 }} />
               </div>
             )}
 
