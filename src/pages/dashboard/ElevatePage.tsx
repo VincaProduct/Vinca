@@ -244,21 +244,40 @@ export default function ElevatePage() {
     if (profilePhone) setBookingPhone(profilePhone);
   }, [profileName, profilePhone]);
 
-  // ── Submit booking to consultation_bookings ────────────────
+  // ── Submit booking to consultation_bookings + Zoho Bookings ──
   const handleBookingSubmit = async () => {
     if (!selectedDate || !selectedSlot || !user) return;
     setBookingLoading(true);
+
+    const name          = bookingName || profileName;
+    const phone         = bookingPhone || profilePhone || '';
+    const preferredDate = format(selectedDate, 'yyyy-MM-dd');
+
     await (supabase.from('consultation_bookings') as any).insert({
-      user_id:           user.id,
-      full_name:         bookingName || profileName,
-      email:             profileEmail,
-      phone:             bookingPhone || profilePhone || '',
-      preferred_date:    format(selectedDate, 'yyyy-MM-dd'),
+      user_id:             user.id,
+      full_name:           name,
+      email:               profileEmail,
+      phone,
+      preferred_date:      preferredDate,
       preferred_time_slot: selectedSlot,
-      consultation_type: 'elevate_consultation',
-      additional_info:   additionalInfo || null,
-      status:            'pending',
+      consultation_type:   'elevate_consultation',
+      additional_info:     additionalInfo || null,
+      status:              'pending',
     });
+
+    // Sync to Zoho Bookings (fire-and-forget — don't block success screen on API errors)
+    supabase.functions.invoke('zoho-booking', {
+      body: {
+        preferred_date:      preferredDate,
+        preferred_time_slot: selectedSlot,
+        full_name:           name,
+        email:               profileEmail,
+        phone,
+      },
+    }).then(({ error }) => {
+      if (error) console.error('Zoho Booking sync failed:', error);
+    });
+
     setBookingLoading(false);
     goTo('booked');
   };

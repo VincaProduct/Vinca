@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.update-zoho-contact-referral]
 verify_jwt = false
+
+[functions.zoho-booking]
+verify_jwt = false
