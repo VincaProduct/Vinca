@@ -162,6 +162,7 @@ export default function ElevatePage() {
   const [bookingName, setBookingName]   = useState('');
   const [bookingPhone, setBookingPhone] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
@@ -204,6 +205,7 @@ export default function ElevatePage() {
     setAnswers({ investable_amount: '', concern: '', focus: '' });
     setPhone('');
     setSelectedDate(undefined);
+    setCalendarOpen(false);
     setSelectedSlot('');
     setAdditionalInfo('');
     setModalOpen(true);
@@ -809,7 +811,7 @@ export default function ElevatePage() {
                   {/* Date */}
                   <div className="mb-6">
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Select a date</p>
-                    <Popover>
+                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                       <PopoverTrigger asChild>
                         <button
                           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-left focus:outline-none focus:border-green-500 transition-colors flex items-center justify-between"
@@ -827,7 +829,7 @@ export default function ElevatePage() {
                         <Calendar
                           mode="single"
                           selected={selectedDate}
-                          onSelect={setSelectedDate}
+                          onSelect={(date) => { setSelectedDate(date); setCalendarOpen(false); }}
                           disabled={{ before: today }}
                           classNames={{
                             months: 'w-full',
