@@ -47,6 +47,13 @@ const AuthPage = () => {
   }
 
   const handleGoogleSignIn = async () => {
+    // Determine lead source from the context that brought the user here
+    let leadSource = 'Website Signup';
+    if (ffrState) leadSource = 'Calculator';
+    else if (isConsultation) leadSource = 'Consultation CTA';
+    else if (blogContext) leadSource = 'Blog Article';
+    localStorage.setItem('pending_lead_source', leadSource);
+
     setLoading(true);
     await signInWithGoogle(referralCode || undefined);
     setLoading(false);

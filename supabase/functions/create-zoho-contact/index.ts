@@ -17,6 +17,7 @@ interface ContactData {
   company?: string;
   phone?: string;
   referralCode?: string;
+  leadSource?: string;
 }
 
 serve(async (req) => {
@@ -30,7 +31,7 @@ serve(async (req) => {
     const body: ContactData = await req.json();
 
     // Validate required fields
-    const { userId, email, firstName, lastName, fullName, company, phone, referralCode } = body;
+    const { userId, email, firstName, lastName, fullName, company, phone, referralCode, leadSource } = body;
 
     if (!userId || !email) {
       console.error('Missing required fields:', { userId, email });
@@ -135,7 +136,7 @@ serve(async (req) => {
           Email: email,
           Phone: phone || null,
           User_Type: 'Basic', // NEW FIELD - all signups start as Basic
-          Lead_Source: referrerContactId ? 'External Referral' : 'Google Signup',
+          Lead_Source: referrerContactId ? 'External Referral' : (leadSource || 'Website Signup'),
           Description: `Signed up via Google OAuth on ${currentDate}${referrerContactId ? ' (Referred)' : ''}`,
           ...(referrerContactId && { Referral_Contact: { id: referrerContactId } })
         },

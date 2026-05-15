@@ -35,9 +35,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Clear redirect path after successful sign in
-        if (event === 'SIGNED_IN') {
+        if (event === 'SIGNED_IN' && session?.user) {
           localStorage.removeItem('redirect_after_login');
+
+          // For new users (profile in 'waiting_lead_source'), write the lead source and
+          // trigger the Zoho contact creation by flipping zoho_sync_status to 'pending'
+          const leadSource = localStorage.getItem('pending_lead_source') || 'Website Signup';
+          localStorage.removeItem('pending_lead_source');
+
+          supabase
+            .from('profiles')
+            .select('zoho_sync_status')
+            .eq('id', session.user.id)
+            .single()
+            .then(({ data }) => {
+              if (data?.zoho_sync_status === 'waiting_lead_source') {
+                supabase
+                  .from('profiles')
+                  .update({ lead_source: leadSource, zoho_sync_status: 'pending' })
+                  .eq('id', session.user.id)
+                  .then(() => {});
+              }
+            });
         }
       }
     );
