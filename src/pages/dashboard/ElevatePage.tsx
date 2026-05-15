@@ -6,6 +6,7 @@ import { useFFR } from '@/hooks/useFFR';
 import { calculateFFRScore } from '@/utils/ffrScore';
 import { supabase } from '@/integrations/supabase/client';
 import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { User, TrendingUp, Shield, Zap } from 'lucide-react';
 
@@ -788,40 +789,50 @@ export default function ElevatePage() {
 
                   {/* Date */}
                   <div className="mb-6">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-                      Select a date
-                      {selectedDate && <span className="ml-2 normal-case font-medium text-gray-700">{format(selectedDate, 'dd MMM yyyy')}</span>}
-                    </p>
-                    <div className="rounded-2xl border border-gray-100 overflow-hidden bg-white"
-                      style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={{ before: today }}
-                        className="w-full"
-                        classNames={{
-                          months: 'w-full',
-                          month: 'w-full',
-                          table: 'w-full',
-                          head_row: 'flex justify-between px-2',
-                          head_cell: 'text-gray-400 font-medium text-xs w-9 text-center',
-                          row: 'flex justify-between px-2 mt-1',
-                          cell: 'w-9 h-9 text-center',
-                          day: 'w-9 h-9 rounded-xl text-sm font-medium hover:bg-green-50 hover:text-green-700 transition-colors',
-                          day_selected: 'bg-green-600 text-white hover:bg-green-600 hover:text-white rounded-xl',
-                          day_today: 'text-green-600 font-bold',
-                          day_disabled: 'text-gray-200 cursor-not-allowed hover:bg-transparent hover:text-gray-200',
-                          day_outside: 'text-gray-200',
-                          caption: 'flex justify-between items-center px-4 py-3 border-b border-gray-100',
-                          caption_label: 'text-sm font-bold text-gray-900',
-                          nav: 'flex gap-1',
-                          nav_button: 'w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white',
-                          nav_button_previous: 'static',
-                          nav_button_next: 'static',
-                        }}
-                      />
-                    </div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Select a date</p>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-left focus:outline-none focus:border-green-500 transition-colors flex items-center justify-between"
+                          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                        >
+                          <span className={selectedDate ? 'text-gray-900 font-medium' : 'text-gray-400'}>
+                            {selectedDate ? format(selectedDate, 'dd MMMM yyyy') : 'Pick a date'}
+                          </span>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                          </svg>
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 rounded-2xl border border-gray-100 shadow-xl" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          disabled={{ before: today }}
+                          classNames={{
+                            months: 'w-full',
+                            month: 'w-full',
+                            caption: 'flex justify-between items-center px-4 py-3 border-b border-gray-100',
+                            caption_label: 'text-sm font-bold text-gray-900',
+                            nav: 'flex gap-1',
+                            nav_button: 'w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white',
+                            nav_button_previous: 'static',
+                            nav_button_next: 'static',
+                            table: 'w-full px-3 pb-3',
+                            head_row: 'flex justify-between mt-3',
+                            head_cell: 'text-gray-400 font-medium text-xs w-9 text-center',
+                            row: 'flex justify-between mt-1',
+                            cell: 'w-9 h-9 text-center p-0',
+                            day: 'w-9 h-9 rounded-xl text-sm font-medium hover:bg-green-50 hover:text-green-700 transition-colors',
+                            day_selected: '!bg-green-600 !text-white hover:!bg-green-600 hover:!text-white rounded-xl font-semibold',
+                            day_today: 'text-green-600 font-bold',
+                            day_disabled: 'text-gray-200 cursor-not-allowed hover:bg-transparent hover:text-gray-200',
+                            day_outside: 'text-gray-200',
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   {/* Time slots */}
