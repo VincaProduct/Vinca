@@ -709,15 +709,16 @@ export default function ElevatePage() {
                 </div>
                 <iframe
                   src={(() => {
-                    const params = new URLSearchParams();
-                    const name = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
+                    const name  = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
                     const email = user?.email || '';
-                    const ph = (profilePhone || phone || '').replace(/\s/g, '');
+                    const ph    = (profilePhone || phone || '').replace(/\s/g, '');
+                    const params = new URLSearchParams();
                     if (name)  params.set('name', name);
                     if (email) params.set('email', email);
-                    if (ph)    params.set('phone', ph);
+                    if (ph)    params.set('phone_number', ph);
                     const qs = params.toString();
-                    return `https://prudhvi-vincawealth.zohobookings.in/portal-embed${qs ? '?' + qs : ''}#/182381000000140004`;
+                    // Zoho Bookings SPA reads pre-fill from the hash fragment
+                    return `https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000000140004${qs ? '?' + qs : ''}`;
                   })()}
                   className="w-full border-0 block"
                   style={{ minHeight: 600 }}
