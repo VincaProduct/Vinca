@@ -267,8 +267,8 @@ export default function ElevatePage() {
       status:              'pending',
     });
 
-    // Sync to Zoho Bookings (fire-and-forget — don't block success screen on API errors)
-    supabase.functions.invoke('zoho-booking', {
+    // Sync to Zoho Bookings
+    const { data: zohoData, error: zohoError } = await supabase.functions.invoke('zoho-booking', {
       body: {
         preferred_date:      preferredDate,
         preferred_time_slot: selectedSlot,
@@ -276,9 +276,12 @@ export default function ElevatePage() {
         email:               profileEmail,
         phone,
       },
-    }).then(({ error }) => {
-      if (error) console.error('Zoho Booking sync failed:', error);
     });
+    if (zohoError) {
+      console.error('Zoho Booking invoke error:', zohoError);
+    } else {
+      console.log('Zoho Booking result:', JSON.stringify(zohoData));
+    }
 
     setBookingLoading(false);
     goTo('booked');
