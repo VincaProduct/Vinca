@@ -142,18 +142,43 @@ serve(async (req) => {
       ],
     };
 
-    console.log('Creating Zoho Contact with payload:', JSON.stringify(contactPayload));
+    // Search for existing Zoho contact with this email before creating
+    let contactId: string | null = null;
+    let isExisting = false;
 
-    // Create contact in Zoho CRM (instead of Lead)
-    const zohoResponse = await zohoRequest('POST', 'Contacts', contactPayload);
+    try {
+      const searchResponse = await zohoRequest('GET', `Contacts/search?email=${encodeURIComponent(email)}&fields=id,Email`);
+      if (searchResponse.data && searchResponse.data.length > 0) {
+        contactId = searchResponse.data[0].id;
+        isExisting = true;
+        console.log('Found existing Zoho contact:', contactId);
+      }
+    } catch (_) {
+      // 204 No Content when no results — not an error
+      console.log('No existing contact found for email:', email);
+    }
 
-    console.log('Zoho API response:', JSON.stringify(zohoResponse));
+    let zohoResponse: any;
 
-    // Check if contact creation was successful
-    if (zohoResponse.data && zohoResponse.data[0] && zohoResponse.data[0].code === 'SUCCESS') {
-      const contactId = zohoResponse.data[0].details.id;
+    if (isExisting && contactId) {
+      // Update existing contact rather than creating a duplicate
+      zohoResponse = await zohoRequest('PUT', `Contacts/${contactId}`, { data: [contactPayload.data[0]] });
+      console.log('Updated existing Zoho contact:', JSON.stringify(zohoResponse));
+    } else {
+      console.log('Creating new Zoho Contact with payload:', JSON.stringify(contactPayload));
+      zohoResponse = await zohoRequest('POST', 'Contacts', contactPayload);
+      console.log('Zoho API response:', JSON.stringify(zohoResponse));
+    }
 
-      console.log('Contact created successfully:', contactId);
+    // Resolve contactId from create response if new
+    if (!isExisting) {
+      if (zohoResponse.data && zohoResponse.data[0] && zohoResponse.data[0].code === 'SUCCESS') {
+        contactId = zohoResponse.data[0].details.id;
+      }
+    }
+
+    if (contactId) {
+      console.log(isExisting ? 'Linked to existing contact:' : 'Contact created successfully:', contactId);
 
       // Update profile with Zoho contact ID (not lead ID)
       const { error: updateError } = await supabase
@@ -190,22 +215,21 @@ serve(async (req) => {
       }
 
       return new Response(
-        JSON.stringify({ 
-          success: true, 
+        JSON.stringify({
+          success: true,
           contactId,
-          message: 'Contact created successfully',
+          message: isExisting ? 'Linked to existing contact' : 'Contact created successfully',
         }),
-        { 
-          status: 200, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     } else {
-      // Contact creation failed
-      const errorMessage = zohoResponse.data?.[0]?.message || 'Unknown error from Zoho API';
-      console.error('Zoho contact creation failed:', errorMessage);
+      // Contact creation/update failed
+      const errorMessage = zohoResponse?.data?.[0]?.message || 'Unknown error from Zoho API';
+      console.error('Zoho contact operation failed:', errorMessage);
 
-      // Update profile with error status
       await supabase
         .from('profiles')
         .update({
@@ -215,13 +239,13 @@ serve(async (req) => {
         .eq('id', userId);
 
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: errorMessage,
         }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
