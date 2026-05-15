@@ -12,7 +12,7 @@ const GREEN = '#06A969';
 const DARK_BG = '#0D2818';
 
 // ─── Types ────────────────────────────────────────────────────
-type ModalStep = 'q1' | 'q2' | 'q3' | 'phone' | 'booking' | 'ineligible';
+type ModalStep = 'q1' | 'q2' | 'q3' | 'phone' | 'booking' | 'booked' | 'ineligible';
 type Answers   = { investable_amount: string; concern: string; focus: string };
 
 // ─── Scroll-reveal hook ───────────────────────────────────────
@@ -155,6 +155,14 @@ export default function ElevatePage() {
   const [profileName, setProfileName]   = useState('');
   const [profileEmail, setProfileEmail] = useState('');
 
+  // Booking form state
+  const [bookingName, setBookingName]   = useState('');
+  const [bookingPhone, setBookingPhone] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState('');
+  const [additionalInfo, setAdditionalInfo] = useState('');
+  const [bookingLoading, setBookingLoading] = useState(false);
+
   // FAQ
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
@@ -192,6 +200,9 @@ export default function ElevatePage() {
     setStep('q1');
     setAnswers({ investable_amount: '', concern: '', focus: '' });
     setPhone('');
+    setSelectedDate('');
+    setSelectedSlot('');
+    setAdditionalInfo('');
     setModalOpen(true);
   }, []);
 
@@ -224,36 +235,30 @@ export default function ElevatePage() {
     goTo(profilePhone ? 'booking' : 'phone');
   };
 
-  // ── Nimbuspop booking embed ────────────────────────────────
+  // ── Pre-fill booking form when profile data loads ─────────
   useEffect(() => {
-    if (step !== 'booking') return;
+    if (profileName)  setBookingName(profileName);
+    if (profilePhone) setBookingPhone(profilePhone);
+  }, [profileName, profilePhone]);
 
-    const params = new URLSearchParams();
-    if (profileName)  params.set('name', profileName);
-    if (profileEmail) params.set('email', profileEmail);
-    const ph = (profilePhone || phone || '').replace(/\s/g, '');
-    if (ph) params.set('phone_number', ph);
-    const qs = params.toString();
-    const bookingUrl = `https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000001291158${qs ? '?' + qs : ''}`;
-
-    const script = document.createElement('script');
-    script.src = 'https://bookings.nimbuspop.com/assets/embed.js';
-    script.async = true;
-    script.onload = () => {
-      (window as any).Bookings?.inlineEmbed({
-        url: bookingUrl,
-        parent: '#elevate-booking-container',
-        height: '600px',
-      });
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      script.remove();
-      const el = document.getElementById('elevate-booking-container');
-      if (el) el.innerHTML = '';
-    };
-  }, [step, profileName, profileEmail, profilePhone, phone]);
+  // ── Submit booking to consultation_bookings ────────────────
+  const handleBookingSubmit = async () => {
+    if (!selectedDate || !selectedSlot || !user) return;
+    setBookingLoading(true);
+    await (supabase.from('consultation_bookings') as any).insert({
+      user_id:           user.id,
+      full_name:         bookingName || profileName,
+      email:             profileEmail,
+      phone:             bookingPhone || profilePhone || '',
+      preferred_date:    selectedDate,
+      preferred_time_slot: selectedSlot,
+      consultation_type: 'elevate_consultation',
+      additional_info:   additionalInfo || null,
+      status:            'pending',
+    });
+    setBookingLoading(false);
+    goTo('booked');
+  };
 
   const handlePhone = async () => {
     if (!phone.trim() || !user) return;
@@ -649,7 +654,7 @@ export default function ElevatePage() {
 
           {/* Modal card */}
           <div
-            className={`bg-white rounded-3xl w-full shadow-2xl ${step === 'booking' ? 'max-w-3xl overflow-hidden' : 'max-w-lg p-12 max-md:p-8'}`}
+            className="bg-white rounded-3xl w-full shadow-2xl max-w-lg p-12 max-md:p-8"
             style={{
               opacity: sliding ? 0 : 1,
               transform: sliding ? 'translateX(20px)' : 'translateX(0)',
@@ -734,18 +739,126 @@ export default function ElevatePage() {
               </div>
             )}
 
-            {/* Eligible — book a session */}
-            {step === 'booking' && (
-              <div>
-                <div className="px-10 pt-10 pb-6 max-md:px-6 max-md:pt-6">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-lg mb-4"
-                    style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}
-                  >✓</div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">You are eligible for Elevate</h2>
-                  <p className="text-gray-500 text-sm">Pick a time that works for you — a wealth manager will call you at that slot.</p>
+            {/* Booking form */}
+            {step === 'booking' && (() => {
+              const today = new Date().toISOString().split('T')[0];
+              const TIME_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
+              const canSubmit = selectedDate && selectedSlot && !bookingLoading;
+              return (
+                <div>
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: '#F0FDF4', border: `1.5px solid ${GREEN}`, color: GREEN, fontSize: 16 }}>✓</div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-900 leading-tight">Book your free consultation</h2>
+                      <p className="text-sm text-gray-400">A wealth manager will call you at the chosen slot.</p>
+                    </div>
+                  </div>
+
+                  {/* Your details */}
+                  <div className="mb-6">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Your details</p>
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        value={bookingName}
+                        onChange={e => setBookingName(e.target.value)}
+                        placeholder="Full name"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                      />
+                      <input
+                        type="text"
+                        value={profileEmail}
+                        disabled
+                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-sm bg-gray-50 text-gray-400 cursor-not-allowed"
+                      />
+                      <input
+                        type="tel"
+                        value={bookingPhone}
+                        onChange={e => setBookingPhone(e.target.value)}
+                        placeholder="Phone number"
+                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  <div className="mb-6">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Select a date</p>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      min={today}
+                      onChange={e => setSelectedDate(e.target.value)}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                    />
+                  </div>
+
+                  {/* Time slots */}
+                  <div className="mb-6">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Select a time</p>
+                    <div className="grid grid-cols-4 gap-2 max-md:grid-cols-3">
+                      {TIME_SLOTS.map(slot => (
+                        <button
+                          key={slot}
+                          onClick={() => setSelectedSlot(slot)}
+                          className="py-2.5 px-3 rounded-xl text-sm font-medium border transition-all duration-150"
+                          style={selectedSlot === slot
+                            ? { background: GREEN, color: 'white', border: `1.5px solid ${GREEN}` }
+                            : { background: 'white', color: '#374151', border: '1.5px solid #E5E7EB' }
+                          }
+                        >
+                          {slot}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  <div className="mb-8">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Anything specific? <span className="normal-case font-normal">(optional)</span></p>
+                    <textarea
+                      value={additionalInfo}
+                      onChange={e => setAdditionalInfo(e.target.value)}
+                      placeholder="E.g. I want to discuss early retirement planning..."
+                      rows={3}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors resize-none"
+                    />
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    onClick={handleBookingSubmit}
+                    disabled={!canSubmit}
+                    className="w-full py-4 rounded-xl font-semibold text-white text-sm transition-all duration-150 disabled:opacity-40"
+                    style={{ background: GREEN }}
+                  >
+                    {bookingLoading ? 'Booking...' : 'Book My Consultation →'}
+                  </button>
                 </div>
-                <div id="elevate-booking-container" style={{ minHeight: 600 }} />
+              );
+            })()}
+
+            {/* Success */}
+            {step === 'booked' && (
+              <div className="text-center py-4">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-6"
+                  style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}
+                >✓</div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Consultation booked!</h2>
+                <p className="text-gray-500 text-sm leading-relaxed mb-2">
+                  We've received your request for <strong>{selectedSlot}</strong> on <strong>{selectedDate && new Date(selectedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>.
+                </p>
+                <p className="text-gray-400 text-sm mb-8">A confirmation will be sent to <strong>{profileEmail}</strong>.</p>
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className="px-8 py-3 rounded-full font-semibold text-white text-sm transition-opacity hover:opacity-90"
+                  style={{ background: GREEN }}
+                >
+                  Done
+                </button>
               </div>
             )}
 
