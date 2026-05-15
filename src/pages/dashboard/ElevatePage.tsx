@@ -708,7 +708,17 @@ export default function ElevatePage() {
                   <p className="text-gray-500 text-sm">Pick a time that works for you — a wealth manager will call you at that slot.</p>
                 </div>
                 <iframe
-                  src="https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000000140004"
+                  src={(() => {
+                    const params = new URLSearchParams();
+                    const name = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
+                    const email = user?.email || '';
+                    const ph = (profilePhone || phone || '').replace(/\s/g, '');
+                    if (name)  params.set('name', name);
+                    if (email) params.set('email', email);
+                    if (ph)    params.set('phone', ph);
+                    const qs = params.toString();
+                    return `https://prudhvi-vincawealth.zohobookings.in/portal-embed${qs ? '?' + qs : ''}#/182381000000140004`;
+                  })()}
                   className="w-full border-0 block"
                   style={{ minHeight: 600 }}
                   title="Book a Wealth Manager Consultation"
