@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFinancialPlanning } from '@/components/financial-planning/context/FinancialPlanningContext';
 import { useFFR } from '@/hooks/useFFR';
 import { calculateFFRScore } from '@/utils/ffrScore';
+import { supabase } from '@/integrations/supabase/client';
 import { User, TrendingUp, Shield, Zap } from 'lucide-react';
 
 // ─── Primary green from Tailwind config ───────────────────────
@@ -11,8 +12,8 @@ const GREEN = '#06A969';
 const DARK_BG = '#0D2818';
 
 // ─── Types ────────────────────────────────────────────────────
-type ModalStep = 'q1' | 'q2' | 'q3' | 'booking' | 'ineligible';
-type Answers   = { income: string; concern: string; goal: string };
+type ModalStep = 'q1' | 'q2' | 'q3' | 'phone' | 'booking' | 'ineligible';
+type Answers   = { investable_amount: string; concern: string; focus: string };
 
 // ─── Scroll-reveal hook ───────────────────────────────────────
 function useReveal(stagger = 150) {
@@ -147,7 +148,10 @@ export default function ElevatePage() {
   const [modalOpen, setModalOpen]   = useState(false);
   const [step, setStep]             = useState<ModalStep>('q1');
   const [sliding, setSliding]       = useState(false);
-  const [answers, setAnswers]       = useState<Answers>({ income: '', concern: '', goal: '' });
+  const [answers, setAnswers]       = useState<Answers>({ investable_amount: '', concern: '', focus: '' });
+  const [phone, setPhone]           = useState('');
+  const [phoneLoading, setPhoneLoading] = useState(false);
+  const [profilePhone, setProfilePhone] = useState<string | null>(null);
 
   // FAQ
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -156,10 +160,31 @@ export default function ElevatePage() {
   const s2Ref  = useReveal(150);
   const s4Ref  = useRevealRight(200);
 
+  // ── Fetch existing phone from profile ─────────────────────
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('phone').eq('id', user.id).single()
+      .then(({ data }) => setProfilePhone(data?.phone ?? null));
+  }, [user]);
+
+  // ── Save lead to elevate_leads ─────────────────────────────
+  const saveLead = useCallback(async (data: Answers, eligible: boolean) => {
+    if (!user) return;
+    await (supabase.from('elevate_leads') as any).insert({
+      user_id: user.id,
+      investable_amount: data.investable_amount,
+      concern: data.concern || null,
+      focus: data.focus || null,
+      eligible,
+      ffr_score: ffrScore,
+    });
+  }, [user, ffrScore]);
+
   // ── Modal helpers ──────────────────────────────────────────
   const openModal = useCallback(() => {
     setStep('q1');
-    setAnswers({ income: '', concern: '', goal: '' });
+    setAnswers({ investable_amount: '', concern: '', focus: '' });
+    setPhone('');
     setModalOpen(true);
   }, []);
 
@@ -168,19 +193,36 @@ export default function ElevatePage() {
     setTimeout(() => { setStep(next); setSliding(false); }, 220);
   }, []);
 
-  const handleQ1 = (income: string) => {
-    setAnswers((a) => ({ ...a, income }));
-    goTo('q2');
+  const handleQ1 = (investable_amount: string) => {
+    const next = { ...answers, investable_amount };
+    setAnswers(next);
+    if (investable_amount === 'Less than this for now') {
+      saveLead(next, false);
+      goTo('ineligible');
+    } else {
+      goTo('q2');
+    }
   };
+
   const handleQ2 = (concern: string) => {
     setAnswers((a) => ({ ...a, concern }));
     goTo('q3');
   };
-  const handleQ3 = (goal: string) => {
-    const next = { ...answers, goal };
+
+  const handleQ3 = async (focus: string) => {
+    const next = { ...answers, focus };
     setAnswers(next);
-    // Eligible if income is not the lowest bracket
-    goTo(next.income !== 'Under ₹1L/month' ? 'booking' : 'ineligible');
+    await saveLead(next, true);
+    // Skip phone step if profile already has one
+    goTo(profilePhone ? 'booking' : 'phone');
+  };
+
+  const handlePhone = async () => {
+    if (!phone.trim() || !user) return;
+    setPhoneLoading(true);
+    await supabase.from('profiles').update({ phone: phone.trim() }).eq('id', user.id);
+    setPhoneLoading(false);
+    goTo('booking');
   };
 
   // ── Data ───────────────────────────────────────────────────
@@ -576,17 +618,22 @@ export default function ElevatePage() {
               transition: 'opacity 0.22s ease, transform 0.22s ease',
             }}
           >
-            {/* Q1 */}
+            {/* Q1 — eligibility gate */}
             {step === 'q1' && (
               <QuestionScreen
                 stepIndex={0}
-                question="What is your monthly income?"
-                options={['Under ₹1L/month', '₹1L – ₹3L/month', '₹3L – ₹5L/month', 'Above ₹5L/month']}
+                question="How much are you ready to invest?"
+                options={[
+                  '₹25,000+/month via SIP',
+                  '₹10 lakh+ as a lump sum',
+                  'Both',
+                  'Less than this for now',
+                ]}
                 onSelect={handleQ1}
               />
             )}
 
-            {/* Q2 */}
+            {/* Q2 — classification only */}
             {step === 'q2' && (
               <QuestionScreen
                 stepIndex={1}
@@ -601,19 +648,52 @@ export default function ElevatePage() {
               />
             )}
 
-            {/* Q3 */}
+            {/* Q3 — classification only */}
             {step === 'q3' && (
               <QuestionScreen
                 stepIndex={2}
-                question="What is your primary financial goal?"
+                question="What is your primary focus?"
                 options={[
-                  'Retire early and comfortably',
-                  'Build wealth for my family',
-                  'Stop worrying about money',
-                  'I am not sure yet',
+                  'Planning for retirement',
+                  'Building wealth for my family',
+                  'Both retirement and wealth building',
+                  'Not sure yet — I need guidance',
                 ]}
                 onSelect={handleQ3}
               />
+            )}
+
+            {/* Phone — only if profile.phone is null */}
+            {step === 'phone' && (
+              <div>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-lg mb-6"
+                  style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}
+                >✓</div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">You are eligible for Elevate</h2>
+                <p className="text-gray-500 text-sm mb-8">One last thing — what number should your wealth manager call you on?</p>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-sm font-medium focus:outline-none focus:border-green-500 transition-colors mb-4"
+                />
+                <button
+                  onClick={handlePhone}
+                  disabled={!phone.trim() || phoneLoading}
+                  className="w-full py-4 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 disabled:opacity-40"
+                  style={{ background: GREEN }}
+                >
+                  {phoneLoading ? 'Saving...' : 'Continue to Booking →'}
+                </button>
+                <button
+                  onClick={() => goTo('booking')}
+                  className="w-full mt-3 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  Skip for now
+                </button>
+              </div>
             )}
 
             {/* Eligible — book a session */}
@@ -645,10 +725,26 @@ export default function ElevatePage() {
                   style={{ background: '#FEF3C7', border: '2px solid #F59E0B', color: '#92400E' }}
                 >ℹ</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">Not quite ready for Elevate yet</h2>
-                <p className="text-gray-500 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
-                  Elevate works best when you have an established income and are ready to commit to a retirement plan.
-                  Start with VincaWealth to build your foundation.
+                <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-sm mx-auto">
+                  Elevate works best when you have at least ₹25K/month to invest via SIP or ₹10 lakh as a lump sum.
+                  Start by building your foundation with VincaWealth.
                 </p>
+
+                <div className="bg-gray-50 rounded-2xl p-5 mb-6 text-left max-w-sm mx-auto">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Have a special situation?</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Write to us at{' '}
+                    <a
+                      href="mailto:support@vincawealth.com?subject=Elevate Eligibility"
+                      className="font-semibold underline"
+                      style={{ color: GREEN }}
+                    >
+                      support@vincawealth.com
+                    </a>
+                    {' '}— share your situation and we'll help you understand the right path forward.
+                  </p>
+                </div>
+
                 <button
                   onClick={() => { setModalOpen(false); navigate('/financial-freedom-calculator'); }}
                   className="px-8 py-3 rounded-full font-semibold text-white text-sm transition-opacity hover:opacity-90"
