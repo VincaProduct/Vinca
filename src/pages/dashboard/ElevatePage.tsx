@@ -5,6 +5,8 @@ import { useFinancialPlanning } from '@/components/financial-planning/context/Fi
 import { useFFR } from '@/hooks/useFFR';
 import { calculateFFRScore } from '@/utils/ffrScore';
 import { supabase } from '@/integrations/supabase/client';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 import { User, TrendingUp, Shield, Zap } from 'lucide-react';
 
 // ─── Primary green from Tailwind config ───────────────────────
@@ -158,7 +160,7 @@ export default function ElevatePage() {
   // Booking form state
   const [bookingName, setBookingName]   = useState('');
   const [bookingPhone, setBookingPhone] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [bookingLoading, setBookingLoading] = useState(false);
@@ -200,7 +202,7 @@ export default function ElevatePage() {
     setStep('q1');
     setAnswers({ investable_amount: '', concern: '', focus: '' });
     setPhone('');
-    setSelectedDate('');
+    setSelectedDate(undefined);
     setSelectedSlot('');
     setAdditionalInfo('');
     setModalOpen(true);
@@ -250,7 +252,7 @@ export default function ElevatePage() {
       full_name:         bookingName || profileName,
       email:             profileEmail,
       phone:             bookingPhone || profilePhone || '',
-      preferred_date:    selectedDate,
+      preferred_date:    format(selectedDate, 'yyyy-MM-dd'),
       preferred_time_slot: selectedSlot,
       consultation_type: 'elevate_consultation',
       additional_info:   additionalInfo || null,
@@ -741,7 +743,8 @@ export default function ElevatePage() {
 
             {/* Booking form */}
             {step === 'booking' && (() => {
-              const today = new Date().toISOString().split('T')[0];
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
               const TIME_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
               const canSubmit = selectedDate && selectedSlot && !bookingLoading;
               return (
@@ -785,14 +788,40 @@ export default function ElevatePage() {
 
                   {/* Date */}
                   <div className="mb-6">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Select a date</p>
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      min={today}
-                      onChange={e => setSelectedDate(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors"
-                    />
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+                      Select a date
+                      {selectedDate && <span className="ml-2 normal-case font-medium text-gray-700">{format(selectedDate, 'dd MMM yyyy')}</span>}
+                    </p>
+                    <div className="rounded-2xl border border-gray-100 overflow-hidden bg-white"
+                      style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={{ before: today }}
+                        className="w-full"
+                        classNames={{
+                          months: 'w-full',
+                          month: 'w-full',
+                          table: 'w-full',
+                          head_row: 'flex justify-between px-2',
+                          head_cell: 'text-gray-400 font-medium text-xs w-9 text-center',
+                          row: 'flex justify-between px-2 mt-1',
+                          cell: 'w-9 h-9 text-center',
+                          day: 'w-9 h-9 rounded-xl text-sm font-medium hover:bg-green-50 hover:text-green-700 transition-colors',
+                          day_selected: 'bg-green-600 text-white hover:bg-green-600 hover:text-white rounded-xl',
+                          day_today: 'text-green-600 font-bold',
+                          day_disabled: 'text-gray-200 cursor-not-allowed hover:bg-transparent hover:text-gray-200',
+                          day_outside: 'text-gray-200',
+                          caption: 'flex justify-between items-center px-4 py-3 border-b border-gray-100',
+                          caption_label: 'text-sm font-bold text-gray-900',
+                          nav: 'flex gap-1',
+                          nav_button: 'w-7 h-7 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors bg-white',
+                          nav_button_previous: 'static',
+                          nav_button_next: 'static',
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Time slots */}
@@ -849,7 +878,7 @@ export default function ElevatePage() {
                 >✓</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Consultation booked!</h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-2">
-                  We've received your request for <strong>{selectedSlot}</strong> on <strong>{selectedDate && new Date(selectedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>.
+                  We've received your request for <strong>{selectedSlot}</strong> on <strong>{selectedDate && format(selectedDate, 'dd MMMM yyyy')}</strong>.
                 </p>
                 <p className="text-gray-400 text-sm mb-8">A confirmation will be sent to <strong>{profileEmail}</strong>.</p>
                 <button
