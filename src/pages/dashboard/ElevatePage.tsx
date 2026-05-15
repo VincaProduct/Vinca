@@ -152,6 +152,8 @@ export default function ElevatePage() {
   const [phone, setPhone]           = useState('');
   const [phoneLoading, setPhoneLoading] = useState(false);
   const [profilePhone, setProfilePhone] = useState<string | null>(null);
+  const [profileName, setProfileName]   = useState('');
+  const [profileEmail, setProfileEmail] = useState('');
 
   // FAQ
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -160,11 +162,16 @@ export default function ElevatePage() {
   const s2Ref  = useReveal(150);
   const s4Ref  = useRevealRight(200);
 
-  // ── Fetch existing phone from profile ─────────────────────
+  // ── Fetch profile data (canonical source for name/email/phone) ──
   useEffect(() => {
     if (!user) return;
-    supabase.from('profiles').select('phone').eq('id', user.id).single()
-      .then(({ data }) => setProfilePhone(data?.phone ?? null));
+    supabase.from('profiles').select('full_name, email, phone').eq('id', user.id).single()
+      .then(({ data }) => {
+        if (!data) return;
+        setProfileName(data.full_name || '');
+        setProfileEmail(data.email || '');
+        setProfilePhone(data.phone ?? null);
+      });
   }, [user]);
 
   // ── Save lead to elevate_leads ─────────────────────────────
@@ -709,15 +716,12 @@ export default function ElevatePage() {
                 </div>
                 <iframe
                   src={(() => {
-                    const name  = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
-                    const email = user?.email || '';
-                    const ph    = (profilePhone || phone || '').replace(/\s/g, '');
                     const params = new URLSearchParams();
-                    if (name)  params.set('name', name);
-                    if (email) params.set('email', email);
-                    if (ph)    params.set('phone_number', ph);
+                    if (profileName)  params.set('name', profileName);
+                    if (profileEmail) params.set('email', profileEmail);
+                    const ph = (profilePhone || phone || '').replace(/\s/g, '');
+                    if (ph) params.set('phone_number', ph);
                     const qs = params.toString();
-                    // Zoho Bookings SPA reads pre-fill from the hash fragment
                     return `https://prudhvi-vincawealth.zohobookings.in/portal-embed#/182381000000140004${qs ? '?' + qs : ''}`;
                   })()}
                   className="w-full border-0 block"
