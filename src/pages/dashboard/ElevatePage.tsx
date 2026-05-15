@@ -254,11 +254,12 @@ export default function ElevatePage() {
     const name          = bookingName || profileName;
     const phone         = bookingPhone || profilePhone || '';
     const preferredDate = format(selectedDate, 'yyyy-MM-dd');
+    const email         = profileEmail || user.email || '';
 
-    await (supabase.from('consultation_bookings') as any).insert({
+    const { error: dbError } = await (supabase.from('consultation_bookings') as any).insert({
       user_id:             user.id,
       full_name:           name,
-      email:               profileEmail,
+      email,
       phone,
       preferred_date:      preferredDate,
       preferred_time_slot: selectedSlot,
@@ -266,6 +267,7 @@ export default function ElevatePage() {
       additional_info:     additionalInfo || null,
       status:              'pending',
     });
+    if (dbError) console.error('Booking DB insert error:', dbError);
 
     // Sync to Zoho Bookings
     const { data: zohoData, error: zohoError } = await supabase.functions.invoke('zoho-booking', {
@@ -273,7 +275,7 @@ export default function ElevatePage() {
         preferred_date:      preferredDate,
         preferred_time_slot: selectedSlot,
         full_name:           name,
-        email:               profileEmail,
+        email,
         phone,
       },
     });
