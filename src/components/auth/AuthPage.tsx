@@ -47,11 +47,18 @@ const AuthPage = () => {
   }
 
   const handleGoogleSignIn = async () => {
-    // Determine lead source from the context that brought the user here
-    let leadSource = 'Website Signup';
-    if (ffrState) leadSource = 'Calculator';
-    else if (isConsultation) leadSource = 'Consultation CTA';
-    else if (blogContext) leadSource = 'Blog Article';
+    // Determine lead source — specific on-site context takes priority over UTM
+    let leadSource: string;
+    if (ffrState) {
+      leadSource = 'Calculator';
+    } else if (isConsultation) {
+      leadSource = 'Consultation CTA';
+    } else if (blogContext) {
+      leadSource = 'Blog Article';
+    } else {
+      // Fall back to UTM source captured from the URL they arrived on
+      leadSource = localStorage.getItem('utm_source') || 'Website Signup';
+    }
     localStorage.setItem('pending_lead_source', leadSource);
 
     setLoading(true);
