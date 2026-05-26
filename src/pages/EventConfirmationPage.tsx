@@ -4,6 +4,7 @@ import { CheckCircle, Calendar, Clock, User, Video, ExternalLink, ArrowRight, Lo
 import { useEvent, useEventRegistration } from '@/hooks/useEvents';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
@@ -66,8 +67,9 @@ export default function EventConfirmationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-start pt-16 px-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-start px-6">
+      <Header />
+      <div className="w-full max-w-md pt-16">
 
         {/* Success mark */}
         <div className="flex flex-col items-center mb-8">

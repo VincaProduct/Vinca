@@ -4,6 +4,8 @@ import { useEvent, useEventRegistration } from '@/hooks/useEvents';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
@@ -56,6 +58,7 @@ export default function EventDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header />
       <div className="max-w-2xl mx-auto px-6 py-10">
 
         {/* Back */}
@@ -131,6 +134,7 @@ export default function EventDetailPage() {
         </div>
 
       </div>
+      <Footer />
     </div>
   );
 }

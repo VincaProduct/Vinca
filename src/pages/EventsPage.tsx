@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, User, ArrowRight, Video } from 'lucide-react';
 import { useEvents } from '@/hooks/useEvents';
 import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
@@ -18,6 +20,7 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header />
 
       {/* Header */}
       <div className="px-6 py-12 max-w-3xl mx-auto">
@@ -82,6 +85,7 @@ export default function EventsPage() {
           </Link>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }
