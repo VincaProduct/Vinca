@@ -60,6 +60,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import PublicPricing from "./pages/PublicPricing";
 import DashboardBuyMembershipPage from "./pages/dashboard/BuyMembershipPage";
+import EventsPage from "./pages/EventsPage";
+import EventDetailPage from "./pages/EventDetailPage";
+import EventConfirmationPage from "./pages/EventConfirmationPage";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +89,9 @@ const App = () => (
                   <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
                   <Route path="/pricing" element={<PublicRoute><PublicPricing /></PublicRoute>} />
                   <Route path="/buy-membership" element={<PublicRoute><BuyMembership /></PublicRoute>} />
+                  <Route path="/events" element={<EventsPage />} />
+                  <Route path="/events/:id" element={<EventDetailPage />} />
+                  <Route path="/events/:id/confirmation" element={<EventConfirmationPage />} />
 
                   {/* DASHBOARD ROUTES */}
                   <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>

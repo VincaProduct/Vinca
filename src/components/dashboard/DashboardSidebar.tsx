@@ -6,6 +6,7 @@ import {
   UserPlus,
   TrendingUp,
   Calendar,
+  Video,
   FileText,
   Users,
   LayoutDashboard,
@@ -130,6 +131,12 @@ const NAV: NavGroup[] = [
     icon: Star,
     url: '/dashboard/elevate',
     premium: true,
+  },
+  {
+    key: 'events',
+    title: 'Events',
+    icon: Video,
+    url: '/events',
   },
 ];
 
