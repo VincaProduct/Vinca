@@ -151,6 +151,16 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                 </span>
               </Link>
 
+              <Link
+                to="/events"
+                className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
+                  Events
+                </span>
+              </Link>
+
               <button
                 onClick={() => handleMenuItemClick(() => scrollToSection('faq'))}
                 className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"
