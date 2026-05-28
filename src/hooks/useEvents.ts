@@ -13,6 +13,7 @@ export interface VincaEvent {
   image_url: string | null;
   is_published: boolean;
   created_at: string;
+  event_registrations?: { count: number }[];
 }
 
 export interface EventRegistration {
@@ -35,7 +36,7 @@ export function useEvents() {
       setLoading(true);
       const { data, error } = await (supabase as any)
         .from('events')
-        .select('*')
+        .select('*, event_registrations(count)')
         .eq('is_published', true)
         .gte('event_date', new Date().toISOString())
         .order('event_date', { ascending: true });

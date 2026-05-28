@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, User, Video, Loader2, CheckCircle } from 'lucide-react';
-import { useEvents, useEventRegistration } from '@/hooks/useEvents';
+import { useEvents, useEventRegistration, VincaEvent } from '@/hooks/useEvents';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,22 +17,21 @@ function formatTime(dateStr: string) {
   return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 }
 
-interface VincaEvent {
-  id: string;
-  title: string;
-  event_date: string;
-  duration_minutes: number;
-  description?: string | null;
-  host_name?: string | null;
-  zoho_meeting_link?: string | null;
-  image_url?: string | null;
-  is_published: boolean;
+function daysUntil(dateStr: string): number {
+  const eventDate = new Date(dateStr);
+  const now = new Date();
+  eventDate.setHours(0, 0, 0, 0);
+  now.setHours(0, 0, 0, 0);
+  return Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 function EventCard({ event }: { event: VincaEvent }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isRegistered, registering, checking, register } = useEventRegistration(event.id);
+
+  const days = daysUntil(event.event_date);
+  const regCount = event.event_registrations?.[0]?.count ?? 0;
 
   async function handleRegister() {
     if (!user) {
@@ -50,32 +49,39 @@ function EventCard({ event }: { event: VincaEvent }) {
   return (
     <div className="border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-200 bg-white">
 
-      {/* Poster image */}
-      {event.image_url ? (
+      {/* Full poster image — no crop */}
+      {event.image_url && (
         <img
           src={event.image_url}
           alt={event.title}
-          className="w-full h-64 object-cover object-top"
+          className="w-full h-auto block"
         />
-      ) : (
-        <div className="w-full h-48 bg-gradient-to-br from-emerald-900 to-emerald-600 flex items-center justify-center">
-          <Video className="h-12 w-12 text-white opacity-30" />
-        </div>
       )}
 
       {/* Content */}
       <div className="p-6">
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold tracking-wide uppercase text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full mb-3">
-          <Video className="h-3 w-3" /> Free Webinar
-        </span>
 
-        <h2 className="text-lg font-bold text-gray-900 mb-3">{event.title}</h2>
+        {/* Badges row */}
+        <div className="flex items-center gap-2 flex-wrap mb-3">
+          <span className="inline-flex items-center gap-1 text-[11px] font-bold tracking-wide uppercase text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+            <Video className="h-3 w-3" /> Free Webinar
+          </span>
+          {days > 0 && days <= 14 && (
+            <span className="inline-flex items-center text-[11px] font-bold tracking-wide uppercase text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+              {days === 1 ? 'Tomorrow' : `${days} days away`}
+            </span>
+          )}
+          {regCount > 0 && (
+            <span className="inline-flex items-center text-[11px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+              {regCount} registered
+            </span>
+          )}
+        </div>
 
-        {event.description && (
-          <p className="text-sm text-gray-500 mb-4 line-clamp-2">{event.description}</p>
-        )}
+        <h2 className="text-lg font-bold text-gray-900 mb-2">{event.title}</h2>
 
-        <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-5">
+        {/* Meta */}
+        <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-4">
           <span className="flex items-center gap-1.5">
             <Calendar className="h-4 w-4 text-emerald-600 flex-shrink-0" />
             {formatDate(event.event_date)}
@@ -92,6 +98,14 @@ function EventCard({ event }: { event: VincaEvent }) {
           )}
         </div>
 
+        {/* Description */}
+        {event.description && (
+          <p className="text-sm text-gray-500 mb-5 leading-relaxed whitespace-pre-line">
+            {event.description}
+          </p>
+        )}
+
+        {/* CTA */}
         {checking ? (
           <div className="flex items-center gap-2 text-gray-400 text-sm py-2">
             <Loader2 className="h-4 w-4 animate-spin" /> Checking…
@@ -127,7 +141,6 @@ export default function EventsPage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Page header — pt-24 clears the fixed navbar */}
       <div className="px-6 pt-24 pb-8 max-w-3xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-emerald-700 mb-2">Live Sessions</p>
         <h1 className="text-3xl font-black text-gray-900 mb-3">Upcoming Webinars</h1>
@@ -136,7 +149,6 @@ export default function EventsPage() {
         </p>
       </div>
 
-      {/* Events list */}
       <div className="px-6 pb-16 max-w-3xl mx-auto space-y-6">
         {loading && (
           <div className="space-y-4">
