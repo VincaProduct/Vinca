@@ -102,10 +102,13 @@ export function useEventRegistration(eventId: string) {
     setRegistering(true);
     const { error } = await (supabase as any)
       .from('event_registrations')
-      .insert({
-        event_id: eventId,
-        user_id: user.id,
-      });
+      .insert({ event_id: eventId, user_id: user.id, phone: phone || null });
+    if (!error && phone) {
+      await (supabase as any)
+        .from('profiles')
+        .update({ phone })
+        .eq('id', user.id);
+    }
     setRegistering(false);
     if (error) return { success: false, error: error.message };
     setIsRegistered(true);
