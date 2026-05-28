@@ -10,7 +10,7 @@ export interface VincaEvent {
   event_date: string;
   duration_minutes: number;
   zoho_meeting_link: string | null;
-  registration_limit: number | null;
+  image_url: string | null;
   is_published: boolean;
   created_at: string;
 }
@@ -104,9 +104,6 @@ export function useEventRegistration(eventId: string) {
       .insert({
         event_id: eventId,
         user_id: user.id,
-        name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Guest',
-        email: user.email,
-        phone: phone || null,
       });
     setRegistering(false);
     if (error) return { success: false, error: error.message };
