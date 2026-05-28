@@ -103,7 +103,7 @@ function EventCard({ event }: { event: VincaEvent }) {
 
           {/* Description */}
           {event.description && (
-            <p className="text-sm text-gray-500 mb-5 leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-gray-500 mb-5 leading-relaxed line-clamp-4">
               {event.description}
             </p>
           )}
@@ -148,7 +148,7 @@ export default function EventsPage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      <div className="px-6 pt-24 pb-8 max-w-3xl mx-auto">
+      <div className="px-6 pt-24 pb-8 max-w-5xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-emerald-700 mb-2">Live Sessions</p>
         <h1 className="text-3xl font-black text-gray-900 mb-3">Upcoming Webinars</h1>
         <p className="text-gray-500 text-base">
@@ -156,7 +156,7 @@ export default function EventsPage() {
         </p>
       </div>
 
-      <div className="px-6 pb-16 max-w-3xl mx-auto space-y-6">
+      <div className="px-6 pb-16 max-w-5xl mx-auto space-y-6">
         {loading && (
           <div className="space-y-4">
             {[1, 2].map(i => (
