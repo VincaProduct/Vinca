@@ -48,87 +48,94 @@ function EventCard({ event }: { event: VincaEvent }) {
 
   return (
     <div className="border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-200 bg-white">
+      <div className="flex flex-col sm:flex-row">
 
-      {/* Full poster image — no crop */}
-      {event.image_url && (
-        <img
-          src={event.image_url}
-          alt={event.title}
-          className="w-full h-auto block"
-        />
-      )}
-
-      {/* Content */}
-      <div className="p-6">
-
-        {/* Badges row */}
-        <div className="flex items-center gap-2 flex-wrap mb-3">
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold tracking-wide uppercase text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
-            <Video className="h-3 w-3" /> Free Webinar
-          </span>
-          {days > 0 && days <= 14 && (
-            <span className="inline-flex items-center text-[11px] font-bold tracking-wide uppercase text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
-              {days === 1 ? 'Tomorrow' : `${days} days away`}
-            </span>
-          )}
-          {regCount > 0 && (
-            <span className="inline-flex items-center text-[11px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-              {regCount} registered
-            </span>
-          )}
-        </div>
-
-        <h2 className="text-lg font-bold text-gray-900 mb-2">{event.title}</h2>
-
-        {/* Meta */}
-        <div className="flex flex-wrap gap-3 text-sm text-gray-500 mb-4">
-          <span className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-            {formatDate(event.event_date)}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-            {formatTime(event.event_date)} · {event.duration_minutes} min
-          </span>
-          {event.host_name && (
-            <span className="flex items-center gap-1.5">
-              <User className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-              {event.host_name}
-            </span>
-          )}
-        </div>
-
-        {/* Description */}
-        {event.description && (
-          <p className="text-sm text-gray-500 mb-5 leading-relaxed whitespace-pre-line">
-            {event.description}
-          </p>
+        {/* Poster — left column on desktop, top on mobile */}
+        {event.image_url && (
+          <div className="sm:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center p-3 sm:p-4">
+            <img
+              src={event.image_url}
+              alt={event.title}
+              className="w-full h-auto sm:max-h-[380px] object-contain rounded-lg"
+            />
+          </div>
         )}
 
-        {/* CTA */}
-        {checking ? (
-          <div className="flex items-center gap-2 text-gray-400 text-sm py-2">
-            <Loader2 className="h-4 w-4 animate-spin" /> Checking…
-          </div>
-        ) : isRegistered ? (
-          <div className="flex items-center gap-2 text-emerald-700 text-sm font-semibold py-2">
-            <CheckCircle className="h-5 w-5" /> You're registered for this session
-          </div>
-        ) : (
-          <Button
-            onClick={handleRegister}
-            disabled={registering}
-            className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl py-5 text-sm"
-          >
-            {registering ? (
-              <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Registering…</>
-            ) : user ? (
-              'Register for Free'
-            ) : (
-              'Sign in with Google to Register'
+        {/* Content — right column on desktop, below on mobile */}
+        <div className="flex-1 p-5 sm:p-6 flex flex-col">
+
+          {/* Badges */}
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold tracking-wide uppercase text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+              <Video className="h-3 w-3" /> Free Webinar
+            </span>
+            {days > 0 && days <= 14 && (
+              <span className="inline-flex items-center text-[11px] font-bold tracking-wide uppercase text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+                {days === 1 ? 'Tomorrow' : `${days} days away`}
+              </span>
             )}
-          </Button>
-        )}
+            {regCount > 0 && (
+              <span className="inline-flex items-center text-[11px] font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                {regCount} registered
+              </span>
+            )}
+          </div>
+
+          <h2 className="text-lg font-bold text-gray-900 mb-2">{event.title}</h2>
+
+          {/* Meta */}
+          <div className="flex flex-col gap-1.5 text-sm text-gray-500 mb-4">
+            <span className="flex items-center gap-1.5">
+              <Calendar className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+              {formatDate(event.event_date)}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+              {formatTime(event.event_date)} · {event.duration_minutes} min
+            </span>
+            {event.host_name && (
+              <span className="flex items-center gap-1.5">
+                <User className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                {event.host_name}
+              </span>
+            )}
+          </div>
+
+          {/* Description */}
+          {event.description && (
+            <p className="text-sm text-gray-500 mb-5 leading-relaxed whitespace-pre-line">
+              {event.description}
+            </p>
+          )}
+
+          {/* CTA — pushed to bottom */}
+          <div className="mt-auto">
+            {checking ? (
+              <div className="flex items-center gap-2 text-gray-400 text-sm py-2">
+                <Loader2 className="h-4 w-4 animate-spin" /> Checking…
+              </div>
+            ) : isRegistered ? (
+              <div className="flex items-center gap-2 text-emerald-700 text-sm font-semibold py-2">
+                <CheckCircle className="h-5 w-5" /> You're registered for this session
+              </div>
+            ) : (
+              <Button
+                onClick={handleRegister}
+                disabled={registering}
+                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl py-5 text-sm"
+              >
+                {registering ? (
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Registering…</>
+                ) : user ? (
+                  'Register for Free'
+                ) : (
+                  'Sign in with Google to Register'
+                )}
+              </Button>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   );
