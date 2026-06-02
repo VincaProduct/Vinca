@@ -212,7 +212,7 @@ export default function ElevatePage() {
 
   const s2Items = [
     { icon: <User size={22} color="white" />,       title: 'A dedicated point of contact',    desc: 'One wealth expert who knows your complete financial picture and guides every decision with you directly. The same person, every time.' },
-    { icon: <TrendingUp size={22} color="white" />, title: 'Active portfolio management',     desc: 'Your portfolio is reviewed and rebalanced every month — proactively, not reactively. Markets shift. Your plan adjusts.' },
+    { icon: <TrendingUp size={22} color="white" />, title: 'Active portfolio management',     desc: 'Your portfolio is reviewed and rebalanced proactively, not reactively. Markets shift. Your plan adjusts.' },
     { icon: <Shield size={22} color="white" />,     title: 'Complete financial coverage',     desc: 'Insurance gaps, emergency fund, tax efficiency — mapped, reviewed, and optimised from day one. Nothing left unchecked.' },
     { icon: <Zap size={22} color="white" />,        title: 'Always responsive',               desc: 'Questions answered. Decisions supported. Same-day responses — not when a slot opens up, when you need them.' },
   ];
@@ -220,8 +220,8 @@ export default function ElevatePage() {
   const faqs = [
     { q: 'Is Compass right for me?',
       a: 'Compass is for people with a clear retirement goal who want a dedicated programme — not a product, not a generic advisor — actively working on it. If you want your retirement plan built, managed, and kept on track, Compass is for you.' },
-    { q: 'What does Compass actually do every month?',
-      a: 'Your retirement plan is reviewed, your portfolio rebalanced where needed, your insurance and tax position checked, and any life changes factored in. You receive a clear update and next steps — every month, without having to ask.' },
+    { q: 'What does Compass actually do?',
+      a: 'Your retirement plan is reviewed, your portfolio rebalanced where needed, your insurance and tax position checked, and any life changes factored in. You receive a clear update and next steps — without having to ask.' },
     { q: 'What if my dedicated wealth expert changes?',
       a: 'Your entire retirement plan, portfolio history, and context lives in Vinca\'s system — not with any individual. If your primary contact changes, another expert picks up exactly where they left off. Your programme never restarts.' },
     { q: 'What does it cost?',
@@ -296,7 +296,7 @@ export default function ElevatePage() {
             </div>
 
             <p className="cp-rise text-base text-gray-500 leading-relaxed" style={{ animationDelay: '300ms' }}>
-              A dedicated programme that actively manages your wealth and retirement plan every month — not a product you buy and forget, but an ongoing engagement that keeps your retirement on track.
+              A dedicated programme that actively manages your wealth and retirement plan — not a product you buy and forget, but an ongoing engagement that keeps your retirement on track.
             </p>
 
             <div className="cp-rise flex flex-col gap-3" style={{ animationDelay: '420ms' }}>
