@@ -1,7 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
-import { zohoRequest } from "../_shared/zoho.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,33 +22,21 @@ serve(async (req) => {
       });
     }
 
-    // Zoho sends contact_id as a query parameter (Module Parameter)
+    // Zoho sends all fields as Module Parameters (query params) — no API call needed
     const contactId = url.searchParams.get('contact_id');
+    const firstName = url.searchParams.get('first_name');
+    const lastName  = url.searchParams.get('last_name');
+    const phone     = url.searchParams.get('phone');
+    const email     = url.searchParams.get('email');
+    const fullName  = [firstName, lastName].filter(Boolean).join(' ') || null;
+
     if (!contactId) {
       return new Response(JSON.stringify({ error: 'Missing contact_id' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    console.log('Zoho webhook fired for contact:', contactId);
-
-    // Fetch full contact data from Zoho CRM
-    const zohoContact = await zohoRequest('GET', `Contacts/${contactId}`);
-    const contact = zohoContact?.data?.[0];
-
-    if (!contact) {
-      return new Response(JSON.stringify({ error: 'Contact not found in Zoho' }), {
-        status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    console.log('Fetched Zoho contact:', JSON.stringify(contact));
-
-    const firstName = contact.First_Name;
-    const lastName  = contact.Last_Name;
-    const fullName  = contact.Full_Name || [firstName, lastName].filter(Boolean).join(' ');
-    const phone     = contact.Phone;
-    const email     = contact.Email;
+    console.log('Zoho webhook fired for contact:', contactId, { firstName, lastName, phone, email });
 
     // Build Supabase profile update
     const profileUpdate: Record<string, any> = {

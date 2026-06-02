@@ -362,7 +362,7 @@ function SubTabPills<T extends string>({ tabs, active, onChange }: { tabs: { val
   );
 }
 
-function ElevateCta({ label }: { label: string }) {
+function CompassCta({ label }: { label: string }) {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200">
@@ -371,7 +371,7 @@ function ElevateCta({ label }: { label: string }) {
         <p className="text-xs text-slate-500 mt-0.5">Your wealth manager can help you pick the right products for your plan.</p>
       </div>
       <button
-        onClick={() => navigate('/dashboard/elevate')}
+        onClick={() => navigate('/dashboard/compass')}
         className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition flex-shrink-0"
       >
         Talk to wealth manager <ArrowUpRight className="w-4 h-4" />
@@ -540,7 +540,7 @@ export default function KnowYourMarketPage() {
             </>
           )}
 
-          <ElevateCta label="Ready to start building your corpus?" />
+          <CompassCta label="Ready to start building your corpus?" />
         </section>
 
         {/* ── Section 3: Generate Income ────────────────────────────────────── */}
@@ -682,7 +682,7 @@ export default function KnowYourMarketPage() {
             </>
           )}
 
-          <ElevateCta label="Want help structuring your retirement income?" />
+          <CompassCta label="Want help structuring your retirement income?" />
         </section>
 
         {/* ── Global disclaimer ─────────────────────────────────────────────── */}

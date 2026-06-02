@@ -102,7 +102,14 @@ export async function zohoRequest(
 
   const response = await fetch(url, options);
 
-  const responseData = await response.json();
+  // Handle empty body (Zoho returns 204 No Content when nothing is found)
+  const text = await response.text();
+  if (!text) {
+    if (response.status === 204) return null;
+    throw new Error(`Zoho API returned empty body with status ${response.status}`);
+  }
+
+  const responseData = JSON.parse(text);
 
   if (!response.ok) {
     console.error('Zoho API request failed:', response.status, responseData);

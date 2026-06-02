@@ -418,7 +418,7 @@ export default function InsurancePage() {
                 I need help with a claim →
               </button>
               <button
-                onClick={() => navigate('/dashboard/elevate')}
+                onClick={() => navigate('/dashboard/compass')}
                 className="px-6 py-3 rounded-lg border border-white/20 text-white/80 hover:text-white hover:border-white/40 text-sm font-semibold transition"
               >
                 I want to buy insurance
@@ -512,7 +512,7 @@ export default function InsurancePage() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => navigate('/dashboard/elevate')}
+              <button onClick={() => navigate('/dashboard/compass')}
                 className="w-full py-2.5 rounded-lg border-2 border-emerald-600 text-emerald-700 text-sm font-semibold hover:bg-emerald-50 transition flex items-center justify-center gap-2">
                 Get guidance <ArrowRight className="w-4 h-4" />
               </button>
@@ -543,7 +543,7 @@ export default function InsurancePage() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => navigate('/dashboard/elevate')}
+              <button onClick={() => navigate('/dashboard/compass')}
                 className="w-full py-2.5 rounded-lg border-2 border-emerald-600 text-emerald-700 text-sm font-semibold hover:bg-emerald-50 transition flex items-center justify-center gap-2">
                 Get guidance <ArrowRight className="w-4 h-4" />
               </button>

@@ -786,7 +786,7 @@ function NextMoveChapter() {
           You've seen your gap. Book 30 minutes with a wealth manager who will look at your specific numbers and tell you exactly what to do.
         </p>
         <button
-          onClick={() => window.location.href = '/dashboard/elevate'}
+          onClick={() => window.location.href = '/dashboard/compass'}
           style={{
             background: 'white', color: 'hsl(158 64% 32%)', border: 'none', borderRadius: 12,
             padding: '15px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer',

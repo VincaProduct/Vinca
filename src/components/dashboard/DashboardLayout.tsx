@@ -149,7 +149,7 @@ const MOBILE_TABS = [
   { key: 'build',   label: 'Build',   icon: TrendingUp, url: '/dashboard/sprints',   exact: false, premium: false },
   { key: 'protect', label: 'Protect', icon: Shield,     url: '/dashboard/insurance', exact: false, premium: false },
   { key: 'grow',    label: 'Grow',    icon: Sprout,     url: '/dashboard/learning',  exact: false, premium: false },
-  { key: 'elevate', label: 'Elevate', icon: Star,       url: '/dashboard/elevate',   exact: false, premium: true  },
+  { key: 'compass', label: 'Compass', icon: Star,       url: '/dashboard/compass',   exact: false, premium: true  },
 ] as const;
 
 function MobileTabBar() {

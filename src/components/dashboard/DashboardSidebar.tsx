@@ -126,10 +126,10 @@ const NAV: NavGroup[] = [
     dot: () => 'green',
   },
   {
-    key: 'elevate',
-    title: 'Elevate',
+    key: 'compass',
+    title: 'Compass',
     icon: Star,
-    url: '/dashboard/elevate',
+    url: '/dashboard/compass',
     premium: true,
   },
   {
@@ -333,7 +333,7 @@ export function DashboardSidebar() {
                 const dotColor = group.dot ? group.dot(score, foundationScore) : null;
                 const pillLabel = group.pillText ? group.pillText(score ?? 0, foundationScore) : null;
 
-                // ── Direct-link item (My Dashboard / Elevate) ────────────
+                // ── Direct-link item (My Dashboard / Compass) ────────────
                 if (group.url) {
                   const active = isSubActive(group.url);
                   if (group.premium) {

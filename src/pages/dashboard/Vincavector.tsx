@@ -1212,7 +1212,7 @@ export default function Vincavector() {
                   {screen === 'result' && resultVisible && (
                     <ResultScreen
                       result={result}
-                      onBook={() => navigate('/dashboard/elevate')}
+                      onBook={() => navigate('/dashboard/compass')}
                       onBack={handleBack}
                       animOut={animOut}
                     />

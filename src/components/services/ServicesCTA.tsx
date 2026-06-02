@@ -20,9 +20,9 @@ const ServicesCTA = () => {
           <Button
             onClick={() => {
               if (user) {
-                navigate('/dashboard/elevate');
+                navigate('/dashboard/compass');
               } else {
-                localStorage.setItem('redirect_after_login', '/dashboard/elevate');
+                localStorage.setItem('redirect_after_login', '/dashboard/compass');
                 sessionStorage.setItem('auth_context_consultation', 'true');
                 navigate('/auth');
               }

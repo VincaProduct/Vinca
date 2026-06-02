@@ -301,34 +301,34 @@ export default function ElevatePage() {
   const s2Items = [
     {
       icon: <User size={24} color="white" />,
-      title: 'Your Dedicated Manager',
-      desc: 'One expert who knows your complete financial picture. Not a team. Not a chatbot. One person accountable for your wealth.',
+      title: 'Your Dedicated Navigator',
+      desc: 'One expert who maps your complete financial picture. Not a team. Not a chatbot. One person who knows exactly where you\'re headed and how to get you there.',
     },
     {
       icon: <TrendingUp size={24} color="white" />,
-      title: 'Active Portfolio Oversight',
-      desc: 'Monthly reviews, rebalancing when needed, proactive changes as markets and your life evolve.',
+      title: 'Monthly Course Corrections',
+      desc: 'Portfolio reviews, rebalancing when needed, proactive adjustments as markets shift and your life evolves. Always pointed in the right direction.',
     },
     {
       icon: <Shield size={24} color="white" />,
-      title: 'Full Foundation Audit',
-      desc: 'Life insurance, health cover, emergency fund, tax efficiency — reviewed and optimised from day one.',
+      title: 'No Blind Spots',
+      desc: 'Life insurance, health cover, emergency fund, tax efficiency — all reviewed and optimised. A complete picture from day one, nothing left unchecked.',
     },
     {
       icon: <Zap size={24} color="white" />,
-      title: 'Priority Access',
-      desc: 'Same-day responses. Instant booking. Available when you need them, not when they have a slot.',
+      title: 'Always There When It Matters',
+      desc: 'Same-day responses. Instant booking. Available when you need direction, not just when they happen to have a free slot.',
     },
   ];
 
 
   const faqs = [
-    { q: 'Is Elevate right for me?', a: 'Elevate is for people with a clear retirement goal who want a dedicated expert to help them reach it. If you want your retirement plan built and managed properly, Elevate is for you.' },
-    { q: 'How is this different from a regular financial advisor?', a: 'Your wealth manager starts from your retirement goal — they already know your lifestyle tier, your income, and your health risk profile before the first call. It is not generic advice. It is built on your numbers.' },
+    { q: 'Is Compass right for me?', a: 'Compass is for people with a clear retirement goal who want a dedicated expert to guide them there. If you want your retirement plan built, managed, and navigated properly — Compass is for you.' },
+    { q: 'How is this different from a regular financial advisor?', a: 'Your wealth manager starts from your retirement destination — they already know your lifestyle tier, your income, and your health risk profile before the first call. It is not generic guidance. It is built around your specific route.' },
     { q: 'What does it cost?', a: 'Pricing is shared after eligibility check. We work with a limited number of clients to ensure quality.' },
     { q: 'How do I get started?', a: 'Click Check My Eligibility. Answer 3 questions. If eligible, you will be matched with a wealth manager within 48 hours.' },
     { q: 'Is my data safe?', a: 'Yes. All data is encrypted and never shared with third parties. We are AMFI registered.' },
-    { q: 'What if I am not eligible?', a: 'We will point you to the right resources on VincaWealth to get you ready for Elevate.' },
+    { q: 'What if I am not eligible?', a: 'We will point you to the right resources on VincaWealth to help you get ready for Compass.' },
   ];
 
   const stories = [
@@ -339,12 +339,12 @@ export default function ElevatePage() {
     },
     {
       initials: 'PS', name: 'Priya S.', role: 'Business Owner, Hyderabad',
-      quote: '"My CA handled my taxes. Now I finally have someone handling my wealth."',
+      quote: '"My CA handled my taxes. Now I finally have someone navigating my wealth."',
       result: 'Closed a ₹45K/month investment gap without reducing lifestyle',
     },
     {
       initials: 'AT', name: 'Ankit T.', role: 'Senior Engineer, Pune',
-      quote: '"I thought I needed to understand markets to invest. Turns out I just needed the right person."',
+      quote: '"I thought I needed to understand markets to invest. Turns out I just needed the right guide."',
       result: 'Retirement plan secured 3 years ahead of schedule',
     },
   ];
@@ -362,23 +362,23 @@ export default function ElevatePage() {
           {/* Left */}
           <div className="flex-1 flex flex-col gap-8 max-w-xl">
             <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">
-              Elevate by VincaWealth
+              Compass by VincaWealth
             </span>
 
             <div className="flex flex-col gap-1">
               <h1 className="text-6xl font-extrabold text-gray-900 leading-tight max-md:text-4xl">
-                Retire on your terms.
+                Navigate retirement
               </h1>
               <h1 className="text-6xl font-extrabold text-gray-900 leading-tight max-md:text-4xl">
-                With a dedicated
+                with a dedicated
               </h1>
               <h1 className="text-6xl font-extrabold leading-tight italic max-md:text-4xl" style={{ color: GREEN }}>
-                expert in your corner.
+                guide in your corner.
               </h1>
             </div>
 
             <p className="text-lg text-gray-500 leading-relaxed max-w-md">
-              Most people manage their finances alone — between meetings, on weekends, with half the information. Elevate gives you one dedicated wealth manager who handles everything full time.
+              Most people navigate their finances alone — between meetings, on weekends, without a clear destination. Compass gives you one dedicated wealth manager who knows your route and gets you there.
             </p>
 
             <div className="flex flex-col gap-3">
@@ -418,13 +418,13 @@ export default function ElevatePage() {
                 style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.12)', border: '1px solid #F3F4F6' }}>
                 <div className="p-10 pb-6">
                   <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">
-                    With Elevate you get
+                    With Compass you get
                   </p>
                   <div className="flex flex-col divide-y divide-gray-100">
                     {[
-                      'A dedicated wealth manager — one person, fully accountable',
-                      'A personalised retirement plan built around your life',
-                      'Monthly portfolio reviews and active rebalancing',
+                      'A dedicated wealth manager — your personal navigator',
+                      'A personalised retirement roadmap built around your life',
+                      'Monthly portfolio reviews and active course correction',
                       'Tax, insurance, and emergency fund audit',
                       'Priority access — same-day responses',
                     ].map((item) => (
@@ -458,10 +458,10 @@ export default function ElevatePage() {
       <section className="w-full" style={{ background: DARK_BG }}>
         <div className="max-w-6xl mx-auto px-20 py-24 max-md:px-5 max-md:py-12">
           <p className="text-xs tracking-widest uppercase mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            What Elevate Includes
+            What Compass Includes
           </p>
           <h2 className="text-5xl font-extrabold text-white mb-16 max-w-lg leading-tight max-md:text-3xl">
-            Everything you need to retire on your terms.
+            Every tool you need to reach retirement — and stay on course.
           </h2>
 
           <div
@@ -497,9 +497,9 @@ export default function ElevatePage() {
             {/* Left — sticky */}
             <div className="w-72 flex-shrink-0 max-md:w-full">
               <div className="sticky top-24">
-                <p className="text-xs tracking-widest text-gray-400 uppercase mb-4">Is Elevate For You?</p>
+                <p className="text-xs tracking-widest text-gray-400 uppercase mb-4">Is Compass For You?</p>
                 <h2 className="text-4xl font-extrabold text-gray-900 leading-tight max-md:text-3xl">
-                  Built for people serious about retiring well.
+                  Built for people serious about finding their path to retirement.
                 </h2>
               </div>
             </div>
@@ -507,9 +507,9 @@ export default function ElevatePage() {
             {/* Right — cards */}
             <div className="flex-1 flex flex-col gap-4">
               {[
-                'You have a retirement goal but no clear plan to reach it',
-                'You want your money working harder but do not know where to start',
-                'You are tired of managing finances alone and want a trusted expert',
+                'You have a retirement goal but no clear path to reach it',
+                'You want your money working harder but need someone to show you how',
+                'You are tired of navigating finances alone and want a trusted guide',
               ].map((text) => (
                 <div key={text} className="bg-white rounded-2xl p-7 shadow-sm flex items-start gap-4">
                   <div
@@ -524,9 +524,9 @@ export default function ElevatePage() {
 
               {/* Amber card */}
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 mt-2">
-                <p className="font-bold text-amber-800 mb-2">⚠ Not quite ready for Elevate yet?</p>
+                <p className="font-bold text-amber-800 mb-2">⚠ Not quite ready for Compass yet?</p>
                 <p className="text-amber-700 text-sm leading-relaxed mb-3">
-                  Elevate works best when you have an established income and are ready to commit to a retirement plan.
+                  Compass works best when you have an established income and are ready to commit to a retirement roadmap.
                   Start by calculating your Financial Freedom Score.
                 </p>
                 <button
@@ -641,12 +641,12 @@ export default function ElevatePage() {
           className="absolute bottom-0 left-0 right-0 text-center font-black pointer-events-none select-none leading-none"
           style={{ fontSize: 160, color: 'rgba(255,255,255,0.04)' }}
         >
-          ELEVATE
+          COMPASS
         </div>
 
         <div className="relative z-10 flex flex-col items-center">
           <h2 className="text-5xl font-extrabold text-white mb-4 max-md:text-3xl">
-            Ready to retire on your terms?
+            Ready to find your path to retirement?
           </h2>
           <p className="text-gray-400 mb-10 text-base">
             Limited spots available. Eligibility check takes 2 minutes.
@@ -742,7 +742,7 @@ export default function ElevatePage() {
                   className="w-10 h-10 rounded-full flex items-center justify-center text-lg mb-6"
                   style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}
                 >✓</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">You are eligible for Elevate</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">You are eligible for Compass</h2>
                 <p className="text-gray-500 text-sm mb-8">One last thing — what number should your wealth manager call you on?</p>
                 <input
                   type="tel"
@@ -935,9 +935,9 @@ export default function ElevatePage() {
                   className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-5"
                   style={{ background: '#FEF3C7', border: '2px solid #F59E0B', color: '#92400E' }}
                 >ℹ</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">Not quite ready for Elevate yet</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">Not quite ready for Compass yet</h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-sm mx-auto">
-                  Elevate works best when you have at least ₹25K/month to invest via SIP or ₹10 lakh as a lump sum.
+                  Compass works best when you have at least ₹25K/month to invest via SIP or ₹10 lakh as a lump sum.
                   Start by building your foundation with VincaWealth.
                 </p>
 
@@ -946,7 +946,7 @@ export default function ElevatePage() {
                   <p className="text-sm text-gray-600 leading-relaxed">
                     Write to us at{' '}
                     <a
-                      href="mailto:support@vincawealth.com?subject=Elevate Eligibility"
+                      href="mailto:support@vincawealth.com?subject=Compass Eligibility"
                       className="font-semibold underline"
                       style={{ color: GREEN }}
                     >

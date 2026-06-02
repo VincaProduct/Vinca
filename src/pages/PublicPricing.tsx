@@ -142,7 +142,7 @@ export default function PublicPricing() {
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-foreground">
                   <HeartHandshake className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Elevate: optional 1:1 guidance sessions</span>
+                  <span className="text-muted-foreground">Compass: optional 1:1 guidance sessions</span>
                 </li>
               </ul>
             </div>
@@ -346,12 +346,12 @@ export default function PublicPricing() {
               </li>
             </ul>
           </div>
-          {/* Elevate */}
+          {/* Compass */}
           <div className="bg-card rounded-2xl sm:rounded-3xl border border-border shadow-sm p-8 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <HeartHandshake className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
-                <div className="text-lg sm:text-xl font-bold text-primary">Elevate</div>
+                <div className="text-lg sm:text-xl font-bold text-primary">Compass</div>
               </div>
               <div className="text-sm sm:text-base text-muted-foreground">Optional one-on-one guidance for validation and clarity on your next steps. Fully user-initiated, educational-only.</div>
             </div>

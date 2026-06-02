@@ -66,7 +66,7 @@ export default function PricingPage() {
             </li>
             <li className="flex items-start gap-3 text-base text-slate-800">
               <HeartHandshake className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Elevate: optional 1:1 guidance sessions</span>
+              <span>Compass: optional 1:1 guidance sessions</span>
             </li>
           </ul>
         </div>
@@ -283,7 +283,7 @@ export default function PricingPage() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <HeartHandshake className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-                <div className="text-lg sm:text-xl font-bold text-emerald-800">Elevate</div>
+                <div className="text-lg sm:text-xl font-bold text-emerald-800">Compass</div>
               </div>
               <div className="text-sm sm:text-base text-slate-600">Optional one-on-one guidance for validation and clarity on your next steps. Fully user-initiated, educational-only.</div>
             </div>

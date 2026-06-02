@@ -215,7 +215,7 @@ const FAQSection = () => {
             </p>
             <button
               onClick={() => {
-                localStorage.setItem('redirect_after_login', '/dashboard/elevate');
+                localStorage.setItem('redirect_after_login', '/dashboard/compass');
                 sessionStorage.setItem('auth_context_consultation', 'true');
                 navigate('/auth');
               }}

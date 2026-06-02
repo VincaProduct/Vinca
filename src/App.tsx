@@ -116,7 +116,7 @@ const App = () => (
                     <Route path="learning/series/:id" element={<LearningSeriesDetail />} />
                     <Route path="learning/achievements" element={<LearningAchievements />} />
 
-                    <Route path="elevate" element={<ElevatePage />} />
+                    <Route path="compass" element={<ElevatePage />} />
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
                     <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
                     <Route path="refer" element={<ReferFriend />} />
