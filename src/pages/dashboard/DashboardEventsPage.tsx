@@ -49,11 +49,11 @@ function EventCard({ event }: { event: VincaEvent }) {
       <div className="flex flex-col sm:flex-row">
 
         {event.image_url && (
-          <div className="sm:w-2/5 flex-shrink-0 bg-gray-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="sm:w-52 flex-shrink-0 bg-gray-50 flex items-center justify-center p-3">
             <img
               src={event.image_url}
               alt={event.title}
-              className="w-full h-auto sm:max-h-[380px] object-contain rounded-lg"
+              className="w-full h-auto object-contain rounded-lg"
             />
           </div>
         )}
