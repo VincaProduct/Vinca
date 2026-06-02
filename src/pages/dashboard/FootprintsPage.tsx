@@ -938,7 +938,7 @@ const FootprintDetailView = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-semibold text-foreground">
-                        Anonymous Investor XYZ
+                        Community Member
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(comment.createdAt).toLocaleDateString()}

@@ -13,59 +13,74 @@ interface GoogleReviewItem {
   recencyRank: number;
 }
 
-// Placeholder data – replace with Google Places API responses in future
 const MOCK_REVIEWS: GoogleReviewItem[] = [
   {
     id: 1,
-    name: 'Rahul S.',
+    name: 'T Durgaprasad yadav Ch',
     rating: 5,
-    text: 'Excellent service and professional advice. The team at Vinca Wealth helped me plan my investments perfectly.',
-    date: '2 months ago',
-    recencyRank: 6,
+    text: 'My self Dr DurgaPrasad, I am giving this review after using the app and Vinca Wealth for over 2 years. Vinca Wealth has always been dependable to invest in the right Mutual funds. All the recommendations have been given after thorough research and analysis. They have been regularly updating us with the latest happenings in the Mutual fund world.',
+    date: '3 years ago',
+    recencyRank: 4,
   },
   {
     id: 2,
-    name: 'Priya M.',
-    rating: 4,
-    text: 'Very satisfied with their portfolio management. Responsive team and clear communication.',
-    date: '1 week ago',
-    recencyRank: 1,
-  },
-  {
-    id: 3,
-    name: 'Amit K.',
+    name: 'sehwag Kalyan',
     rating: 5,
-    text: 'Clear guidance on tax-efficient investing. I finally feel confident about my retirement plan.',
-    date: '3 weeks ago',
-    recencyRank: 3,
-  },
-  {
-    id: 4,
-    name: 'Sneha R.',
-    rating: 3,
-    text: 'Good advice, but I would have preferred faster follow-ups. Overall, helpful team.',
-    date: '1 month ago',
+    text: 'Vinca Wealth with their excellent financial planning strategy has helped me to get better clarity on our Financial goals. They not only guided me on how much and where to invest, they also emphasised on the inflation adjusted returns.',
+    date: '3 years ago',
     recencyRank: 5,
   },
   {
+    id: 3,
+    name: 'Nagarajan M',
+    rating: 5,
+    text: 'I have been thinking about my future financial planning, got excellent team support from Vinca Wealth, now I have got freedom on time. If you\'re interested in early retirement too, I highly recommend their services.',
+    date: '3 years ago',
+    recencyRank: 6,
+  },
+  {
+    id: 4,
+    name: 'Uday Kiran Manikonda',
+    rating: 5,
+    text: 'I got in touch with Vinca Wealth when I was unsure of my existing investment plans. Got to know that we should not opt for insurance cum investment products. They helped me to switch to Mutual funds instead for long term wealth creation.',
+    date: '3 years ago',
+    recencyRank: 7,
+  },
+  {
     id: 5,
-    name: 'Vikram T.',
-    rating: 4,
-    text: 'Structured portfolio review and easy-to-understand recommendations. Appreciate the clarity.',
-    date: '2 weeks ago',
-    recencyRank: 2,
+    name: 'dimmiri Reddappa',
+    rating: 5,
+    text: 'Awesome service.',
+    date: '3 months ago',
+    recencyRank: 1,
   },
   {
     id: 6,
-    name: 'Neha G.',
+    name: 'balu naidu',
     rating: 5,
-    text: 'Loved the holistic view on goals and risk. Their tools make tracking super simple.',
-    date: '1.5 months ago',
-    recencyRank: 4,
+    text: 'The best financial planning team in Electronic City and Bangalore.',
+    date: '2 years ago',
+    recencyRank: 2,
+  },
+  {
+    id: 7,
+    name: 'nikhil nik',
+    rating: 5,
+    text: 'Place is amazing, well maintained positive energy, good environment, good service.',
+    date: '3 years ago',
+    recencyRank: 8,
+  },
+  {
+    id: 8,
+    name: 'Gafur Indikar',
+    rating: 5,
+    text: 'Great experience with Vinca Wealth. Highly recommended.',
+    date: '2 years ago',
+    recencyRank: 3,
   },
 ];
 
-const GOOGLE_REVIEWS_URL = 'https://www.google.com/maps/place/Vinca+Wealth';
+const GOOGLE_REVIEWS_URL = 'https://www.google.com/search?q=Vinca+Wealth+Electronic+City+Bangalore+Reviews';
 
 type FilterOption = 'all' | '5' | '4' | '3' | 'recent' | 'highest' | 'lowest';
 
@@ -177,8 +192,8 @@ export default function ReflectionsPage() {
       <CanonicalPageHeader
         title="Reflections from people who used Vinca."
         actions={
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="hidden md:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white"
             onClick={() => window.open(GOOGLE_REVIEWS_URL, '_blank')}
           >
@@ -187,6 +202,20 @@ export default function ReflectionsPage() {
         }
       />
       <div className="min-h-screen pb-24 md:pb-8">
+
+      {/* Google rating summary */}
+      <div className="max-w-7xl mx-auto px-4 pt-6">
+        <div className="inline-flex items-center gap-3 bg-white border border-emerald-100 rounded-xl px-5 py-3 shadow-sm">
+          <div className="flex items-center gap-1">
+            {[1,2,3,4,5].map((s) => (
+              <Star key={s} className="h-5 w-5 text-amber-400 fill-amber-400" />
+            ))}
+          </div>
+          <span className="text-2xl font-black text-gray-900">5.0</span>
+          <span className="text-sm text-gray-500">· 8 reviews on</span>
+          <span className="text-sm font-semibold text-gray-700">Google</span>
+        </div>
+      </div>
 
       {/* Combined Filter Tabs - Matching Financial Readiness Style */}
       <div className="max-w-7xl mx-auto px-4 py-6">

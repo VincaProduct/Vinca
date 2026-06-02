@@ -44,7 +44,14 @@ export default function RaisePage() {
     }
   const [state, setState] = useState({
     raiseText: '',
-    raiseItems: [] as RaiseItem[],
+    raiseItems: [
+      { id: 1, title: "I don't know how much corpus I actually need to retire.", votes: 18, upvotes: 18, downvotes: 0, userVote: null, createdAt: '2026-04-10T10:00:00Z' },
+      { id: 2, title: "My SIPs are running but I have no idea if I'm on track.", votes: 15, upvotes: 15, downvotes: 0, userVote: null, createdAt: '2026-04-18T10:00:00Z' },
+      { id: 3, title: "I keep postponing setting up term insurance.", votes: 12, upvotes: 12, downvotes: 0, userVote: null, createdAt: '2026-03-22T10:00:00Z' },
+      { id: 4, title: "I don't know whether to invest a lump sum or do SIP right now.", votes: 11, upvotes: 11, downvotes: 0, userVote: null, createdAt: '2026-05-01T10:00:00Z' },
+      { id: 5, title: "My family doesn't understand my early retirement goal.", votes: 9, upvotes: 9, downvotes: 0, userVote: null, createdAt: '2026-04-05T10:00:00Z' },
+      { id: 6, title: "I have money sitting in savings account but don't know where to move it.", votes: 8, upvotes: 8, downvotes: 0, userVote: null, createdAt: '2026-05-15T10:00:00Z' },
+    ] as RaiseItem[],
     raiseLoading: false,
   });
 
@@ -197,7 +204,7 @@ export default function RaisePage() {
               onClick={() => setShowConfirmation(false)}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl transition-all shadow-md hover:shadow-lg"
             >
-             Welcome
+             Got it
             </button>
           </div>
         </div>

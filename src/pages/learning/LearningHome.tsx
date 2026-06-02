@@ -36,8 +36,7 @@ const LearningHome = () => {
   const latestAchievement = getLatestAchievement(progress.totalLearningPoints);
   const nextAchievement = getNextAchievement(progress.totalLearningPoints);
   const primarySeries = videoSeries.find((series) => series.id === "wealth-secret");
-  const sampleSeries = videoSeries.find((series) => series.id === "sample-series");
-  const seriesList = [primarySeries, sampleSeries].filter(Boolean) as LearningSeries[];
+  const seriesList = [primarySeries].filter(Boolean) as LearningSeries[];
 
   const handleContinue = () => {
     const lastSeriesId = progress.lastStartedSeriesId;
