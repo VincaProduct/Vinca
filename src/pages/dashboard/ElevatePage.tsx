@@ -414,9 +414,9 @@ export default function ElevatePage() {
               </p>
 
               {[
-                { label: 'You've been meaning to sort this for years.', body: 'You have the income. You have the intention. What's missing is one person who makes it actually happen — not a product, a person.' },
-                { label: 'Your current advisor sells you products.', body: 'No one is looking at your complete picture and asking: will you actually retire when you planned to? Compass does.' },
-                { label: 'You're on track — or think you are.', body: 'But there's no one who can tell you for certain, or course-correct when markets shift, your income changes, or life happens.' },
+                { label: "You've been meaning to sort this for years.", body: "You have the income. You have the intention. What's missing is one person who makes it actually happen — not a product, a person." },
+                { label: "Your current advisor sells you products.", body: "No one is looking at your complete picture and asking: will you actually retire when you planned to? Compass does." },
+                { label: "You're on track — or think you are.", body: "But there's no one who can tell you for certain, or course-correct when markets shift, your income changes, or life happens." },
               ].map((item, i) => (
                 <div key={i} className="py-8" style={{ borderTop: '1px solid #F0F0F0' }}>
                   <p className="font-bold text-gray-900 text-lg mb-2">{item.label}</p>
