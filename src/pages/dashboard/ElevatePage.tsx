@@ -211,25 +211,37 @@ export default function ElevatePage() {
   };
 
   const s2Items = [
-    { icon: <User size={22} color="white" />,      title: 'One person, fully accountable',   desc: 'Not a team. Not a rotating RM. One wealth manager who knows your complete financial picture and stays accountable to your retirement date.' },
-    { icon: <TrendingUp size={22} color="white" />, title: 'Monthly course corrections',       desc: 'Markets shift. Life changes. Your navigator reviews your portfolio every month and rebalances proactively — you never have to ask.' },
-    { icon: <Shield size={22} color="white" />,     title: 'No blind spots',                   desc: 'Insurance gaps, emergency fund shortfalls, tax drag — reviewed and fixed from day one. A complete picture, nothing left unchecked.' },
-    { icon: <Zap size={22} color="white" />,        title: 'Available when it matters',        desc: 'Same-day responses. Instant booking. Not when they have a slot — when you need them.' },
+    { icon: <User size={22} color="white" />,       title: 'A dedicated point of contact',    desc: 'One wealth expert who knows your complete financial picture and guides every decision with you directly. The same person, every time.' },
+    { icon: <TrendingUp size={22} color="white" />, title: 'Active portfolio management',     desc: 'Your portfolio is reviewed and rebalanced every month — proactively, not reactively. Markets shift. Your plan adjusts.' },
+    { icon: <Shield size={22} color="white" />,     title: 'Complete financial coverage',     desc: 'Insurance gaps, emergency fund, tax efficiency — mapped, reviewed, and optimised from day one. Nothing left unchecked.' },
+    { icon: <Zap size={22} color="white" />,        title: 'Always responsive',               desc: 'Questions answered. Decisions supported. Same-day responses — not when a slot opens up, when you need them.' },
   ];
 
   const faqs = [
-    { q: 'Is Compass right for me?',                           a: 'Compass is for people with a clear retirement goal who want one dedicated expert accountable to it. If you want your plan built, managed, and navigated properly — this is for you.' },
-    { q: 'How is this different from my current RM or CA?',    a: 'Your RM is incentivised to sell products. Your CA handles compliance. Neither owns your retirement outcome. Your Compass navigator does — and is measured by whether you reach your goal.' },
-    { q: 'What does it cost?',                                  a: 'Pricing is discussed after the eligibility check. We work with a limited number of clients specifically to protect quality.' },
-    { q: 'How do I get started?',                               a: 'Answer 3 questions. Takes 2 minutes. If eligible, you\'re matched with a navigator within 48 hours.' },
-    { q: 'Is my financial data safe?',                          a: 'Yes. Encrypted, never sold, never shared. Vinca is AMFI registered.' },
-    { q: 'What if I\'m not eligible yet?',                      a: 'We\'ll point you to the right starting point on VincaWealth — and you can reapply when you\'re ready.' },
+    { q: 'Is Compass right for me?',
+      a: 'Compass is for people with a clear retirement goal who want a dedicated programme — not a product, not a generic advisor — actively working on it. If you want your retirement plan built, managed, and kept on track, Compass is for you.' },
+    { q: 'What does Compass actually do every month?',
+      a: 'Your retirement plan is reviewed, your portfolio rebalanced where needed, your insurance and tax position checked, and any life changes factored in. You receive a clear update and next steps — every month, without having to ask.' },
+    { q: 'What if my dedicated wealth expert changes?',
+      a: 'Your entire retirement plan, portfolio history, and context lives in Vinca\'s system — not with any individual. If your primary contact changes, another expert picks up exactly where they left off. Your programme never restarts.' },
+    { q: 'What does it cost?',
+      a: 'Pricing is discussed after the eligibility check. We work with a limited number of clients specifically to protect quality.' },
+    { q: 'How do I get started?',
+      a: 'Answer 3 questions. Takes 2 minutes. If eligible, your Compass programme is activated within 48 hours.' },
+    { q: 'Is my financial data safe?',
+      a: 'Yes. Encrypted, never sold, never shared with third parties. Vinca is AMFI registered.' },
   ];
 
   const stories = [
-    { initials: 'RM', name: 'Rahul M.', role: 'Engineering Manager, Bangalore', quote: '"I used to spend every Sunday stressing about my portfolio. Now I spend it with my kids."', result: 'FFR score moved from 31 → 74 in 4 months' },
-    { initials: 'PS', name: 'Priya S.', role: 'Founder, Hyderabad',             quote: '"My CA handles my taxes. Now I finally have someone who handles my wealth."',             result: 'Closed a ₹45K/month investment gap without changing lifestyle' },
-    { initials: 'AT', name: 'Ankit T.', role: 'Senior Engineer, Pune',          quote: '"I thought I needed to understand markets to invest well. Turns out I just needed the right person."', result: 'Retirement plan secured 3 years ahead of schedule' },
+    { initials: 'RM', name: 'Rahul M.', role: 'Engineering Manager, Bangalore',
+      quote: '"I used to spend every Sunday stressing about my portfolio. Now I spend it with my kids."',
+      result: 'Retirement readiness score: 31 → 74 in 4 months' },
+    { initials: 'PS', name: 'Priya S.', role: 'Founder, Hyderabad',
+      quote: '"I had savings but no plan. Compass gave me a plan that actually gets reviewed and updated."',
+      result: 'Closed a ₹45K/month investment gap without changing lifestyle' },
+    { initials: 'AT', name: 'Ankit T.', role: 'Senior Engineer, Pune',
+      quote: '"I thought I needed to understand markets to retire well. Turns out I just needed the right programme."',
+      result: 'Retirement plan secured 3 years ahead of schedule' },
   ];
 
   return (
@@ -261,32 +273,33 @@ export default function ElevatePage() {
         <div className="w-full max-w-7xl mx-auto flex items-center gap-20 max-md:flex-col max-md:gap-14">
 
           {/* Left */}
-          <div className="flex-1 flex flex-col gap-8 max-w-lg">
+          <div className="flex-1 flex flex-col gap-7 max-w-lg">
 
             <div className="cp-rise" style={{ animationDelay: '0ms' }}>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: DARK_BG }}>
                 <CompassIcon size={13} color={GREEN} />
-                <span className="text-[11px] font-bold tracking-widest text-white uppercase">Compass — Vinca Wealth</span>
+                <span className="text-[11px] font-bold tracking-widest text-white uppercase">Private Programme · Vinca Wealth</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-0">
-              <h1 className="cp-rise text-5xl font-black text-gray-900 leading-tight max-md:text-4xl" style={{ animationDelay: '100ms' }}>
-                A wealth manager.
-              </h1>
-              <h1 className="cp-rise text-5xl font-black text-gray-900 leading-tight max-md:text-4xl" style={{ animationDelay: '200ms' }}>
-                An analyst. An ops team.
-              </h1>
-              <h1 className="cp-rise text-5xl font-black leading-tight italic max-md:text-4xl" style={{ color: GREEN, animationDelay: '320ms' }}>
-                All three, yours.
-              </h1>
+            {/* Brand name as hero */}
+            <div className="cp-rise" style={{ animationDelay: '80ms' }}>
+              <p className="text-8xl font-black leading-none tracking-tight max-md:text-6xl" style={{ color: DARK_BG }}>
+                Compass.
+              </p>
             </div>
 
-            <p className="cp-rise text-base text-gray-500 leading-relaxed" style={{ animationDelay: '440ms' }}>
-              Compass is Vinca's private retirement management programme. A dedicated three-person team works on your wealth and retirement plan — and your wealth manager is the one who guides every decision with you, one-on-one.
+            <div className="cp-rise" style={{ animationDelay: '180ms' }}>
+              <p className="text-xl font-medium leading-snug" style={{ color: 'rgba(13,40,24,0.5)' }}>
+                Vinca's private retirement management programme.
+              </p>
+            </div>
+
+            <p className="cp-rise text-base text-gray-500 leading-relaxed" style={{ animationDelay: '300ms' }}>
+              A dedicated programme that actively manages your wealth and retirement plan every month — not a product you buy and forget, but an ongoing engagement that keeps your retirement on track.
             </p>
 
-            <div className="cp-rise flex flex-col gap-3" style={{ animationDelay: '560ms' }}>
+            <div className="cp-rise flex flex-col gap-3" style={{ animationDelay: '420ms' }}>
               <button onClick={openModal}
                 className="w-fit px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
                 style={{ background: GREEN }}>
@@ -296,53 +309,31 @@ export default function ElevatePage() {
             </div>
           </div>
 
-          {/* Right — Compass team card */}
+          {/* Right — Programme deliverables card */}
           <div className="flex-1 flex justify-center max-md:w-full cp-fade" style={{ animationDelay: '300ms' }}>
             <div className="cp-float w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: DARK_BG, boxShadow: '0 24px 64px rgba(0,0,0,0.22)' }}>
-              <div className="px-8 pt-8 pb-2">
-                <div className="flex items-center gap-2 mb-8">
+              <div className="px-8 pt-8 pb-6">
+                <div className="flex items-center gap-2 mb-6">
                   <CompassIcon size={13} color={GREEN} />
-                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Your Compass Team</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Compass · Active</span>
                 </div>
+                <p className="text-white font-black text-xl mb-1" style={{ letterSpacing: '-0.02em' }}>Your programme, this month</p>
+                <p className="text-xs mb-7" style={{ color: 'rgba(255,255,255,0.35)' }}>What Compass is working on for you right now</p>
 
                 {[
-                  {
-                    initials: 'WM',
-                    role: 'Wealth Manager',
-                    tag: 'Your guide',
-                    desc: 'Leads your plan. Speaks with you directly, one-on-one.',
-                    highlight: true,
-                  },
-                  {
-                    initials: 'AN',
-                    role: 'Analyst',
-                    tag: 'Behind the scenes',
-                    desc: 'Research, portfolio analysis, market intelligence.',
-                    highlight: false,
-                  },
-                  {
-                    initials: 'OP',
-                    role: 'Operations',
-                    tag: 'Makes it happen',
-                    desc: 'Execution, paperwork, implementation. Nothing falls through.',
-                    highlight: false,
-                  },
-                ].map((member, i) => (
-                  <div key={member.role} className="flex items-start gap-4 mb-6">
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
-                      style={{ background: member.highlight ? GREEN : 'rgba(255,255,255,0.1)', color: 'white' }}>
-                      {member.initials}
+                  { done: true,  text: 'Retirement roadmap — built and reviewed' },
+                  { done: true,  text: 'Portfolio rebalanced — June' },
+                  { done: true,  text: 'Insurance gap — identified and actioned' },
+                  { done: false, text: 'Monthly update call — June 15' },
+                ].map(item => (
+                  <div key={item.text} className="flex items-center gap-3 mb-3.5">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ background: item.done ? GREEN : 'rgba(255,255,255,0.08)' }}>
+                      {item.done && <Check />}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <p className="text-sm font-bold text-white">{member.role}</p>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0"
-                          style={{ background: member.highlight ? 'rgba(6,169,105,0.25)' : 'rgba(255,255,255,0.08)', color: member.highlight ? GREEN : 'rgba(255,255,255,0.4)' }}>
-                          {member.tag}
-                        </span>
-                      </div>
-                      <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>{member.desc}</p>
-                    </div>
+                    <span className="text-sm" style={{ color: item.done ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.3)' }}>
+                      {item.text}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -368,13 +359,16 @@ export default function ElevatePage() {
 
           <div className="grid grid-cols-3 gap-0 max-md:grid-cols-1" style={{ borderLeft: '1px solid #E5E7EB' }}>
             {[
-              { step: '01', time: '2 minutes',  title: 'Check eligibility',       body: 'Answer 3 questions about your investment capacity. We match you only when the fit is right.' },
-              { step: '02', time: 'Within 48h', title: 'Meet your wealth manager', body: 'Your wealth manager reviews your full financial picture before the first call — prepared, specific, and ready to build your plan.' },
-              { step: '03', time: 'Ongoing',    title: 'Your team takes over',     body: 'Monthly reviews, rebalancing, tax and insurance, execution — your team handles it. Your wealth manager keeps you informed, one-on-one.' },
+              { step: '01', time: '2 minutes',  title: 'Check eligibility',
+                body: 'Answer 3 questions about your investment capacity. Compass is selective — we want the programme to be right for you before we activate it.' },
+              { step: '02', time: 'Within 48h', title: 'Your programme begins',
+                body: 'Your retirement roadmap is built. Your portfolio reviewed. Your wealth expert has studied your complete picture before the first call.' },
+              { step: '03', time: 'Every month', title: 'Active management, ongoing',
+                body: 'Compass handles the work — reviews, rebalancing, tax, insurance. You stay informed. Your retirement date stays on track.' },
             ].map(s => (
               <div key={s.step} className="px-10 py-10 max-md:px-6 max-md:py-8" style={{ borderRight: '1px solid #E5E7EB' }}>
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-4xl font-black" style={{ color: 'rgba(13,40,24,0.15)' }}>{s.step}</span>
+                  <span className="text-4xl font-black" style={{ color: 'rgba(13,40,24,0.18)' }}>{s.step}</span>
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.1)', color: GREEN }}>{s.time}</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-3">{s.title}</h3>
@@ -386,7 +380,7 @@ export default function ElevatePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          SECTION 3 — WHAT YOUR NAVIGATOR HANDLES
+          SECTION 3 — WHAT COMPASS COVERS
       ══════════════════════════════════════════════════════ */}
       <section className="w-full" style={{ background: DARK_BG }}>
         <div className="max-w-6xl mx-auto px-20 py-24 max-md:px-5 max-md:py-14">
@@ -394,7 +388,7 @@ export default function ElevatePage() {
             What Compass covers
           </p>
           <h2 className="text-5xl font-black text-white mb-20 max-w-lg leading-tight max-md:text-3xl">
-            Three people on your wealth.<br />Nothing left unmanaged.
+            Active management.<br />Every month.
           </h2>
 
           <div ref={s2Ref} className="grid grid-cols-2 max-md:grid-cols-1"
@@ -415,7 +409,7 @@ export default function ElevatePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          SECTION 4 — IS THIS FOR YOU (editorial)
+          SECTION 4 — WHO IT'S FOR
       ══════════════════════════════════════════════════════ */}
       <section className="w-full bg-white">
         <div className="max-w-6xl mx-auto px-20 py-24 max-md:px-5 max-md:py-14">
@@ -425,20 +419,23 @@ export default function ElevatePage() {
               <div className="sticky top-24">
                 <p className="text-[11px] tracking-widest uppercase text-gray-400 mb-4">Who it's for</p>
                 <h2 className="text-3xl font-black text-gray-900 leading-tight">
-                  Compass isn't for everyone.
+                  Compass is for people whose retirement deserves more than good intentions.
                 </h2>
               </div>
             </div>
 
             <div ref={leftRef} className="flex-1 flex flex-col">
               <p className="text-xl text-gray-500 leading-relaxed mb-12 font-medium">
-                It's for people who have a retirement goal — but no dedicated team accountable to making it happen.
+                A retirement plan that sits in a spreadsheet is not a plan. It needs to be actively managed, month after month.
               </p>
 
               {[
-                { label: "You've been meaning to sort this for years.", body: "You have the income. You have the intention. What's missing is one person who makes it actually happen — not a product, a person." },
-                { label: "Your current advisor sells you products.", body: "No one is looking at your complete picture and asking: will you actually retire when you planned to? Compass does." },
-                { label: "You're on track — or think you are.", body: "But there's no one who can tell you for certain, or course-correct when markets shift, your income changes, or life happens." },
+                { label: 'You have a retirement goal. No one is actively working toward it.',
+                  body: 'You have the income and the intention. What is missing is a programme that actually executes — not a product, not a one-time plan, but ongoing active management.' },
+                { label: 'Your wealth is growing. Your plan is not keeping up.',
+                  body: 'Income has changed. Markets have moved. Life has happened. Without active management, even a good plan drifts off course.' },
+                { label: 'You want to retire on time. Not approximately. On time.',
+                  body: 'Compass holds your retirement date accountable — with monthly reviews, proactive course corrections, and a wealth expert who knows your numbers.' },
               ].map((item, i) => (
                 <div key={i} className="py-8" style={{ borderTop: '1px solid #F0F0F0' }}>
                   <p className="font-bold text-gray-900 text-lg mb-2">{item.label}</p>
@@ -447,11 +444,11 @@ export default function ElevatePage() {
               ))}
 
               <div className="pt-8 mt-2" style={{ borderTop: '1px solid #F0F0F0' }}>
-                <p className="text-sm text-gray-400 mb-1">Not there yet?</p>
+                <p className="text-sm text-gray-400 mb-1">Not ready for Compass yet?</p>
                 <button onClick={() => navigate('/dashboard/ffr')}
                   className="text-sm font-semibold underline-offset-2 underline transition-colors"
                   style={{ color: GREEN }}>
-                  Calculate your Financial Freedom Score →
+                  Start with your Financial Freedom Score →
                 </button>
               </div>
             </div>
@@ -504,7 +501,7 @@ export default function ElevatePage() {
                 <span className="text-xl flex-shrink-0 transition-transform duration-200"
                   style={{ color: GREEN, transform: openFAQ === i ? 'rotate(45deg)' : 'rotate(0deg)', display: 'inline-block' }}>+</span>
               </button>
-              <div style={{ maxHeight: openFAQ === i ? '200px' : 0, overflow: 'hidden', transition: 'max-height 0.3s ease' }}>
+              <div style={{ maxHeight: openFAQ === i ? '220px' : 0, overflow: 'hidden', transition: 'max-height 0.3s ease' }}>
                 <p className="text-gray-500 text-sm leading-relaxed pb-6">{faq.a}</p>
               </div>
             </div>
@@ -521,9 +518,11 @@ export default function ElevatePage() {
         </div>
         <div className="relative z-10 flex flex-col items-center">
           <CompassIcon size={32} color={GREEN} className="mb-6" />
-          <h2 className="text-5xl font-black text-white mb-4 max-md:text-3xl">One person.<br />Your entire retirement.</h2>
+          <h2 className="text-5xl font-black text-white mb-4 max-md:text-3xl">
+            Your retirement deserves<br />active management.
+          </h2>
           <p className="text-gray-400 mb-10 text-base max-w-md">
-            Limited to 20 clients per month. Eligibility check takes 2 minutes.
+            Compass. Vinca's private retirement management programme.<br />Limited to 20 clients per month.
           </p>
           <button onClick={openModal}
             className="bg-white font-bold px-10 py-4 rounded-full text-base transition-all duration-200 hover:scale-[1.03]"
