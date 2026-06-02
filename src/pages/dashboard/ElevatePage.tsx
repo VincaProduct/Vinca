@@ -271,56 +271,78 @@ export default function ElevatePage() {
             </div>
 
             <div className="flex flex-col gap-0">
-              <h1 className="cp-rise text-5xl font-black text-gray-400 leading-tight max-md:text-4xl" style={{ animationDelay: '100ms' }}>
-                Your CA handles taxes.
+              <h1 className="cp-rise text-5xl font-black text-gray-900 leading-tight max-md:text-4xl" style={{ animationDelay: '100ms' }}>
+                A wealth manager.
               </h1>
-              <h1 className="cp-rise text-5xl font-black text-gray-400 leading-tight max-md:text-4xl" style={{ animationDelay: '200ms' }}>
-                Your RM sells products.
+              <h1 className="cp-rise text-5xl font-black text-gray-900 leading-tight max-md:text-4xl" style={{ animationDelay: '200ms' }}>
+                An analyst. An ops team.
               </h1>
-              <h1 className="cp-rise text-5xl font-black leading-tight max-md:text-4xl" style={{ color: DARK_BG, animationDelay: '320ms' }}>
-                Who owns your retirement?
+              <h1 className="cp-rise text-5xl font-black leading-tight italic max-md:text-4xl" style={{ color: GREEN, animationDelay: '320ms' }}>
+                All three, yours.
               </h1>
             </div>
 
             <p className="cp-rise text-base text-gray-500 leading-relaxed" style={{ animationDelay: '440ms' }}>
-              Compass is Vinca's private 1-on-1 wealth management programme. One dedicated navigator — not a team, not a chatbot — who builds your retirement plan, manages your investments, and stays accountable to your goal for the long term.
+              Compass is Vinca's private retirement management programme. A dedicated three-person team works on your wealth and retirement plan — and your wealth manager is the one who guides every decision with you, one-on-one.
             </p>
 
             <div className="cp-rise flex flex-col gap-3" style={{ animationDelay: '560ms' }}>
               <button onClick={openModal}
                 className="w-fit px-8 py-4 rounded-full font-semibold text-white text-sm transition-all duration-200 hover:opacity-90 hover:scale-[1.02]"
                 style={{ background: GREEN }}>
-                See if you qualify →
+                Check My Eligibility →
               </button>
               <span className="text-sm text-gray-400">Limited to 20 clients per month</span>
             </div>
           </div>
 
-          {/* Right — Navigator activity card */}
+          {/* Right — Compass team card */}
           <div className="flex-1 flex justify-center max-md:w-full cp-fade" style={{ animationDelay: '300ms' }}>
             <div className="cp-float w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: DARK_BG, boxShadow: '0 24px 64px rgba(0,0,0,0.22)' }}>
-              <div className="px-8 pt-8 pb-6">
-                <div className="flex items-center gap-2 mb-5">
+              <div className="px-8 pt-8 pb-2">
+                <div className="flex items-center gap-2 mb-8">
                   <CompassIcon size={13} color={GREEN} />
-                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Your Navigator</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Your Compass Team</span>
                 </div>
-                <p className="text-white font-bold text-lg mb-0.5">Wealth Manager</p>
-                <p className="text-sm mb-7" style={{ color: 'rgba(255,255,255,0.35)' }}>Vinca · Assigned to you</p>
 
                 {[
-                  { done: true,  text: 'Retirement roadmap — built' },
-                  { done: true,  text: 'Insurance gap — reviewed' },
-                  { done: true,  text: 'SIP rebalanced — June' },
-                  { done: false, text: 'Monthly review — June 15' },
-                ].map(item => (
-                  <div key={item.text} className="flex items-center gap-3 mb-3">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: item.done ? GREEN : 'rgba(255,255,255,0.08)' }}>
-                      {item.done && <Check />}
+                  {
+                    initials: 'WM',
+                    role: 'Wealth Manager',
+                    tag: 'Your guide',
+                    desc: 'Leads your plan. Speaks with you directly, one-on-one.',
+                    highlight: true,
+                  },
+                  {
+                    initials: 'AN',
+                    role: 'Analyst',
+                    tag: 'Behind the scenes',
+                    desc: 'Research, portfolio analysis, market intelligence.',
+                    highlight: false,
+                  },
+                  {
+                    initials: 'OP',
+                    role: 'Operations',
+                    tag: 'Makes it happen',
+                    desc: 'Execution, paperwork, implementation. Nothing falls through.',
+                    highlight: false,
+                  },
+                ].map((member, i) => (
+                  <div key={member.role} className="flex items-start gap-4 mb-6">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                      style={{ background: member.highlight ? GREEN : 'rgba(255,255,255,0.1)', color: 'white' }}>
+                      {member.initials}
                     </div>
-                    <span className="text-sm" style={{ color: item.done ? 'rgba(255,255,255,0.88)' : 'rgba(255,255,255,0.32)' }}>
-                      {item.text}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-bold text-white">{member.role}</p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full flex-shrink-0"
+                          style={{ background: member.highlight ? 'rgba(6,169,105,0.25)' : 'rgba(255,255,255,0.08)', color: member.highlight ? GREEN : 'rgba(255,255,255,0.4)' }}>
+                          {member.tag}
+                        </span>
+                      </div>
+                      <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>{member.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -346,13 +368,13 @@ export default function ElevatePage() {
 
           <div className="grid grid-cols-3 gap-0 max-md:grid-cols-1" style={{ borderLeft: '1px solid #E5E7EB' }}>
             {[
-              { step: '01', time: '2 minutes',  title: 'Check eligibility',           body: 'Answer 3 questions about your investment capacity. We need to know it\'s the right fit before we match you.' },
-              { step: '02', time: 'Within 48h', title: 'Meet your navigator',         body: 'Your wealth manager reviews your full financial picture before the first call. Prepared and specific — not a generic intro.' },
-              { step: '03', time: 'Ongoing',    title: 'Your route, end-to-end',     body: 'Monthly reviews, rebalancing, tax and insurance — all handled. You focus on living. They navigate.' },
+              { step: '01', time: '2 minutes',  title: 'Check eligibility',       body: 'Answer 3 questions about your investment capacity. We match you only when the fit is right.' },
+              { step: '02', time: 'Within 48h', title: 'Meet your wealth manager', body: 'Your wealth manager reviews your full financial picture before the first call — prepared, specific, and ready to build your plan.' },
+              { step: '03', time: 'Ongoing',    title: 'Your team takes over',     body: 'Monthly reviews, rebalancing, tax and insurance, execution — your team handles it. Your wealth manager keeps you informed, one-on-one.' },
             ].map(s => (
               <div key={s.step} className="px-10 py-10 max-md:px-6 max-md:py-8" style={{ borderRight: '1px solid #E5E7EB' }}>
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-4xl font-black" style={{ color: '#E8F5F0' }}>{s.step}</span>
+                  <span className="text-4xl font-black" style={{ color: 'rgba(13,40,24,0.15)' }}>{s.step}</span>
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.1)', color: GREEN }}>{s.time}</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-3">{s.title}</h3>
@@ -371,8 +393,8 @@ export default function ElevatePage() {
           <p className="text-[11px] tracking-widest uppercase mb-5" style={{ color: 'rgba(255,255,255,0.35)' }}>
             What Compass covers
           </p>
-          <h2 className="text-5xl font-black text-white mb-20 max-w-md leading-tight max-md:text-3xl">
-            Nothing left<br />unmanaged.
+          <h2 className="text-5xl font-black text-white mb-20 max-w-lg leading-tight max-md:text-3xl">
+            Three people on your wealth.<br />Nothing left unmanaged.
           </h2>
 
           <div ref={s2Ref} className="grid grid-cols-2 max-md:grid-cols-1"
@@ -410,7 +432,7 @@ export default function ElevatePage() {
 
             <div ref={leftRef} className="flex-1 flex flex-col">
               <p className="text-xl text-gray-500 leading-relaxed mb-12 font-medium">
-                It's for people who have a retirement goal — but no one who's actually accountable to it.
+                It's for people who have a retirement goal — but no dedicated team accountable to making it happen.
               </p>
 
               {[
@@ -506,7 +528,7 @@ export default function ElevatePage() {
           <button onClick={openModal}
             className="bg-white font-bold px-10 py-4 rounded-full text-base transition-all duration-200 hover:scale-[1.03]"
             style={{ color: DARK_BG }}>
-            See if you qualify →
+            Check My Eligibility →
           </button>
           <p className="text-sm mt-5" style={{ color: 'rgba(255,255,255,0.3)' }}>No obligation. No spam.</p>
         </div>
