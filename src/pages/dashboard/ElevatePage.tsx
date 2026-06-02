@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { User, TrendingUp, Shield, Zap } from 'lucide-react';
+import { User, TrendingUp, Shield, Zap, Compass as CompassIcon, CheckCircle, Clock } from 'lucide-react';
 
 // ─── Primary green from Tailwind config ───────────────────────
 const GREEN = '#06A969';
@@ -360,11 +360,15 @@ export default function ElevatePage() {
         <div className="w-full max-w-7xl mx-auto flex items-center gap-16 max-md:flex-col max-md:gap-10">
 
           {/* Left */}
-          <div className="flex-1 flex flex-col gap-8 max-w-xl">
-            <span className="text-xs font-medium tracking-widest text-gray-400 uppercase">
-              Compass by VincaWealth
-            </span>
+          <div className="flex-1 flex flex-col gap-7 max-w-xl">
 
+            {/* Brand badge */}
+            <div className="inline-flex items-center gap-2 w-fit px-4 py-2 rounded-full" style={{ background: DARK_BG }}>
+              <CompassIcon size={14} color={GREEN} />
+              <span className="text-xs font-bold tracking-widest text-white uppercase">Compass by VincaWealth</span>
+            </div>
+
+            {/* Headline */}
             <div className="flex flex-col gap-1">
               <h1 className="text-6xl font-extrabold text-gray-900 leading-tight max-md:text-4xl">
                 Navigate retirement
@@ -377,9 +381,12 @@ export default function ElevatePage() {
               </h1>
             </div>
 
-            <p className="text-lg text-gray-500 leading-relaxed max-w-md">
-              Most people navigate their finances alone — between meetings, on weekends, without a clear destination. Compass gives you one dedicated wealth manager who knows your route and gets you there.
-            </p>
+            {/* Definition callout */}
+            <div className="rounded-xl px-5 py-4" style={{ borderLeft: `4px solid ${GREEN}`, background: '#F0FDF4' }}>
+              <p className="text-sm font-semibold text-gray-800 leading-relaxed">
+                Compass is Vinca's dedicated 1-on-1 wealth management programme. One wealth manager, fully accountable to your retirement goal — building your plan, managing your investments, and navigating every decision with you.
+              </p>
+            </div>
 
             <div className="flex flex-col gap-3">
               <button
@@ -449,6 +456,63 @@ export default function ElevatePage() {
             )}
           </div>
 
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          SECTION 1.5 — HOW COMPASS WORKS
+      ══════════════════════════════════════════════════════ */}
+      <section className="w-full border-y border-gray-100" style={{ background: '#F8FDF9' }}>
+        <div className="max-w-6xl mx-auto px-20 py-16 max-md:px-5 max-md:py-10">
+          <p className="text-xs tracking-widest uppercase text-gray-400 mb-10">How Compass works</p>
+          <div className="grid grid-cols-3 gap-10 max-md:grid-cols-1 max-md:gap-8">
+
+            {/* Step 1 */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: GREEN }}>
+                  <CheckCircle size={16} color="white" />
+                </div>
+                <div className="flex-1 h-px" style={{ background: 'rgba(6,169,105,0.2)' }} />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: GREEN }}>Step 1 — 2 minutes</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Check your eligibility</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Answer 3 questions about your investment capacity and retirement goal. We need to know if Compass is the right fit before we match you.</p>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: GREEN }}>
+                  <Clock size={16} color="white" />
+                </div>
+                <div className="flex-1 h-px" style={{ background: 'rgba(6,169,105,0.2)' }} />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: GREEN }}>Step 2 — Within 48 hrs</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Meet your navigator</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Your dedicated wealth manager reviews your complete financial picture before the first call. Not a generic intro — a prepared, personalised session from day one.</p>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: GREEN }}>
+                  <CompassIcon size={16} color="white" />
+                </div>
+                <div className="flex-1 h-px opacity-0" />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold tracking-widest uppercase mb-2" style={{ color: GREEN }}>Step 3 — Ongoing</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Your route, managed end-to-end</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Monthly portfolio reviews, rebalancing, tax and insurance audit — all handled. You focus on living. They handle the navigation.</p>
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 

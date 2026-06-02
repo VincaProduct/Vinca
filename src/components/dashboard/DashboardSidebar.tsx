@@ -23,7 +23,7 @@ import {
   ShieldCheck,
   ChevronDown,
   Sprout,
-  Star,
+  Compass,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -128,7 +128,7 @@ const NAV: NavGroup[] = [
   {
     key: 'compass',
     title: 'Compass',
-    icon: Star,
+    icon: Compass,
     url: '/dashboard/compass',
     premium: true,
   },
@@ -341,22 +341,22 @@ export function DashboardSidebar() {
                       <Link
                         key={group.key}
                         to={group.url}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 mt-1"
+                        className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-150 mt-2"
                         style={{
-                          border: `0.5px solid ${ELEVATE_GREEN}`,
+                          border: `1.5px solid ${ELEVATE_GREEN}`,
                           color: ELEVATE_GREEN,
-                          background: active ? 'rgba(15,110,86,0.06)' : 'transparent',
+                          background: active ? 'rgba(15,110,86,0.10)' : 'rgba(15,110,86,0.04)',
                         }}
                       >
-                        <Icon style={{ width: 18, height: 18, color: ELEVATE_GREEN }} />
-                        <span className="text-sm" style={{ fontWeight: 500, color: ELEVATE_GREEN }}>
+                        <Icon style={{ width: 20, height: 20, color: ELEVATE_GREEN }} />
+                        <span className="text-sm font-semibold" style={{ color: ELEVATE_GREEN }}>
                           {group.title}
                         </span>
                         <span
-                          className="ml-auto text-[9px] font-bold tracking-wide px-1.5 py-0.5 rounded-full"
-                          style={{ background: 'rgba(15,110,86,0.1)', color: ELEVATE_GREEN }}
+                          className="ml-auto text-[9px] font-bold tracking-wide px-2 py-0.5 rounded-full"
+                          style={{ background: ELEVATE_GREEN, color: 'white' }}
                         >
-                          premium
+                          1-on-1
                         </span>
                       </Link>
                     );
