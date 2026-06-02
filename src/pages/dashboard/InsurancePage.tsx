@@ -573,7 +573,7 @@ export default function InsurancePage() {
               return (
                 <div key={s.step} className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-black text-slate-100">{s.step}</span>
+                    <span className="text-2xl font-black" style={{ color: 'rgba(13,40,24,0.15)' }}>{s.step}</span>
                     <div className="bg-emerald-50 p-2 rounded-lg">
                       <Icon className="w-4 h-4 text-emerald-600" />
                     </div>

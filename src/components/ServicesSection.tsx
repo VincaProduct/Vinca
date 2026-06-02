@@ -5,28 +5,28 @@ import ServicesCTA from "@/components/services/ServicesCTA";
 const ServicesSection = () => {
   const services = [
     {
-      title: 'Financial Freedom planning',
-      description: 'Comprehensive financial freedom strategies tailored to your lifestyle goals and timeline.',
-      features: ['Personalised roadmap', 'Estimating the requirement', 'Investment plan', 'Income Replacement Strategy'],
+      title: 'Retirement Planning',
+      description: 'Know exactly when you can retire and what it will take to get there — with a score and a plan, not a guess.',
+      features: ['Financial Freedom Readiness score', 'Retirement corpus estimation', 'SIP strategy and timeline', 'Retirement date projection'],
       icon: '🏖️'
     },
     {
-      title: 'Investment Management',
-      description: 'Professional portfolio management with personalized asset allocation and risk management.',
-      features: ['Portfolio Construction', 'Risk Assessment', 'Tax-Loss Harvesting', 'Rebalancing Strategy'],
+      title: 'Mutual Fund Portfolio Management',
+      description: 'Portfolio built for your retirement goal, actively monitored and rebalanced as markets move.',
+      features: ['Goal-based portfolio construction', 'SIP setup and management', 'Regular portfolio rebalancing', 'Performance tracking'],
       icon: '📈'
     },
     {
-      title: 'Financial Freedom Planning',
-      description: 'Holistic financial planning covering all aspects of your financial life.',
-      features: ['Goal Setting', 'Cash Flow Analysis', 'Insurance Review', 'Estate Planning'],
-      icon: '📋'
+      title: 'Insurance Planning',
+      description: 'The two pillars that protect your retirement corpus — assessed, gap-identified, and sorted.',
+      features: ['Life insurance adequacy check', 'Health insurance review', 'Coverage gap identification', 'Claim support at zero upfront cost'],
+      icon: '🛡️'
     },
     {
-      title: 'Tax Optimization',
-      description: 'Strategic tax planning to minimize your tax burden and maximize wealth accumulation.',
-      features: ['Tax-Efficient Investing', 'Charitable Strategies', 'Business Tax Planning', 'Retirement Distributions'],
-      icon: '💰'
+      title: 'Compass — Dedicated Wealth Management',
+      description: 'One expert who knows your complete financial picture and actively manages your retirement plan.',
+      features: ['Dedicated wealth expert', 'Active portfolio oversight', 'Insurance and emergency fund coverage', 'Same-day responses'],
+      icon: '🧭'
     }
   ];
 
@@ -35,11 +35,10 @@ const ServicesSection = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4 sm:mb-6 text-foreground px-2">
-            Comprehensive Wealth Management Services
+            Everything your retirement plan needs
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-            From retirement planning to investment management, we provide the expertise and 
-            personalized strategies you need to achieve your financial goals.
+            From knowing your number to reaching it — Vinca covers the full journey to financial freedom.
           </p>
         </div>
 
