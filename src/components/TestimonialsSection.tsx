@@ -116,8 +116,8 @@ const TestimonialsSection = () => {
             </div>
             <div className="w-px h-8 bg-border"></div>
             <div className="text-center">
-              <div className="text-xl lg:text-2xl font-bold text-primary">4.9★</div>
-              <div className="text-xs lg:text-sm text-muted-foreground">Client Rating</div>
+              <div className="text-xl lg:text-2xl font-bold text-primary">5.0★</div>
+              <div className="text-xs lg:text-sm text-muted-foreground">Google Rating</div>
             </div>
             <div className="w-px h-8 bg-border"></div>
             <div className="text-center">

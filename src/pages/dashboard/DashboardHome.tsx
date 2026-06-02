@@ -113,15 +113,18 @@ function DashboardHomeContent() {
             </>
           ) : (
             <>
-              <p className="text-xl font-semibold text-white mb-3 max-w-xs leading-snug">
-                Complete your financial profile to unlock your retirement date.
+              <p className="text-4xl font-black text-white leading-tight mb-2">
+                When will you retire?
+              </p>
+              <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Fill in 6 numbers. Get your retirement date, your corpus gap, and your FFR score.
               </p>
               <Link
                 to="/dashboard/ffr"
-                className="text-sm font-semibold hover:underline"
-                style={{ color: GREEN }}
+                className="inline-block px-5 py-2.5 rounded-lg text-sm font-bold transition-opacity hover:opacity-90"
+                style={{ background: GREEN, color: 'white' }}
               >
-                Set up your plan →
+                Find my retirement date →
               </Link>
             </>
           )}
@@ -169,14 +172,15 @@ function DashboardHomeContent() {
             </>
           ) : (
             <div className="space-y-3">
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Complete your profile to see your score.
+              <p className="text-3xl font-black text-foreground">—/100</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Your score measures how ready you are for financial freedom across 5 dimensions.
               </p>
               <Link
                 to="/dashboard/ffr"
                 className="inline-block text-sm font-semibold text-primary hover:underline"
               >
-                Get your score →
+                Calculate my readiness score →
               </Link>
             </div>
           )}

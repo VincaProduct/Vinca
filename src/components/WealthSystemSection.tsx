@@ -17,23 +17,23 @@ const WealthSystemSection = () => {
     {
       number: "01",
       icon: Target,
-      title: "Personalized Blueprint",
-      description: "We analyze your goals and create a tailored financial roadmap just for you.",
-      highlight: "Custom Strategy",
+      title: "Know your number",
+      description: "Calculate your retirement corpus, your gap, and your projected retirement date. Most investors never do this.",
+      highlight: "FFR Score",
     },
     {
-      number: "02", 
+      number: "02",
       icon: Lightbulb,
-      title: "Expert Portfolio",
-      description: "Best fund selection based on data, not bias. Optimized for your success.",
-      highlight: "Best Funds",
+      title: "Build the right portfolio",
+      description: "Mutual funds selected for your retirement timeline — not for commissions. SIPs that compound toward your date.",
+      highlight: "Goal-Based Investing",
     },
     {
       number: "03",
       icon: TrendingUp,
-      title: "Continuous Growth",
-      description: "24/7 monitoring and optimization to keep your wealth on the right track.",
-      highlight: "Always Optimized",
+      title: "Stay on track",
+      description: "Your plan reviewed, your portfolio rebalanced, your insurance and emergency fund kept in order. Proactively.",
+      highlight: "Active Management",
     },
   ];
 
@@ -56,12 +56,12 @@ const WealthSystemSection = () => {
           </div>
           
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Our Simple 3-Step
-            <span className="text-primary block">Wealth Building Process</span>
+            How Vinca gets you to
+            <span className="text-primary block">financial freedom</span>
           </h2>
-          
+
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Transform your financial future with our systematic approach that has helped 60+ families achieve their wealth goals.
+            Most investors are investing without knowing their number. Vinca fixes that — and keeps it fixed.
           </p>
         </div>
 
