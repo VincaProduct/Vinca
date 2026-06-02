@@ -196,13 +196,23 @@ export default function EventConfirmationPage() {
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="space-y-3 mb-8">
+            {/* Primary CTA — dashboard */}
+            <Link to="/dashboard/ffr" className="block mb-3">
+              <Button className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl py-5 text-sm">
+                Find my retirement date now <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            </Link>
+            <p className="text-xs text-center text-gray-400 mb-6">
+              Takes 2 minutes. See your FFR score and retirement date before the webinar.
+            </p>
+
+            {/* Secondary actions */}
+            <div className="space-y-2">
               <a
                 href={googleCalendarUrl(event)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-2 w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 <Calendar className="h-4 w-4" /> Add to Google Calendar
               </a>
@@ -211,27 +221,11 @@ export default function EventConfirmationPage() {
                   href={event.zoho_meeting_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl py-3 text-sm font-semibold transition-colors"
+                  className="flex items-center justify-center gap-2 w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
                 >
                   <ExternalLink className="h-4 w-4" /> Join on Zoho Meetings
                 </a>
               )}
-            </div>
-
-            {/* Soft CTA */}
-            <div className="border border-amber-100 bg-amber-50 rounded-2xl p-5">
-              <p className="text-sm font-semibold text-amber-900 mb-1">While you wait…</p>
-              <p className="text-xs text-amber-700 mb-4">
-                See how retirement-ready you actually are. Takes 2 minutes.
-              </p>
-              <Link to="/dashboard/ffr">
-                <Button
-                  variant="outline"
-                  className="w-full border-amber-200 text-amber-800 hover:bg-amber-100 font-medium text-sm rounded-xl"
-                >
-                  Check my retirement readiness <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
             </div>
           </>
         )}

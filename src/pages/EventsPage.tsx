@@ -115,8 +115,16 @@ function EventCard({ event }: { event: VincaEvent }) {
                 <Loader2 className="h-4 w-4 animate-spin" /> Checking…
               </div>
             ) : isRegistered ? (
-              <div className="flex items-center gap-2 text-emerald-700 text-sm font-semibold py-2">
-                <CheckCircle className="h-5 w-5" /> You're registered for this session
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-emerald-700 text-sm font-semibold">
+                  <CheckCircle className="h-5 w-5" /> You're registered for this session
+                </div>
+                <Button
+                  onClick={() => navigate('/dashboard/ffr')}
+                  className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold rounded-xl py-4 text-sm"
+                >
+                  Find my retirement date before the webinar →
+                </Button>
               </div>
             ) : (
               <Button
