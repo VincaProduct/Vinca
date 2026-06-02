@@ -63,6 +63,7 @@ import DashboardBuyMembershipPage from "./pages/dashboard/BuyMembershipPage";
 import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import EventConfirmationPage from "./pages/EventConfirmationPage";
+import DashboardEventsPage from "./pages/dashboard/DashboardEventsPage";
 
 const queryClient = new QueryClient();
 
@@ -116,6 +117,7 @@ const App = () => (
                     <Route path="learning/series/:id" element={<LearningSeriesDetail />} />
                     <Route path="learning/achievements" element={<LearningAchievements />} />
 
+                    <Route path="events" element={<DashboardEventsPage />} />
                     <Route path="compass" element={<ElevatePage />} />
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
                     <Route path="investment-opportunities" element={<InvestmentOpportunities />} />

@@ -136,7 +136,7 @@ const NAV: NavGroup[] = [
     key: 'events',
     title: 'Events',
     icon: Video,
-    url: '/events',
+    url: '/dashboard/events',
   },
 ];
 
