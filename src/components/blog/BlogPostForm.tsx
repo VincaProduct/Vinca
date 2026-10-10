@@ -1,7 +1,7 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye } from 'lucide-react';
 import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -11,7 +11,9 @@ import { ContentForm } from './ContentForm';
 import { PostFormActions } from './PostFormActions';
 import { TOCEditor, type TOCItem } from './TOCEditor';
 import { CTASelectionForm } from './CTASelectionForm';
-import type { Tables } from '@/integrations/supabase/types';
+import { BlogPreviewDialog } from './BlogPreviewDialog';
+import { sameToc, tocFromMarkdown } from '@/lib/toc';
+import type { Json, Tables } from '@/integrations/supabase/types';
 
 type BlogPost = Tables<'blog_posts'>;
 
@@ -34,7 +36,11 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
     status: 'draft' as 'draft' | 'published' | 'archived',
     author_id: '',
     table_of_contents: [] as TOCItem[],
+    tags: [] as string[],
   });
+  // Table of contents follows the H2/H3 headings unless switched to manual
+  const [tocAuto, setTocAuto] = useState(true);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const { createPost, updatePost } = useBlogPosts();
   const { user } = useAuth();
@@ -42,6 +48,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
 
   useEffect(() => {
     if (post) {
+      const savedToc = (post.table_of_contents as unknown as TOCItem[]) || [];
       setFormData({
         title: post.title,
         subtitle: post.subtitle || '',
@@ -54,10 +61,16 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         read_time: post.read_time || '5 min read',
         status: post.status as 'draft' | 'published' | 'archived' || 'draft',
         author_id: post.author_id || '',
-        table_of_contents: (post.table_of_contents as unknown as TOCItem[]) || [],
+        table_of_contents: savedToc,
+        tags: post.tags || [],
       });
+      // Keep a hand-edited TOC as it is; otherwise follow the headings
+      setTocAuto(savedToc.length === 0 || sameToc(savedToc, tocFromMarkdown(post.content)));
     }
   }, [post]);
+
+  const autoToc = useMemo(() => tocFromMarkdown(formData.content), [formData.content]);
+  const tableOfContents = tocAuto ? autoToc : formData.table_of_contents;
 
   const updateFormData = (updates: Partial<typeof formData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
@@ -96,7 +109,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         ...formData,
         status,
         published_at: status === 'published' ? new Date().toISOString() : null,
-        table_of_contents: formData.table_of_contents as any,
+        table_of_contents: tableOfContents as unknown as Json,
         // Legacy fields for backward compatibility
         author_name: '',
         author_title: '',
@@ -130,6 +143,14 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
     }
   };
 
+  const openPreview = () => {
+    if (!formData.title && !formData.content) {
+      toast({ title: 'Nothing to preview yet', description: 'Add a title or some content first.' });
+      return;
+    }
+    setPreviewOpen(true);
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-4xl">
       <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -137,9 +158,13 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
           <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
           <span className="hidden sm:inline">Back</span>
         </Button>
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate flex-1">
           {post ? 'Edit Post' : 'Create New Post'}
         </h1>
+        <Button variant="outline" size="sm" onClick={openPreview} className="shrink-0">
+          <Eye className="w-4 h-4 mr-2" />
+          Preview
+        </Button>
       </div>
 
       <div className="grid gap-4 sm:gap-6">
@@ -153,6 +178,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
             read_time: formData.read_time,
             featured_image: formData.featured_image,
             excerpt: formData.excerpt,
+            tags: formData.tags,
           }}
           onUpdate={updateFormData}
           onFeaturedImageUploaded={handleFeaturedImageUploaded}
@@ -172,6 +198,9 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         <TOCEditor
           items={formData.table_of_contents}
           onItemsChange={(table_of_contents) => updateFormData({ table_of_contents })}
+          auto={tocAuto}
+          onAutoChange={setTocAuto}
+          autoItems={autoToc}
         />
 
         <CTASelectionForm
@@ -181,9 +210,24 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         <PostFormActions
           onSaveDraft={() => handleSave('draft')}
           onPublish={() => handleSave('published')}
+          onPreview={openPreview}
           saving={saving}
         />
       </div>
+
+      <BlogPreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        post={{
+          ...(post || {}),
+          ...formData,
+          id: post?.id || 'preview',
+          table_of_contents: tableOfContents,
+          published_at: post?.published_at || null,
+          created_at: post?.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }}
+      />
     </div>
   );
 };

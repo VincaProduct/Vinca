@@ -1,5 +1,7 @@
 
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,11 +17,26 @@ interface PostDetailsFormProps {
     read_time: string;
     featured_image: string;
     excerpt: string;
+    tags: string[];
   };
   onUpdate: (updates: Partial<PostDetailsFormProps['formData']>) => void;
   onFeaturedImageUploaded: (url: string) => void;
   onFeaturedImageRemoved: () => void;
 }
+
+/** "SIP, mutual funds , sip" -> ["SIP", "mutual funds"] (trimmed, no duplicates) */
+const parseTags = (text: string) => {
+  const seen = new Set<string>();
+  return text
+    .split(',')
+    .map((tag) => tag.trim().replace(/\s+/g, ' '))
+    .filter((tag) => {
+      const key = tag.toLowerCase();
+      if (!tag || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+};
 
 const categories = [
   'Technology',
@@ -43,6 +60,14 @@ export const PostDetailsForm = ({
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
   };
+
+  // Typed text is kept as-is while editing and turned into tags as you go
+  const [tagsText, setTagsText] = useState(formData.tags.join(', '));
+  useEffect(() => {
+    // Opening a saved post fills the tags in after the form has mounted
+    if (parseTags(tagsText).join('|') !== formData.tags.join('|')) setTagsText(formData.tags.join(', '));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.tags]);
 
   const handleTitleChange = (title: string) => {
     onUpdate({
@@ -122,6 +147,29 @@ export const PostDetailsForm = ({
               placeholder="5 min read"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-2 block">Tags</label>
+          <Input
+            value={tagsText}
+            onChange={(e) => {
+              setTagsText(e.target.value);
+              onUpdate({ tags: parseTags(e.target.value) });
+            }}
+            onBlur={() => setTagsText(formData.tags.join(', '))}
+            placeholder="e.g. SIP, mutual funds, retirement planning"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Separate tags with commas. Use the topics and phrases readers search for.
+          </p>
+          {formData.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {formData.tags.map((tag) => (
+                <Badge key={tag} variant="secondary">{tag}</Badge>
+              ))}
+            </div>
+          )}
         </div>
 
         <ImageUpload

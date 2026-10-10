@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, GripVertical, List } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Trash2, GripVertical, List, RefreshCw } from 'lucide-react';
 
 export interface TOCItem {
   id: string;
@@ -15,9 +16,14 @@ export interface TOCItem {
 interface TOCEditorProps {
   items: TOCItem[];
   onItemsChange: (items: TOCItem[]) => void;
+  /** Build the list from the post's H2/H3 headings instead of editing it by hand */
+  auto: boolean;
+  onAutoChange: (auto: boolean) => void;
+  /** The list built from the current headings */
+  autoItems: TOCItem[];
 }
 
-export const TOCEditor = ({ items, onItemsChange }: TOCEditorProps) => {
+export const TOCEditor = ({ items, onItemsChange, auto, onAutoChange, autoItems }: TOCEditorProps) => {
   const [newItem, setNewItem] = useState({ title: '', level: 2 as 1 | 2 | 3 });
 
   const generateAnchor = (title: string) => {
@@ -82,10 +88,61 @@ export const TOCEditor = ({ items, onItemsChange }: TOCEditorProps) => {
           Table of Contents
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Configure the table of contents for this article. Users can click on items to jump to sections.
+          Readers can click an item to jump to that section.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="flex items-start justify-between gap-4 rounded-lg border p-3">
+          <div>
+            <label htmlFor="toc-auto" className="text-sm font-medium">
+              Build automatically from headings
+            </label>
+            <p className="text-xs text-muted-foreground">
+              Every Heading 2 in the content becomes an item, with its Heading 3s nested under it.
+              Turn this off to edit the list by hand.
+            </p>
+          </div>
+          <Switch
+            id="toc-auto"
+            checked={auto}
+            onCheckedChange={(checked) => {
+              // Start manual editing from the current automatic list
+              if (!checked) onItemsChange(autoItems);
+              onAutoChange(checked);
+            }}
+          />
+        </div>
+
+        {auto ? (
+          autoItems.length > 0 ? (
+            <div className="space-y-1 rounded-lg bg-muted/30 p-3">
+              {autoItems.map((item) => (
+                <div key={item.id} className={`text-sm ${item.level === 1 ? 'ml-0 font-medium' : 'ml-4 text-muted-foreground'}`}>
+                  • {item.title}
+                  <span className="ml-2 text-xs text-muted-foreground">#{item.anchor}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-muted-foreground">
+              <List className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No headings yet.</p>
+              <p className="text-xs">Mark section titles as Heading 2 in the editor and they will appear here.</p>
+            </div>
+          )
+        ) : (
+        <>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onItemsChange(autoItems)}
+          disabled={autoItems.length === 0}
+        >
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Replace with current headings
+        </Button>
+
         {/* Add New Item */}
         <div className="flex gap-2">
           <Input
@@ -188,6 +245,8 @@ export const TOCEditor = ({ items, onItemsChange }: TOCEditorProps) => {
               ))}
             </div>
           </div>
+        )}
+        </>
         )}
       </CardContent>
     </Card>

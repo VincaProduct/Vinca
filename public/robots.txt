@@ -26,6 +26,7 @@ Allow: /
 Disallow: /dashboard
 Disallow: /payment
 Disallow: /thank-you
+Disallow: /blog-preview
 
 # API endpoints and admin routes
 Disallow: /api/

@@ -294,6 +294,12 @@ const renderPost = (post: Row) => {
               ${renderMarkdown(post.content, toc)}
             </div>
 
+            ${Array.isArray(post.tags) && post.tags.length > 0 ? `
+            <div class="mt-10 flex flex-wrap items-center gap-2">
+              <span class="text-sm text-muted-foreground mr-1">Tags:</span>
+              ${post.tags.map((tag: string) => `<span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-primary/20 text-primary bg-primary/5">${escapeHtml(tag)}</span>`).join("")}
+            </div>` : ""}
+
             ${authorBio ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
               <h2 class="text-lg sm:text-xl font-display font-bold mb-4">About the Author</h2>
@@ -320,6 +326,7 @@ const postHead = (post: Row) => {
   const modified = post.updated_at || published;
   const noindex = post.noindex === true;
   const words = plainText(post.content || "").split(/\s+/).filter(Boolean).length;
+  const tags: string[] = Array.isArray(post.tags) ? post.tags.filter(Boolean) : [];
 
   const graph: Row[] = [
     organization,
@@ -362,6 +369,7 @@ const postHead = (post: Row) => {
       mainEntityOfPage: { "@id": url },
       isPartOf: { "@id": WEBSITE_ID },
       articleSection: post.category,
+      ...(tags.length > 0 ? { keywords: tags.join(", ") } : {}),
       wordCount: words,
       inLanguage: "en-IN",
     },
@@ -400,6 +408,7 @@ const postHead = (post: Row) => {
     <meta property="article:modified_time" content="${escapeHtml(modified)}">
     <meta property="article:author" content="${escapeHtml(authorName)}">
     <meta property="article:section" content="${escapeHtml(post.category)}">
+    ${tags.map((tag) => `<meta property="article:tag" content="${escapeHtml(tag)}">`).join("\n    ")}
     <script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@graph": graph })}</script>`;
 };
 

@@ -91,8 +91,14 @@ export const TableOfContents = ({ items, className = '' }: TableOfContentsProps)
               <ul className="space-y-2 border-l border-border/40">
                 {items.map((item) => (
                   <li key={item.id}>
-                    <button
-                      onClick={() => scrollToSection(item.anchor)}
+                    {/* A real link, so the TOC works for search engines and without JavaScript */}
+                    <a
+                      href={`#${item.anchor}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(item.anchor);
+                        window.history.replaceState(null, '', `#${item.anchor}`);
+                      }}
                       className={`block w-full text-left py-1.5 px-4 -ml-px border-l-2 transition-all duration-200 hover:border-primary/50 hover:text-foreground ${
                         getLevelStyles(item.level)
                       } ${
@@ -104,7 +110,7 @@ export const TableOfContents = ({ items, className = '' }: TableOfContentsProps)
                       <span className="line-clamp-2 leading-relaxed">
                         {item.title}
                       </span>
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>

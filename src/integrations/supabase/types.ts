@@ -64,6 +64,7 @@ export type Database = {
           status: string | null
           subtitle: string | null
           table_of_contents: Json | null
+          tags: string[] | null
           title: string
           updated_at: string
         }
@@ -86,6 +87,7 @@ export type Database = {
           status?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
+          tags?: string[] | null
           title: string
           updated_at?: string
         }
@@ -108,6 +110,7 @@ export type Database = {
           status?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
+          tags?: string[] | null
           title?: string
           updated_at?: string
         }

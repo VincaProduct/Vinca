@@ -36,9 +36,9 @@ interface RichTextEditorProps {
 
 type BlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'h4';
 
+// The post title is the page's only H1, so section headings start at H2
 const blockTypes: { value: BlockType; label: string }[] = [
   { value: 'paragraph', label: 'Paragraph' },
-  { value: 'h1', label: 'Heading 1' },
   { value: 'h2', label: 'Heading 2' },
   { value: 'h3', label: 'Heading 3' },
   { value: 'h4', label: 'Heading 4' },
@@ -283,6 +283,8 @@ export const RichTextEditor = ({ content, onContentChange }: RichTextEditorProps
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      {/* Older posts may still contain an H1: show it so it can be changed */}
+                      {state.blockType === 'h1' && <SelectItem value="h1">Heading 1</SelectItem>}
                       {blockTypes.map((t) => (
                         <SelectItem key={t.value} value={t.value}>
                           {t.label}

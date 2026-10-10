@@ -28,14 +28,17 @@ type BlogPost = Tables<'blog_posts'> & {
 
 interface BlogArticleProps {
   slug?: string;
+  /** Unsaved post from the CMS preview: shown as-is instead of loading by slug */
+  previewPost?: BlogPost;
 }
 
-const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
+const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   const { slug: paramSlug } = useParams();
-  const slug = propSlug || paramSlug;
+  const slug = previewPost ? previewPost.slug : propSlug || paramSlug;
 
   // Post embedded by the server-rendered page, so the article shows without a refetch
   const [initialPost] = useState(() => {
+    if (previewPost) return previewPost;
     const ssrPost = readSsrData<BlogPost>('blog-post-data');
     return ssrPost && ssrPost.slug === slug ? ssrPost : null;
   });
@@ -75,7 +78,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
 
   useEffect(() => {
     const loadArticle = async () => {
-      if (!slug || initialPost?.slug === slug) return;
+      if (previewPost || !slug || initialPost?.slug === slug) return;
 
       setLoading(true);
       let reloading = false;
@@ -104,6 +107,10 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
     loadArticle();
     fetchPublishedPosts();
   }, [slug]);
+
+  useEffect(() => {
+    if (previewPost) setArticle(previewPost);
+  }, [previewPost]);
 
   useEffect(() => {
     if (article && posts.length > 0) {
@@ -154,7 +161,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
         <title>{article.title} | Vinca Wealth Blog</title>
         <meta name="title" content={`${article.title} | Vinca Wealth Blog`} />
         <meta name="description" content={description} />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="robots" content={previewPost ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
 
         {/* Canonical URL */}
         <link rel="canonical" href={blogUrl} />
@@ -315,6 +322,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
               <SimpleCTARenderer
                 blogPostId={article.id}
                 category={article.category}
+                tags={article.tags || undefined}
                 position="top"
               />
 
@@ -335,12 +343,14 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
                   tocItems={article.table_of_contents as unknown as TOCItem[]}
                   blogPostId={article.id}
                   category={article.category}
+                tags={article.tags || undefined}
                 />
               ) : (
                 <BlogContentWithInlineCTAs
                   content={article.content}
                   blogPostId={article.id}
                   category={article.category}
+                tags={article.tags || undefined}
                 />
               )}
 
@@ -348,8 +358,21 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
               <SimpleCTARenderer
                 blogPostId={article.id}
                 category={article.category}
+                tags={article.tags || undefined}
                 position="bottom"
               />
+
+              {/* Tags */}
+              {article.tags && article.tags.length > 0 && (
+                <div className="mt-10 flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-muted-foreground mr-1">Tags:</span>
+                  {article.tags.map((tag) => (
+                    <Badge key={tag} variant="outline" className="border-primary/20 text-primary bg-primary/5">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
 
               {/* Author Bio */}
               {(article.author?.bio || article.author_bio) && (
@@ -394,6 +417,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
               <SimpleCTARenderer
                 blogPostId={article.id}
                 category={article.category}
+                tags={article.tags || undefined}
                 position="below_toc"
               />
             </div>
