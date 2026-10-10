@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 type Status = 'idle' | 'saving' | 'done' | 'already' | 'error';
 
 /**
- * Simple "Subscribe to our newsletter" sign-up. Saves the email to
+ * Simple newsletter sign-up ("Get data-backed market insights"). Saves the email to
  * newsletter_subscribers (visitors can add, only admins can read).
  * The blog edge function renders the same markup, so keep them in sync.
  */
@@ -39,10 +39,10 @@ export const BlogSubscribe = ({ id = 'subscribe', className = '' }: { id?: strin
   return (
     <section aria-labelledby={`${id}-title`} className={`not-prose rounded-lg border border-border p-4 ${className}`}>
       <p id={`${id}-title`} className="font-semibold text-foreground">
-        Subscribe to our newsletter
+        Get data-backed market insights
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
-        Get new articles by email. By subscribing you agree to receive emails from Vinca Wealth; unsubscribe anytime.
+        Well-researched articles on markets, equities, mutual funds and investing, delivered to your inbox.
       </p>
 
       {status === 'done' || status === 'already' ? (
@@ -84,9 +84,13 @@ export const BlogSubscribe = ({ id = 'subscribe', className = '' }: { id?: strin
               Subscribe
             </Button>
           </div>
-          {status === 'error' && (
+          {status === 'error' ? (
             <p className="mt-2 text-xs text-destructive" role="alert">
               Sorry, that didn't work. Please try again later.
+            </p>
+          ) : (
+            <p className="mt-2 text-xs text-muted-foreground">
+              By subscribing you agree to receive emails from Vinca Wealth. Unsubscribe anytime.
             </p>
           )}
         </form>

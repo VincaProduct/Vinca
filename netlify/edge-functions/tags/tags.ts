@@ -206,14 +206,15 @@ const renderTakeaways = (items: unknown) => {
 /** Same markup as the app's BlogSubscribe, so the layout doesn't move when it takes over */
 const renderSubscribe = (id: string, extraClass = "") => `
             <section aria-labelledby="${id}-title" class="not-prose rounded-lg border border-border p-4 ${extraClass}">
-              <p id="${id}-title" class="font-semibold text-foreground">Subscribe to our newsletter</p>
-              <p class="mt-1 text-sm text-muted-foreground">Get new articles by email. By subscribing you agree to receive emails from Vinca Wealth; unsubscribe anytime.</p>
+              <p id="${id}-title" class="font-semibold text-foreground">Get data-backed market insights</p>
+              <p class="mt-1 text-sm text-muted-foreground">Well-researched articles on markets, equities, mutual funds and investing, delivered to your inbox.</p>
               <form class="mt-3" onsubmit="return false">
                 <div class="flex gap-2">
                   <label for="${id}-email" class="sr-only">Email address</label>
                   <input id="${id}-email" type="email" required autocomplete="email" placeholder="Your email" class="flex w-full rounded-md border border-input px-3 py-2 text-sm placeholder:text-muted-foreground h-9 min-w-0 bg-background">
                   <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground px-3 h-9 shrink-0">Subscribe</button>
                 </div>
+                <p class="mt-2 text-xs text-muted-foreground">By subscribing you agree to receive emails from Vinca Wealth. Unsubscribe anytime.</p>
               </form>
             </section>`;
 
@@ -360,7 +361,7 @@ const renderPost = (post: Row) => {
             </div>` : ""}
           </div>
 
-          <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto space-y-6">${hasToc ? renderToc(toc) : ""}${renderSubscribe("subscribe-sidebar")}</div></aside>
+          <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6"><div class="min-h-0 flex-1 space-y-6 overflow-y-auto">${hasToc ? renderToc(toc) : ""}</div>${renderSubscribe("subscribe-sidebar", "shrink-0")}</div></aside>
         </div>
       </div>
     </article>`;

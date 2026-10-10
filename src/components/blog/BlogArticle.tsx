@@ -397,25 +397,28 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
             {/* Table of Contents Sidebar */}
             <div className="hidden lg:block w-80 flex-shrink-0 space-y-6">
-              {/* TOC and newsletter stay in view together (scrolling inside if too tall) */}
-              <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto space-y-6">
-                {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
-                  <TableOfContents
-                    items={article.table_of_contents as unknown as TOCItem[]}
-                    className="w-full"
-                    sticky={false}
+              {/* Stays in view while reading: the TOC scrolls in its own area so the
+                  newsletter box underneath is always visible */}
+              <div className="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6">
+                <div className="min-h-0 flex-1 space-y-6 overflow-y-auto">
+                  {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
+                    <TableOfContents
+                      items={article.table_of_contents as unknown as TOCItem[]}
+                      className="w-full"
+                      sticky={false}
+                    />
+                  )}
+
+                  {/* Below TOC CTAs */}
+                  <SimpleCTARenderer
+                    blogPostId={article.id}
+                    category={article.category}
+                    position="below_toc"
                   />
-                )}
+                </div>
 
                 {/* Newsletter sign-up */}
-                <BlogSubscribe id="subscribe-sidebar" />
-
-                {/* Below TOC CTAs */}
-                <SimpleCTARenderer
-                  blogPostId={article.id}
-                  category={article.category}
-                  position="below_toc"
-                />
+                <BlogSubscribe id="subscribe-sidebar" className="shrink-0" />
               </div>
 
             </div>
