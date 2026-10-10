@@ -78,13 +78,26 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
       if (!slug || initialPost?.slug === slug) return;
 
       setLoading(true);
+      let reloading = false;
       try {
         const post = await getPostBySlug(slug);
         setArticle(post);
       } catch (error) {
         console.error('Error loading article:', error);
+        // The request failed (network, blocked, ...): load the page normally
+        // once, so the server-rendered article is shown instead of "not found"
+        const reloadKey = `blog-reload:${slug}`;
+        try {
+          if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, '1');
+            reloading = true;
+            window.location.assign(window.location.href);
+          }
+        } catch {
+          // sessionStorage unavailable: fall through to the not-found message
+        }
       } finally {
-        setLoading(false);
+        if (!reloading) setLoading(false);
       }
     };
 

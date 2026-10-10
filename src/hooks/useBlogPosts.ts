@@ -94,8 +94,9 @@ export const useBlogPosts = () => {
       if (error) throw error;
       return data;
     } catch (err) {
+      // Rethrown so a failed request isn't mistaken for a missing post
       console.error('Error fetching post:', err);
-      return null;
+      throw err;
     }
   };
 
