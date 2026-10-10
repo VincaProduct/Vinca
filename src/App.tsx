@@ -59,6 +59,7 @@ const UpgradePage = lazy(() => import("./pages/dashboard/UpgradePage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
+const SubscribersPage = lazy(() => import("./pages/dashboard/SubscribersPage"));
 import NotFound from "./pages/NotFound";
 const PublicPricing = lazy(() => import("./pages/PublicPricing"));
 const DashboardBuyMembershipPage = lazy(() => import("./pages/dashboard/BuyMembershipPage"));
@@ -145,6 +146,14 @@ const App = () => (
                       element={
                         <RoleProtectedRoute requiredRole="super_admin">
                           <GlobalFaqsPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="subscribers"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <SubscribersPage />
                         </RoleProtectedRoute>
                       }
                     />

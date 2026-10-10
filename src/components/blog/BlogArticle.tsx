@@ -6,7 +6,9 @@ import remarkGfm from 'remark-gfm';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, Calendar, User, Share2, Bookmark, ArrowDown, ChevronRight, ArrowUp } from "lucide-react";
+import { Clock, Calendar, User, ArrowDown, ChevronRight, ArrowUp } from "lucide-react";
+import { ShareButton } from "@/components/blog/ShareButton";
+import { BlogSubscribe } from "@/components/blog/BlogSubscribe";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import { SimpleCTARenderer, BlogContentWithInlineCTAs } from '@/components/cta/SimpleCTARenderer';
 import { TableOfContents } from "@/components/blog/TableOfContents";
@@ -311,14 +313,7 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">
-                    <Share2 className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Bookmark className="w-4 h-4" />
-                  </Button>
-                </div>
+                <ShareButton url={blogUrl} />
               </div>
 
               {/* TL;DR */}
@@ -359,6 +354,9 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
               {/* FAQs: the post's own, then the company FAQs */}
               <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
+
+              {/* Newsletter sign-up */}
+              {!previewPost && <BlogSubscribe />}
 
               {/* Bottom CTAs */}
               <SimpleCTARenderer

@@ -16,6 +16,7 @@ import { SeoFieldsForm } from './SeoFieldsForm';
 import { KeyTakeawaysForm, MAX_TAKEAWAYS } from './KeyTakeawaysForm';
 import { PostFaqsForm } from './PostFaqsForm';
 import { cleanFaqs, type FaqItem } from '@/lib/faqs';
+import { estimateReadTime } from '@/lib/readTime';
 import { sameToc, tocFromMarkdown } from '@/lib/toc';
 import type { Json, Tables } from '@/integrations/supabase/types';
 
@@ -49,6 +50,8 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
   });
   // Table of contents follows the H2/H3 headings unless switched to manual
   const [tocAuto, setTocAuto] = useState(true);
+  // Read time follows the content's length unless switched to manual
+  const [readTimeAuto, setReadTimeAuto] = useState(true);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const { createPost, updatePost } = useBlogPosts();
@@ -80,11 +83,16 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
       });
       // Keep a hand-edited TOC as it is; otherwise follow the headings
       setTocAuto(savedToc.length === 0 || sameToc(savedToc, tocFromMarkdown(post.content)));
+      // "5 min read" was the old fixed default, so treat it as not chosen by hand
+      const savedReadTime = (post.read_time || '').trim();
+      setReadTimeAuto(!savedReadTime || savedReadTime === '5 min read' || savedReadTime === estimateReadTime(post.content));
     }
   }, [post]);
 
   const autoToc = useMemo(() => tocFromMarkdown(formData.content), [formData.content]);
   const tableOfContents = tocAuto ? autoToc : formData.table_of_contents;
+  const autoReadTime = useMemo(() => estimateReadTime(formData.content), [formData.content]);
+  const readTime = readTimeAuto ? autoReadTime : formData.read_time.trim() || autoReadTime;
 
   const updateFormData = (updates: Partial<typeof formData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
@@ -136,6 +144,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         status,
         published_at: status === 'published' ? new Date().toISOString() : null,
         table_of_contents: tableOfContents as unknown as Json,
+        read_time: readTime,
         meta_title: metaTitle,
         meta_description: metaDescription || null,
         focus_keyword: formData.focus_keyword.trim() || null,
@@ -211,6 +220,9 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
             excerpt: formData.excerpt,
           }}
           onUpdate={updateFormData}
+          readTimeAuto={readTimeAuto}
+          onReadTimeAutoChange={setReadTimeAuto}
+          autoReadTime={autoReadTime}
           onFeaturedImageUploaded={handleFeaturedImageUploaded}
           onFeaturedImageRemoved={handleFeaturedImageRemoved}
         />
@@ -276,6 +288,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
           ...formData,
           id: post?.id || 'preview',
           table_of_contents: tableOfContents,
+          read_time: readTime,
           meta_title: formData.meta_title.trim() || formData.title,
           meta_description: formData.meta_description.trim() || formData.excerpt,
           published_at: post?.published_at || null,

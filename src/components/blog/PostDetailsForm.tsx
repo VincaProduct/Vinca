@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { ImageUpload } from './ImageUpload';
 
 interface PostDetailsFormProps {
@@ -17,6 +18,10 @@ interface PostDetailsFormProps {
     excerpt: string;
   };
   onUpdate: (updates: Partial<PostDetailsFormProps['formData']>) => void;
+  /** Read time worked out from the content's length, used unless switched off */
+  readTimeAuto: boolean;
+  onReadTimeAutoChange: (auto: boolean) => void;
+  autoReadTime: string;
   onFeaturedImageUploaded: (url: string) => void;
   onFeaturedImageRemoved: () => void;
 }
@@ -34,6 +39,9 @@ const categories = [
 export const PostDetailsForm = ({ 
   formData, 
   onUpdate, 
+  readTimeAuto,
+  onReadTimeAutoChange,
+  autoReadTime,
   onFeaturedImageUploaded, 
   onFeaturedImageRemoved 
 }: PostDetailsFormProps) => {
@@ -115,12 +123,32 @@ export const PostDetailsForm = ({
           </div>
 
           <div>
-            <label className="text-sm font-medium mb-2 block">Read Time</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-medium">Read Time</label>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                Automatic
+                <Switch
+                  checked={readTimeAuto}
+                  onCheckedChange={(auto) => {
+                    // Start manual editing from the calculated value
+                    if (!auto) onUpdate({ read_time: autoReadTime });
+                    onReadTimeAutoChange(auto);
+                  }}
+                  aria-label="Calculate read time automatically"
+                />
+              </label>
+            </div>
             <Input
-              value={formData.read_time}
+              value={readTimeAuto ? autoReadTime : formData.read_time}
               onChange={(e) => onUpdate({ read_time: e.target.value })}
               placeholder="5 min read"
+              disabled={readTimeAuto}
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              {readTimeAuto
+                ? 'Worked out from the length of the content. Switch off to type your own.'
+                : 'Typed by you. Switch on to work it out from the content.'}
+            </p>
           </div>
         </div>
 

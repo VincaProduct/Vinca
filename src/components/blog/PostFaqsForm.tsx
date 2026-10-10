@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { ArrowDown, ArrowUp, HelpCircle, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ExternalLink, HelpCircle, Plus, Trash2 } from 'lucide-react';
 import type { FaqItem } from '@/lib/faqs';
 
 interface PostFaqsFormProps {
@@ -90,8 +90,15 @@ export const PostFaqsForm = ({ items, onChange, showGlobalFaqs, onShowGlobalFaqs
               Show company FAQs on this post
             </label>
             <p className="text-xs text-muted-foreground">
-              The shared questions from Admin Tools → Global FAQs.
+              The same questions appear on every post. Edit them once for all posts.
             </p>
+            <Button type="button" variant="link" size="sm" asChild className="h-auto p-0 mt-1">
+              {/* New tab, so this unsaved post isn't lost */}
+              <a href="/dashboard/global-faqs" target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-3.5 h-3.5 mr-1" />
+                Edit company FAQs
+              </a>
+            </Button>
           </div>
           <Switch id="show-global-faqs" checked={showGlobalFaqs} onCheckedChange={onShowGlobalFaqsChange} />
         </div>

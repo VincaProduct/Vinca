@@ -139,6 +139,33 @@ export type Database = {
           },
         ]
       }
+      newsletter_subscribers: {
+        Row: {
+          consented_at: string
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+          status: string
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+          status?: string
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       global_faqs: {
         Row: {
           answer: string
