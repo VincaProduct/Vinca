@@ -1,5 +1,5 @@
 
-import { MarkdownEditor } from './MarkdownEditor';
+import { RichTextEditor } from './RichTextEditor';
 
 interface ContentFormProps {
   content: string;
@@ -8,8 +8,8 @@ interface ContentFormProps {
 
 export const ContentForm = ({ content, onContentChange }: ContentFormProps) => {
   return (
-    <MarkdownEditor 
-      content={content} 
+    <RichTextEditor
+      content={content}
       onContentChange={onContentChange}
     />
   );
