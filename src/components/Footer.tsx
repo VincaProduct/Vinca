@@ -63,10 +63,17 @@ const Footer = () => {
                 />
               </div>
             </div>
-            <p className="text-muted-foreground max-w-md mb-6">
+            <p className="text-muted-foreground max-w-md mb-4">
               Professional wealth management services. Building financial
               futures with confidence and expertise.
             </p>
+            <div className="text-sm text-muted-foreground space-y-1 mb-6">
+              <p>
+                AMFI Registered Mutual Fund Distributor ·{" "}
+                <span className="whitespace-nowrap">ARN-293401</span>
+              </p>
+              <p>CIN: U65999KA2022PTC169569</p>
+            </div>
             <div className="text-sm text-muted-foreground space-y-1">
               <p>📞 +91 7386809164</p>
               <p>✉️ support@vincawealth.com</p>
@@ -165,13 +172,6 @@ const Footer = () => {
               >
                 Privacy Policy
               </a>
-            </div>
-            <div className="text-sm text-muted-foreground text-center space-y-1">
-              <p>
-                AMFI Registered Mutual Fund Distributor ·{" "}
-                <span className="whitespace-nowrap">ARN-293401</span>
-              </p>
-              <p>CIN: U65999KA2022PTC169569</p>
             </div>
             <p className="text-xs text-muted-foreground text-center max-w-2xl">
               Mutual fund investments are subject to market risks. Read all
