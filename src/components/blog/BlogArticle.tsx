@@ -260,6 +260,13 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
                 </p>
               )}
 
+              {/* Quote */}
+              {article.quote && (
+                <blockquote className="border-l-4 border-primary pl-4 sm:pl-6 py-2 mb-6 sm:mb-8 text-lg sm:text-xl italic text-foreground/80 leading-relaxed">
+                  “{article.quote}”
+                </blockquote>
+              )}
+
               {/* Featured Image */}
               {article.featured_image && (
                 <div className="aspect-video w-full mb-8 sm:mb-12 overflow-hidden rounded-lg">

@@ -24,6 +24,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
+    quote: '',
     content: '',
     excerpt: '',
     slug: '',
@@ -44,6 +45,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
       setFormData({
         title: post.title,
         subtitle: post.subtitle || '',
+        quote: post.quote || '',
         content: post.content,
         excerpt: post.excerpt || '',
         slug: post.slug,
@@ -145,6 +147,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
           formData={{
             title: formData.title,
             subtitle: formData.subtitle,
+            quote: formData.quote,
             slug: formData.slug,
             category: formData.category,
             read_time: formData.read_time,

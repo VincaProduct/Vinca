@@ -58,6 +58,7 @@ export type Database = {
           featured_image: string | null
           id: string
           published_at: string | null
+          quote: string | null
           read_time: string | null
           slug: string
           status: string | null
@@ -79,6 +80,7 @@ export type Database = {
           featured_image?: string | null
           id?: string
           published_at?: string | null
+          quote?: string | null
           read_time?: string | null
           slug: string
           status?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           featured_image?: string | null
           id?: string
           published_at?: string | null
+          quote?: string | null
           read_time?: string | null
           slug?: string
           status?: string | null
