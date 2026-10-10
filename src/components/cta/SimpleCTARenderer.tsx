@@ -76,7 +76,10 @@ export const BlogContentWithInlineCTAs: React.FC<BlogContentWithInlineCTAsProps>
 }) => {
   const { getBlogPostCTAs } = useCTAs();
   const [inlineCTAs, setInlineCTAs] = useState<CTAWithPlacement[]>([]);
-  const [processedContent, setProcessedContent] = useState<string>('');
+  // Show the text straight away; CTA markers are filled in once CTAs have loaded
+  const [processedContent, setProcessedContent] = useState<string>(() =>
+    content.replace(/\[\[CTA:[^\]]+\]\]/g, ''),
+  );
 
   useEffect(() => {
     const fetchAndProcessCTAs = async () => {

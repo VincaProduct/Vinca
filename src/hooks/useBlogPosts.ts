@@ -3,25 +3,51 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Tables } from '@/integrations/supabase/types';
+import { readSsrData } from '@/lib/ssrData';
 
 type BlogPost = Tables<'blog_posts'>;
 
+// Card/list fields only: listing components never need the full post body
+const LISTING_COLUMNS = 'id,title,slug,excerpt,featured_image,category,read_time,published_at,created_at';
+
+// Shared by the grid, category filter and popular articles on the same page,
+// and seeded from the server-rendered blog listing when available
+let publishedPostsRequest: Promise<BlogPost[]> | null = null;
+let publishedPostsRequestedAt = 0;
+
+const loadPublishedPosts = () => {
+  if (!publishedPostsRequest || Date.now() - publishedPostsRequestedAt > 60_000) {
+    publishedPostsRequestedAt = Date.now();
+    const seeded = publishedPostsRequest ? null : readSsrData<BlogPost[]>('blog-list-data');
+    publishedPostsRequest = seeded
+      ? Promise.resolve(seeded)
+      : Promise.resolve(
+          supabase
+            .from('blog_posts')
+            .select(LISTING_COLUMNS)
+            .eq('status', 'published')
+            .order('published_at', { ascending: false }),
+        ).then(({ data, error }) => {
+          if (error) {
+            publishedPostsRequest = null;
+            throw error;
+          }
+          return (data || []) as unknown as BlogPost[];
+        });
+  }
+  return publishedPostsRequest;
+};
+
 export const useBlogPosts = () => {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<BlogPost[]>(() => readSsrData<BlogPost[]>('blog-list-data') || []);
+  const [loading, setLoading] = useState(() => !readSsrData('blog-list-data'));
   const [error, setError] = useState<string | null>(null);
 
+  /** Published posts with listing fields only (no content) */
   const fetchPublishedPosts = async () => {
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('status', 'published')
-        .order('published_at', { ascending: false });
-
-      if (error) throw error;
-      setPosts(data || []);
+      if (posts.length === 0) setLoading(true);
+      setPosts(await loadPublishedPosts());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

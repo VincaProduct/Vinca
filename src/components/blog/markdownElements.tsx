@@ -1,4 +1,5 @@
 import type { Components } from "react-markdown";
+import { optimizedImage, imageSrcSet } from "@/lib/images";
 
 /**
  * Link, table and image renderers shared by every blog post body renderer, so
@@ -22,7 +23,15 @@ export const markdownElements: Components = {
       <table {...props}>{children}</table>
     </div>
   ),
-  img: ({ node: _node, alt, ...props }) => (
-    <img alt={alt || ""} loading="lazy" {...props} />
+  img: ({ node: _node, alt, src, ...props }) => (
+    <img
+      {...props}
+      src={optimizedImage(src, 960)}
+      srcSet={imageSrcSet(src, [640, 960, 1280])}
+      sizes="(min-width: 1024px) 800px, 100vw"
+      alt={alt || ""}
+      loading="lazy"
+      decoding="async"
+    />
   ),
 };

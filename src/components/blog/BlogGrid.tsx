@@ -1,12 +1,13 @@
 
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, ArrowDown } from "lucide-react";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import type { Tables } from "@/integrations/supabase/types";
+import { optimizedImage } from "@/lib/images";
 
 type BlogPost = Tables<'blog_posts'>;
 
@@ -15,10 +16,35 @@ interface BlogGridProps {
   searchQuery: string;
 }
 
+// Must match POSTS_PER_PAGE in the blog edge function (server-rendered pages)
+const POSTS_PER_PAGE = 12;
+
+const pageHref = (page: number) => (page <= 1 ? "/blog" : `/blog?page=${page}`);
+
 const BlogGrid = ({ selectedCategory, searchQuery }: BlogGridProps) => {
-  const [visibleArticles, setVisibleArticles] = useState(6);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filteredArticles, setFilteredArticles] = useState<BlogPost[]>([]);
   const { posts, loading, fetchPublishedPosts } = useBlogPosts();
+  const requestedPage = Number.parseInt(searchParams.get("page") || "1", 10);
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / POSTS_PER_PAGE));
+  const page = Number.isFinite(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+
+  // Back to the top of the list when moving between pages
+  const pageRef = useRef(page);
+  useEffect(() => {
+    if (pageRef.current !== page) window.scrollTo({ top: 0, behavior: "smooth" });
+    pageRef.current = page;
+  }, [page]);
+
+  // Changing the category or search starts again from the first page
+  const filtersRef = useRef({ selectedCategory, searchQuery });
+  useEffect(() => {
+    const previous = filtersRef.current;
+    filtersRef.current = { selectedCategory, searchQuery };
+    if (previous.selectedCategory !== selectedCategory || previous.searchQuery !== searchQuery) {
+      if (searchParams.has("page")) setSearchParams({}, { replace: true });
+    }
+  }, [selectedCategory, searchQuery, searchParams, setSearchParams]);
 
   useEffect(() => {
     fetchPublishedPosts();
@@ -44,9 +70,6 @@ const BlogGrid = ({ selectedCategory, searchQuery }: BlogGridProps) => {
     setFilteredArticles(filtered);
   }, [selectedCategory, searchQuery, posts]);
 
-  const loadMore = () => {
-    setVisibleArticles(prev => prev + 6);
-  };
 
   if (loading) {
     return (
@@ -59,7 +82,7 @@ const BlogGrid = ({ selectedCategory, searchQuery }: BlogGridProps) => {
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {filteredArticles.slice(0, visibleArticles).map((article, index) => (
+        {filteredArticles.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE).map((article, index) => (
           <Card 
             key={article.id}
             className="group hover:shadow-xl transition-all duration-500 border hover:border-primary/20 bg-background overflow-hidden animate-fade-in h-full"
@@ -69,8 +92,12 @@ const BlogGrid = ({ selectedCategory, searchQuery }: BlogGridProps) => {
               {article.featured_image && (
                 <div className="aspect-video overflow-hidden">
                   <img 
-                    src={article.featured_image} 
+                    src={optimizedImage(article.featured_image, 640)} 
                     alt={article.title}
+                    width={640}
+                    height={360}
+                    loading={index < 3 ? "eager" : "lazy"}
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 </div>
@@ -121,9 +148,7 @@ const BlogGrid = ({ selectedCategory, searchQuery }: BlogGridProps) => {
           </p>
           <Button 
             variant="outline" 
-            onClick={() => {
-              setVisibleArticles(6);
-            }}
+            onClick={() => setSearchParams({})}
             className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
           >
             Clear Filters
@@ -131,16 +156,30 @@ const BlogGrid = ({ selectedCategory, searchQuery }: BlogGridProps) => {
         </div>
       )}
 
-      {visibleArticles < filteredArticles.length && (
-        <div className="text-center pt-4 sm:pt-8">
-          <Button 
-            onClick={loadMore}
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-8 py-2 sm:py-3"
-          >
-            Load More Articles
-          </Button>
-        </div>
+      {totalPages > 1 && (
+        <nav aria-label="Blog pages" className="flex flex-wrap items-center justify-center gap-2 pt-4 sm:pt-8">
+          {page > 1 && (
+            <Link to={pageHref(page - 1)} rel="prev" className="inline-flex h-9 items-center rounded-md border px-3 text-sm hover:bg-muted">
+              Previous
+            </Link>
+          )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) =>
+            p === page ? (
+              <span key={p} aria-current="page" className="inline-flex h-9 min-w-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground">
+                {p}
+              </span>
+            ) : (
+              <Link key={p} to={pageHref(p)} className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-3 text-sm hover:bg-muted">
+                {p}
+              </Link>
+            ),
+          )}
+          {page < totalPages && (
+            <Link to={pageHref(page + 1)} rel="next" className="inline-flex h-9 items-center rounded-md border px-3 text-sm hover:bg-muted">
+              Next
+            </Link>
+          )}
+        </nav>
       )}
     </div>
   );

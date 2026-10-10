@@ -44,3 +44,7 @@ path = "/blog/*"
 [[edge_functions]]
 function = "sitemap"
 path = "/sitemap.xml"
+
+# Let Netlify Image CDN resize/convert blog images stored in Supabase
+[images]
+  remote_images = ["https://xmmyjphoaqazwlifehxs\\.supabase\\.co/storage/v1/object/public/.*"]
