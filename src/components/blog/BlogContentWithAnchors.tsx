@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { remarkUnderline } from "@/lib/remarkUnderline";
+import { markdownElements } from "./markdownElements";
 import { SimpleCTAComponent } from '@/components/cta/SimpleCTAComponent';
 import { useCTAs } from '@/hooks/useCTAs';
 import type { TOCItem } from "./TOCEditor";
@@ -145,6 +146,7 @@ export const BlogContentWithAnchors = ({
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkUnderline]}
         components={{
+          ...markdownElements,
           h1: ({ children, ...props }) => {
             const text = extractCleanText(children);
             const anchor =
@@ -257,26 +259,6 @@ export const BlogContentWithAnchors = ({
             >
               {children}
             </pre>
-          ),
-          a: ({ href, children, node: _node, ...props }) => {
-            const isExternal = /^https?:\/\//i.test(href || "");
-            return (
-              <a
-                href={href}
-                {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                {...props}
-              >
-                {children}
-              </a>
-            );
-          },
-          table: ({ children, node: _node, ...props }) => (
-            <div className="my-6 w-full overflow-x-auto">
-              <table {...props}>{children}</table>
-            </div>
-          ),
-          img: ({ node: _node, alt, ...props }) => (
-            <img alt={alt || ""} loading="lazy" {...props} />
           ),
           code: ({ children, className, ...props }) => {
             const isInline = !className;

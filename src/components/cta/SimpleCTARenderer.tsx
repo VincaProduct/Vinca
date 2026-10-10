@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { remarkUnderline } from '@/lib/remarkUnderline';
+import { markdownElements } from '@/components/blog/markdownElements';
 import { SimpleCTAComponent } from './SimpleCTAComponent';
 import { useCTAs } from '@/hooks/useCTAs';
 import type { CTAWithPlacement } from '@/types/cta';
@@ -125,6 +127,7 @@ export const BlogContentWithInlineCTAs: React.FC<BlogContentWithInlineCTAsProps>
 
   // Custom renderer for CTA placeholders
   const components = {
+    ...markdownElements,
     p: ({ children, ...props }: any) => {
       const childText = React.Children.toArray(children).join('');
       const ctaPlaceholderMatch = childText.match(/^<CTA_PLACEHOLDER_(\d+)\/>$/);
@@ -148,9 +151,9 @@ export const BlogContentWithInlineCTAs: React.FC<BlogContentWithInlineCTAsProps>
   };
 
   return (
-    <div className="prose prose-lg max-w-none dark:prose-invert">
+    <div className="blog-content prose prose-lg max-w-none dark:prose-invert">
       <ReactMarkdown 
-        remarkPlugins={[remarkGfm]} 
+        remarkPlugins={[remarkGfm, remarkUnderline]} 
         components={components}
       >
         {processedContent}
