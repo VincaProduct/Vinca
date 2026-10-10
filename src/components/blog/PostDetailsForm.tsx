@@ -9,6 +9,7 @@ interface PostDetailsFormProps {
   formData: {
     title: string;
     subtitle: string;
+    quote: string;
     slug: string;
     category: string;
     read_time: string;
@@ -71,6 +72,16 @@ export const PostDetailsForm = ({
             value={formData.subtitle}
             onChange={(e) => onUpdate({ subtitle: e.target.value })}
             placeholder="Optional subtitle"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-2 block">Quote</label>
+          <Textarea
+            value={formData.quote}
+            onChange={(e) => onUpdate({ quote: e.target.value })}
+            placeholder="Optional inspirational quote shown at the top of the article"
+            rows={2}
           />
         </div>
 
