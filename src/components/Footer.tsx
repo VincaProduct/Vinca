@@ -166,8 +166,19 @@ const Footer = () => {
                 Privacy Policy
               </a>
             </div>
+            <div className="text-sm text-muted-foreground text-center space-y-1">
+              <p>
+                AMFI Registered Mutual Fund Distributor ·{" "}
+                <span className="whitespace-nowrap">ARN-293401</span>
+              </p>
+              <p>CIN: U65999KA2022PTC169569</p>
+            </div>
+            <p className="text-xs text-muted-foreground text-center max-w-2xl">
+              Mutual fund investments are subject to market risks. Read all
+              scheme related documents carefully.
+            </p>
             <div className="text-sm text-muted-foreground text-center">
-              © 2025 Vinca Wealth. All rights reserved.
+              © {new Date().getFullYear()} Vinca Wealth. All rights reserved.
             </div>
           </div>
         </div>
