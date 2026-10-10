@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Download, Loader2, Mail } from 'lucide-react';
 import type { Tables } from '@/integrations/supabase/types';
+import { describeDbError } from '@/lib/dbErrors';
 
 type Subscriber = Tables<'newsletter_subscribers'>;
 
@@ -24,7 +25,7 @@ const SubscribersPage = () => {
       .from('newsletter_subscribers')
       .select('*')
       .order('created_at', { ascending: false });
-    if (error) toast({ title: "Couldn't load subscribers", description: error.message, variant: 'destructive' });
+    if (error) toast({ title: "Couldn't load subscribers", description: describeDbError(error), variant: 'destructive' });
     setSubscribers(data || []);
     setLoading(false);
   };
@@ -44,7 +45,7 @@ const SubscribersPage = () => {
   const setStatus = async (subscriber: Subscriber, status: 'subscribed' | 'unsubscribed') => {
     const { error } = await supabase.from('newsletter_subscribers').update({ status }).eq('id', subscriber.id);
     if (error) {
-      toast({ title: 'Something went wrong', description: error.message, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: describeDbError(error), variant: 'destructive' });
       return;
     }
     toast({ title: status === 'unsubscribed' ? 'Marked as unsubscribed' : 'Subscribed again' });

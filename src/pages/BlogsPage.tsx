@@ -99,7 +99,7 @@ const BlogsPage = () => {
             {/* Sidebar */}
             <div className="lg:w-1/3 space-y-8">
               <PopularArticles />
-              <BlogSubscribe compact />
+              <BlogSubscribe id="subscribe-list" />
               
               {/* Sidebar CTAs */}
               <BlogCTARenderer

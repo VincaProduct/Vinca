@@ -8,9 +8,11 @@ import type { TOCItem } from './TOCEditor';
 interface TableOfContentsProps {
   items: TOCItem[];
   className?: string;
+  /** Stay in view while scrolling (off when a parent column is sticky instead) */
+  sticky?: boolean;
 }
 
-export const TableOfContents = ({ items, className = '' }: TableOfContentsProps) => {
+export const TableOfContents = ({ items, className = '', sticky = true }: TableOfContentsProps) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -66,7 +68,7 @@ export const TableOfContents = ({ items, className = '' }: TableOfContentsProps)
   };
 
   return (
-    <div className={`sticky top-24 ${className}`}>
+    <div className={`${sticky ? 'sticky top-24' : ''} ${className}`}>
       <Card className="border-0 shadow-none bg-transparent">
         <CardHeader className="px-0 pb-3">
           <CardTitle className="flex items-center justify-between text-sm font-medium text-muted-foreground uppercase tracking-wide">

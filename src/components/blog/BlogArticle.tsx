@@ -336,6 +336,9 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
                 </div>
               )}
 
+              {/* Newsletter sign-up (phones; on large screens it sits under the sidebar TOC) */}
+              <BlogSubscribe id="subscribe-mobile" className="lg:hidden mb-8" />
+
               {/* Article Content with integrated CTAs */}
               {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 ? (
                 <BlogContentWithAnchors
@@ -354,9 +357,6 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
               {/* FAQs: the post's own, then the company FAQs */}
               <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
-
-              {/* Newsletter sign-up */}
-              {!previewPost && <BlogSubscribe />}
 
               {/* Bottom CTAs */}
               <SimpleCTARenderer
@@ -397,19 +397,27 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
             {/* Table of Contents Sidebar */}
             <div className="hidden lg:block w-80 flex-shrink-0 space-y-6">
-              {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
-                <TableOfContents
-                  items={article.table_of_contents as unknown as TOCItem[]}
-                  className="w-full"
-                />
-              )}
+              {/* TOC and newsletter stay in view together (scrolling inside if too tall) */}
+              <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto space-y-6">
+                {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
+                  <TableOfContents
+                    items={article.table_of_contents as unknown as TOCItem[]}
+                    className="w-full"
+                    sticky={false}
+                  />
+                )}
 
-              {/* Below TOC CTAs */}
-              <SimpleCTARenderer
-                blogPostId={article.id}
-                category={article.category}
-                position="below_toc"
-              />
+                {/* Newsletter sign-up */}
+                <BlogSubscribe id="subscribe-sidebar" />
+
+                {/* Below TOC CTAs */}
+                <SimpleCTARenderer
+                  blogPostId={article.id}
+                  category={article.category}
+                  position="below_toc"
+                />
+              </div>
+
             </div>
           </div>
 

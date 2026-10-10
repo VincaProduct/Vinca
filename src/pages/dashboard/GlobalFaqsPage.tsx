@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ArrowDown, ArrowUp, HelpCircle, Loader2, Plus, Save, Trash2 } from 'lucide-react';
 import { resetGlobalFaqsCache } from '@/lib/faqs';
+import { describeDbError } from '@/lib/dbErrors';
 import type { Tables } from '@/integrations/supabase/types';
 
 type GlobalFaq = Tables<'global_faqs'>;
@@ -35,7 +36,7 @@ const GlobalFaqsPage = () => {
   const showError = (error: unknown) =>
     toast({
       title: 'Something went wrong',
-      description: error instanceof Error ? error.message : String((error as { message?: string })?.message || error),
+      description: describeDbError(error),
       variant: 'destructive',
     });
 

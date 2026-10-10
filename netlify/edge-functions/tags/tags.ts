@@ -203,6 +203,20 @@ const renderTakeaways = (items: unknown) => {
             </aside>`;
 };
 
+/** Same markup as the app's BlogSubscribe, so the layout doesn't move when it takes over */
+const renderSubscribe = (id: string, extraClass = "") => `
+            <section aria-labelledby="${id}-title" class="not-prose rounded-lg border border-border p-4 ${extraClass}">
+              <p id="${id}-title" class="font-semibold text-foreground">Subscribe to our newsletter</p>
+              <p class="mt-1 text-sm text-muted-foreground">Get new articles by email. By subscribing you agree to receive emails from Vinca Wealth; unsubscribe anytime.</p>
+              <form class="mt-3" onsubmit="return false">
+                <div class="flex gap-2">
+                  <label for="${id}-email" class="sr-only">Email address</label>
+                  <input id="${id}-email" type="email" required autocomplete="email" placeholder="Your email" class="flex w-full rounded-md border border-input px-3 py-2 text-sm placeholder:text-muted-foreground h-9 min-w-0 bg-background">
+                  <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground px-3 h-9 shrink-0">Subscribe</button>
+                </div>
+              </form>
+            </section>`;
+
 const renderFaqs = (faqs: Faq[]) => {
   if (faqs.length === 0) return "";
   return `
@@ -329,6 +343,8 @@ const renderPost = (post: Row) => {
 
             ${hasToc ? `<div class="lg:hidden mb-8">${renderToc(toc)}</div>` : ""}
 
+            ${renderSubscribe("subscribe-mobile", "lg:hidden mb-8")}
+
             <div class="blog-content prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
               ${renderMarkdown(post.content, toc)}
             </div>
@@ -344,7 +360,7 @@ const renderPost = (post: Row) => {
             </div>` : ""}
           </div>
 
-          ${hasToc ? `<aside class="hidden lg:block w-80 flex-shrink-0"><div class="sticky top-24">${renderToc(toc)}</div></aside>` : ""}
+          <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto space-y-6">${hasToc ? renderToc(toc) : ""}${renderSubscribe("subscribe-sidebar")}</div></aside>
         </div>
       </div>
     </article>`;
