@@ -1,32 +1,13 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+
+// Light and dark versions; CSS shows the one matching the page's theme, so
+// the logo can never be out of step with the background
+const LIGHT_LOGO = "/images/black-logo-Photoroom.png";
+const DARK_LOGO = "/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png";
 
 const Logo = () => {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    // Check initial theme
-    const checkTheme = () => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setIsDark(isDarkMode);
-    };
-
-    // Check theme on mount
-    checkTheme();
-
-    // Listen for theme changes
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const logoSrc = isDark
-    ? "/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png"
-    : "/images/black-logo-Photoroom.png";
+  const imageClass =
+    "h-12 object-contain transition-transform duration-500 ease-in-out group-hover:drop-shadow-lg transform group-hover:scale-105";
 
   return (
     <Link
@@ -35,17 +16,16 @@ const Logo = () => {
     >
       <div className="relative">
         <img
-          src={logoSrc}
+          src={LIGHT_LOGO}
           alt="Vinca Wealth - Financial planning and wealth management"
-          className={`h-12 ${
-            isDark ? "w-44 mr-2" : "w-42"
-          } object-contain transition-all duration-500 ease-in-out group-hover:drop-shadow-lg transform group-hover:scale-105`}
+          className={`${imageClass} w-42 dark:hidden`}
           loading="eager"
-          style={{
-            filter: "brightness(1)",
-            transition:
-              "all 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease-in-out",
-          }}
+        />
+        <img
+          src={DARK_LOGO}
+          alt="Vinca Wealth - Financial planning and wealth management"
+          className={`${imageClass} w-44 mr-2 hidden dark:block`}
+          loading="eager"
         />
       </div>
       <div className="absolute inset-0 bg-primary/10 rounded-lg scale-0 group-hover:scale-110 transition-transform duration-300 ease-out -z-10" />

@@ -180,7 +180,7 @@ function MobileTabBar() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 md:hidden flex items-stretch"
-      style={{ background: 'white', borderTop: '0.5px solid #E5E7EB' }}
+      style={{ background: 'var(--ui-surface)', borderTop: '0.5px solid var(--ui-line)' }}
     >
       {MOBILE_TABS.map(({ key, label, icon: Icon, url, exact, premium }) => {
         const active = isTabActive(key, url, exact);
@@ -193,10 +193,10 @@ function MobileTabBar() {
             className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors"
             style={
               premium
-                ? { border: '0.5px solid #0F6E56', color: '#0F6E56' }
+                ? { border: '0.5px solid var(--ui-green-text)', color: 'var(--ui-green-text)' }
                 : active
-                  ? { background: '#E1F5EE', color: '#085041' }
-                  : { color: '#9CA3AF' }
+                  ? { background: 'var(--ui-green-bg)', color: 'var(--ui-green-text)' }
+                  : { color: 'var(--ui-text-faint)' }
             }
           >
             <div className="relative">

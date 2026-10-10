@@ -189,7 +189,7 @@ function DashboardHomeContent() {
         {/* ── Card 3: Portfolio ───────────────────────────────────────── */}
         <div
           className="rounded-2xl border border-border bg-card p-8 space-y-4"
-          style={{ borderLeft: '3px solid #0F6E56', borderRadius: '0 12px 12px 0' }}
+          style={{ borderLeft: '3px solid var(--ui-green-text)', borderRadius: '0 12px 12px 0' }}
         >
           <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
             Your Portfolio

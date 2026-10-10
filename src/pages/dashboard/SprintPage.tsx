@@ -250,7 +250,7 @@ function SprintPageContent() {
                     </div>
                     <span
                       className="text-xs font-semibold whitespace-nowrap px-2.5 py-1 rounded-full flex-shrink-0"
-                      style={{ background: '#F0FDF4', color: GREEN }}
+                      style={{ background: 'var(--ui-green-bg)', color: GREEN }}
                     >
                       ~{months}mo earlier
                     </span>

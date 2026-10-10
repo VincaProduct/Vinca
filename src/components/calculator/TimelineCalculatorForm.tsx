@@ -10,8 +10,8 @@ interface TimelineCalculatorFormProps {
 }
 
 const inputStyle: React.CSSProperties = {
-  background: 'white',
-  border: '2px solid #E5E7EB',
+  background: 'var(--ui-surface)',
+  border: '2px solid var(--ui-line)',
   borderRadius: 12,
   padding: '16px 20px',
   fontSize: 18,
@@ -20,21 +20,21 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
   transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
   fontFamily: "'Plus Jakarta Sans', sans-serif",
-  color: '#111827',
+  color: 'var(--ui-text)',
 };
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 14,
   fontWeight: 500,
-  color: '#374151',
+  color: 'var(--ui-text-body)',
   marginBottom: 8,
   fontFamily: "'Plus Jakarta Sans', sans-serif",
 };
 
 const helperStyle: React.CSSProperties = {
   fontSize: 12,
-  color: '#9CA3AF',
+  color: 'var(--ui-text-faint)',
   marginTop: 6,
 };
 
@@ -60,7 +60,7 @@ function FocusableInput({ label, value, onChange, placeholder, prefix, helper, t
         {prefix && (
           <span style={{
             position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)',
-            fontSize: 18, fontWeight: 600, color: '#374151', pointerEvents: 'none',
+            fontSize: 18, fontWeight: 600, color: 'var(--ui-text-body)', pointerEvents: 'none',
           }}>
             {prefix}
           </span>
@@ -77,7 +77,7 @@ function FocusableInput({ label, value, onChange, placeholder, prefix, helper, t
           style={{
             ...inputStyle,
             paddingLeft: prefix ? 36 : 20,
-            borderColor: focused ? 'hsl(158 64% 52%)' : '#E5E7EB',
+            borderColor: focused ? 'hsl(158 64% 52%)' : 'var(--ui-line)',
             boxShadow: focused ? '0 0 0 4px hsl(158 64% 52% / 0.1)' : 'none',
           }}
         />
@@ -132,11 +132,11 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
           <span style={{ fontSize: 13, fontWeight: 600, color: 'hsl(158 64% 42%)' }}>
             Step {step + 1} of 2
           </span>
-          <span style={{ fontSize: 13, color: '#9CA3AF' }}>
+          <span style={{ fontSize: 13, color: 'var(--ui-text-faint)' }}>
             {step === 0 ? 'Basic details' : 'Your investments'}
           </span>
         </div>
-        <div style={{ height: 4, background: '#E5E7EB', borderRadius: 2, overflow: 'hidden' }}>
+        <div style={{ height: 4, background: 'var(--ui-line)', borderRadius: 2, overflow: 'hidden' }}>
           <div style={{
             height: '100%',
             width: `${progressPct}%`,
@@ -214,10 +214,10 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
 
           {/* Preview card */}
           <div style={{
-            background: 'white',
+            background: 'var(--ui-surface)',
             borderRadius: 12,
             padding: '16px 20px',
-            border: '1px solid #E5E7EB',
+            border: '1px solid var(--ui-line)',
             display: 'flex',
             alignItems: 'center',
             gap: 12,
@@ -232,7 +232,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
                 }} />
               ))}
             </div>
-            <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'var(--ui-text-muted)', margin: 0 }}>
               Based on your inputs, your score will be ready in seconds.
             </p>
           </div>
@@ -263,7 +263,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
               onClick={() => setStep(0)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: 14, color: '#9CA3AF', fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 14, color: 'var(--ui-text-faint)', fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
               ← Back

@@ -105,9 +105,9 @@ function GapChart() {
   };
 
   const phaseLabel = (p: typeof projections[0]) => {
-    if (p.isInSIPPhase) return { label: 'SIP', bg: '#F0FDF4', color: 'hsl(158 64% 32%)' };
-    if (p.isInWaitingPhase) return { label: 'Growth', bg: '#EFF6FF', color: '#1D4ED8' };
-    return { label: 'Withdrawal', bg: '#FFFBEB', color: '#92400E' };
+    if (p.isInSIPPhase) return { label: 'SIP', bg: 'var(--ui-green-bg)', color: 'hsl(158 64% 32%)' };
+    if (p.isInWaitingPhase) return { label: 'Growth', bg: 'var(--ui-blue-bg)', color: 'var(--ui-blue-text)' };
+    return { label: 'Withdrawal', bg: 'var(--ui-amber-bg)', color: 'var(--ui-amber-text)' };
   };
 
   return (
@@ -140,7 +140,7 @@ function GapChart() {
             <Tooltip
               formatter={(v: number, name: string) => [fmt(v), name === 'current' ? 'Current plan' : 'If you close the gap']}
               labelFormatter={l => `Age ${l}`}
-              contentStyle={{ borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13 }}
+              contentStyle={{ borderRadius: 8, border: '1px solid var(--ui-line)', fontSize: 13 }}
             />
             {depletionAge && (
               <ReferenceLine x={depletionAge} stroke="#E85D4A" strokeDasharray="4 3" strokeOpacity={0.5} />
@@ -154,16 +154,16 @@ function GapChart() {
       <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#E85D4A', display: 'inline-block' }} />
-          <span style={{ fontSize: 13, color: '#6B7280' }}>Current plan</span>
+          <span style={{ fontSize: 13, color: 'var(--ui-text-muted)' }}>Current plan</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'hsl(158 64% 42%)', display: 'inline-block' }} />
-          <span style={{ fontSize: 13, color: '#6B7280' }}>If you close the gap</span>
+          <span style={{ fontSize: 13, color: 'var(--ui-text-muted)' }}>If you close the gap</span>
         </div>
       </div>
       {depletionAge && (
-        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, padding: 20, marginTop: 20 }}>
-          <p style={{ fontSize: 14, color: '#991B1B', margin: 0 }}>
+        <div style={{ background: 'var(--ui-red-bg)', border: '1px solid var(--ui-red-line)', borderRadius: 12, padding: 20, marginTop: 20 }}>
+          <p style={{ fontSize: 14, color: 'var(--ui-red-text)', margin: 0 }}>
             On your current plan, your corpus runs out at age <strong>{depletionAge}</strong> — <strong>{yearsEarly}</strong> years before your life expectancy of 90.
           </p>
         </div>
@@ -175,7 +175,7 @@ function GapChart() {
         style={{
           display: 'flex', alignItems: 'center', gap: 6, marginTop: 20,
           background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 14, color: '#6B7280', fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontSize: 14, color: 'var(--ui-text-muted)', fontFamily: "'Plus Jakarta Sans', sans-serif",
           padding: 0,
         }}
       >
@@ -193,13 +193,13 @@ function GapChart() {
         transition: 'max-height 0.4s ease',
         marginTop: tableOpen ? 12 : 0,
         borderRadius: 12,
-        border: tableOpen ? '1px solid #F3F4F6' : 'none',
+        border: tableOpen ? '1px solid var(--ui-muted)' : 'none',
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: "'Plus Jakarta Sans', sans-serif", minWidth: 500 }}>
           <thead>
-            <tr style={{ background: '#F3F4F6' }}>
+            <tr style={{ background: 'var(--ui-muted)' }}>
               {['Age', 'Phase', 'Monthly SIP', 'Corpus', 'Return %'].map(h => (
-                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, color: '#374151', whiteSpace: 'nowrap' }}>{h}</th>
+                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 600, color: 'var(--ui-text-body)', whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -207,21 +207,21 @@ function GapChart() {
             {projections.map((p, idx) => {
               const phase = phaseLabel(p);
               return (
-                <tr key={p.age} style={{ background: idx % 2 === 0 ? 'white' : '#FAFAF8' }}>
-                  <td style={{ padding: '9px 14px', color: '#111827', fontWeight: 500 }}>{p.age}</td>
+                <tr key={p.age} style={{ background: idx % 2 === 0 ? 'var(--ui-surface)' : 'var(--ui-subtle)' }}>
+                  <td style={{ padding: '9px 14px', color: 'var(--ui-text)', fontWeight: 500 }}>{p.age}</td>
                   <td style={{ padding: '9px 14px' }}>
                     <span style={{
                       fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 100,
                       background: phase.bg, color: phase.color,
                     }}>{phase.label}</span>
                   </td>
-                  <td style={{ padding: '9px 14px', color: '#374151' }}>
+                  <td style={{ padding: '9px 14px', color: 'var(--ui-text-body)' }}>
                     {p.monthlySIP > 0 ? fmt(p.monthlySIP) : p.monthlySWP > 0 ? `−${fmt(p.monthlySWP)}` : '—'}
                   </td>
-                  <td style={{ padding: '9px 14px', color: p.expectedCorpus < 0 ? '#E85D4A' : '#111827', fontWeight: 500 }}>
+                  <td style={{ padding: '9px 14px', color: p.expectedCorpus < 0 ? '#E85D4A' : 'var(--ui-text)', fontWeight: 500 }}>
                     {fmt(p.expectedCorpus)}
                   </td>
-                  <td style={{ padding: '9px 14px', color: '#6B7280' }}>{p.returnRate.toFixed(1)}%</td>
+                  <td style={{ padding: '9px 14px', color: 'var(--ui-text-muted)' }}>{p.returnRate.toFixed(1)}%</td>
                 </tr>
               );
             })}
@@ -230,9 +230,9 @@ function GapChart() {
         <button
           onClick={() => setTableOpen(false)}
           style={{
-            display: 'block', width: '100%', padding: '10px 0', background: '#F9FAFB',
-            border: 'none', cursor: 'pointer', fontSize: 13, color: '#9CA3AF',
-            fontFamily: "'Plus Jakarta Sans', sans-serif", borderTop: '1px solid #F3F4F6',
+            display: 'block', width: '100%', padding: '10px 0', background: 'var(--ui-subtle)',
+            border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--ui-text-faint)',
+            fontFamily: "'Plus Jakarta Sans', sans-serif", borderTop: '1px solid var(--ui-muted)',
           }}
         >
           ↑ Hide breakdown
@@ -292,9 +292,9 @@ function FoundationChapter() {
       style={{
         flex: 1, padding: '8px 0', borderRadius: 8, cursor: 'pointer',
         fontSize: 13, fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif",
-        border: `1.5px solid ${statuses[i] === val ? activeBorder : '#E5E7EB'}`,
-        background: statuses[i] === val ? activeBg : 'white',
-        color: statuses[i] === val ? activeColor : '#6B7280',
+        border: `1.5px solid ${statuses[i] === val ? activeBorder : 'var(--ui-line)'}`,
+        background: statuses[i] === val ? activeBg : 'var(--ui-surface)',
+        color: statuses[i] === val ? activeColor : 'var(--ui-text-muted)',
         transition: 'all 0.2s ease',
       }}
     >
@@ -308,8 +308,8 @@ function FoundationChapter() {
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
         <span style={{
           fontSize: 13, fontWeight: 600, padding: '4px 12px', borderRadius: 100,
-          background: allYes ? '#F0FDF4' : '#F3F4F6',
-          color: allYes ? 'hsl(158 64% 32%)' : '#374151',
+          background: allYes ? 'var(--ui-green-bg)' : 'var(--ui-muted)',
+          color: allYes ? 'hsl(158 64% 32%)' : 'var(--ui-text-body)',
           transition: 'all 0.3s ease',
         }}>
           {confirmedCount} of 4 foundations confirmed
@@ -319,11 +319,11 @@ function FoundationChapter() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 16 }}>
         {items.map((item, i) => {
           const s = statuses[i];
-          const cardBg = s === 'yes' ? '#F0FDF4' : s === 'no' ? '#FEF2F2' : 'white';
-          const cardBorder = s === 'yes' ? '1px solid #86EFAC' : s === 'no' ? '1px solid #FECACA' : '1px solid #F3F4F6';
+          const cardBg = s === 'yes' ? 'var(--ui-green-bg)' : s === 'no' ? 'var(--ui-red-bg)' : 'var(--ui-surface)';
+          const cardBorder = s === 'yes' ? '1px solid var(--ui-green-line)' : s === 'no' ? '1px solid var(--ui-red-line)' : '1px solid var(--ui-muted)';
           const pillText = s === 'yes' ? 'Confirmed ✓' : s === 'no' ? 'Action needed' : 'Not checked';
-          const pillBg = s === 'yes' ? '#F0FDF4' : s === 'no' ? '#FEF2F2' : '#F3F4F6';
-          const pillColor = s === 'yes' ? 'hsl(158 64% 32%)' : s === 'no' ? '#E85D4A' : '#9CA3AF';
+          const pillBg = s === 'yes' ? 'var(--ui-green-bg)' : s === 'no' ? 'var(--ui-red-bg)' : 'var(--ui-muted)';
+          const pillColor = s === 'yes' ? 'hsl(158 64% 32%)' : s === 'no' ? '#E85D4A' : 'var(--ui-text-faint)';
 
           return (
             <div key={i} style={{
@@ -343,13 +343,13 @@ function FoundationChapter() {
                   {pillText}
                 </span>
               </div>
-              <p style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 4 }}>{item.name}</p>
-              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 16 }}>You need {item.label}</p>
+              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ui-text)', marginBottom: 4 }}>{item.name}</p>
+              <p style={{ fontSize: 14, color: 'var(--ui-text-muted)', marginBottom: 16 }}>You need {item.label}</p>
 
-              <p style={{ fontSize: 13, color: '#374151', marginBottom: 10 }}>Do you have this in place?</p>
+              <p style={{ fontSize: 13, color: 'var(--ui-text-body)', marginBottom: 10 }}>Do you have this in place?</p>
               <div style={{ display: 'flex', gap: 8 }}>
-                {pillBtn(i, 'yes', '✓ Yes, I do', 'hsl(158 64% 32%)', '#F0FDF4', '#86EFAC')}
-                {pillBtn(i, 'no', '✗ Not yet', '#E85D4A', '#FEF2F2', '#FECACA')}
+                {pillBtn(i, 'yes', '✓ Yes, I do', 'hsl(158 64% 32%)', 'var(--ui-green-bg)', 'var(--ui-green-line)')}
+                {pillBtn(i, 'no', '✗ Not yet', '#E85D4A', 'var(--ui-red-bg)', 'var(--ui-red-line)')}
               </div>
 
               {s === 'no' && (
@@ -374,15 +374,15 @@ function FoundationChapter() {
       </div>
 
       {allYes && (
-        <div style={{ background: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: 12, padding: '16px 20px' }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: '#166534', margin: 0 }}>
+        <div style={{ background: 'var(--ui-green-bg)', border: '1px solid var(--ui-green-line)', borderRadius: 12, padding: '16px 20px' }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ui-green-text)', margin: 0 }}>
             ✓ Foundation solid. Now focus on closing your SIP gap.
           </p>
         </div>
       )}
       {anyNo && !allYes && (
-        <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 12, padding: '16px 20px' }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: '#92400E', margin: 0 }}>
+        <div style={{ background: 'var(--ui-amber-bg)', border: '1px solid var(--ui-amber-line)', borderRadius: 12, padding: '16px 20px' }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ui-amber-text)', margin: 0 }}>
             ⚠️ Fix your foundation before focusing on the SIP gap. Gaps here can undo your retirement plan.
           </p>
         </div>
@@ -412,9 +412,9 @@ function InlineLifestylePanel() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Slider */}
-      <div style={{ background: '#F9FAFB', borderRadius: 12, padding: '20px 20px 16px' }}>
+      <div style={{ background: 'var(--ui-subtle)', borderRadius: 12, padding: '20px 20px 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Lifestyle adjustment</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ui-text-body)' }}>Lifestyle adjustment</span>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'hsl(158 64% 42%)' }}>
             {lifestyleShift >= 0 ? `+${lifestyleShift}%` : `${lifestyleShift}%`}
           </span>
@@ -428,7 +428,7 @@ function InlineLifestylePanel() {
           onChange={e => setLifestyleShift(Number(e.target.value))}
           style={{ width: '100%', accentColor: 'hsl(158 64% 52%)', marginBottom: 8, cursor: 'pointer' }}
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#9CA3AF' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--ui-text-faint)' }}>
           <span>−50%</span><span>0%</span><span>+50%</span><span>+100%</span>
         </div>
       </div>
@@ -442,8 +442,8 @@ function InlineLifestylePanel() {
             style={{
               padding: '6px 16px', borderRadius: 100, border: 'none', cursor: 'pointer',
               fontSize: 13, fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif",
-              background: lifestyleShift === p.value ? 'hsl(158 64% 52%)' : '#F3F4F6',
-              color: lifestyleShift === p.value ? 'white' : '#374151',
+              background: lifestyleShift === p.value ? 'hsl(158 64% 52%)' : 'var(--ui-muted)',
+              color: lifestyleShift === p.value ? 'white' : 'var(--ui-text-body)',
               transition: 'all 0.2s ease',
             }}
           >
@@ -453,25 +453,25 @@ function InlineLifestylePanel() {
       </div>
 
       {/* Result card */}
-      <div style={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: 12, padding: 20 }}>
+      <div style={{ background: 'var(--ui-surface)', border: '1px solid var(--ui-line)', borderRadius: 12, padding: 20 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 12 }}>
           <div>
-            <p style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 4 }}>Monthly expenses</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>{fmt(adjustedExpenses)}</p>
+            <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', marginBottom: 4 }}>Monthly expenses</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)' }}>{fmt(adjustedExpenses)}</p>
           </div>
           <div>
-            <p style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 4 }}>Required SIP</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: '#111827' }}>{fmt(requiredSIP)}</p>
+            <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', marginBottom: 4 }}>Required SIP</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)' }}>{fmt(requiredSIP)}</p>
           </div>
         </div>
         {sipGap > 0 ? (
-          <div style={{ background: '#FEF2F2', borderRadius: 8, padding: '10px 14px' }}>
-            <p style={{ fontSize: 13, color: '#991B1B', margin: 0 }}>
+          <div style={{ background: 'var(--ui-red-bg)', borderRadius: 8, padding: '10px 14px' }}>
+            <p style={{ fontSize: 13, color: 'var(--ui-red-text)', margin: 0 }}>
               You need <strong>{fmt(sipGap)}/mo more</strong> to sustain this lifestyle.
             </p>
           </div>
         ) : (
-          <div style={{ background: '#F0FDF4', borderRadius: 8, padding: '10px 14px' }}>
+          <div style={{ background: 'var(--ui-green-bg)', borderRadius: 8, padding: '10px 14px' }}>
             <p style={{ fontSize: 13, color: 'hsl(158 64% 32%)', margin: 0 }}>
               Your current SIP covers this lifestyle.
             </p>
@@ -500,8 +500,8 @@ function InlineHealthPanel() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               textAlign: 'left', cursor: 'pointer', borderRadius: 12, padding: '14px 16px',
-              border: `2px solid ${selected ? 'hsl(158 64% 52%)' : '#E5E7EB'}`,
-              background: selected ? '#F0FDF4' : 'white',
+              border: `2px solid ${selected ? 'hsl(158 64% 52%)' : 'var(--ui-line)'}`,
+              background: selected ? 'var(--ui-green-bg)' : 'var(--ui-surface)',
               transition: 'all 0.2s ease',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               width: '100%',
@@ -510,15 +510,15 @@ function InlineHealthPanel() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>{cost.icon}</span>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', margin: '0 0 2px' }}>{cost.label}</p>
-                <p style={{ fontSize: 12, color: '#6B7280', margin: 0 }}>{cost.description}</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ui-text)', margin: '0 0 2px' }}>{cost.label}</p>
+                <p style={{ fontSize: 12, color: 'var(--ui-text-muted)', margin: 0 }}>{cost.description}</p>
               </div>
             </div>
             {cost.monthly > 0 && (
               <span style={{
                 fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 100, flexShrink: 0, marginLeft: 12,
-                background: selected ? 'hsl(158 64% 52%)' : '#F3F4F6',
-                color: selected ? 'white' : '#6B7280',
+                background: selected ? 'hsl(158 64% 52%)' : 'var(--ui-muted)',
+                color: selected ? 'white' : 'var(--ui-text-muted)',
                 transition: 'all 0.2s ease',
               }}>
                 +{fmt(cost.monthly)}/mo
@@ -530,23 +530,23 @@ function InlineHealthPanel() {
 
       {/* Result card */}
       {healthStressData && (
-        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, padding: 20, marginTop: 4 }}>
+        <div style={{ background: 'var(--ui-red-bg)', border: '1px solid var(--ui-red-line)', borderRadius: 12, padding: 20, marginTop: 4 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 12 }}>
             <div>
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 4 }}>Years lost</p>
+              <p style={{ fontSize: 11, color: 'var(--ui-text-faint)', marginBottom: 4 }}>Years lost</p>
               <p style={{ fontSize: 24, fontWeight: 700, color: '#E85D4A', margin: 0 }}>
                 {healthStressData.yearsLost}
               </p>
             </div>
             <div>
-              <p style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 4 }}>SIP buffer needed</p>
+              <p style={{ fontSize: 11, color: 'var(--ui-text-faint)', marginBottom: 4 }}>SIP buffer needed</p>
               <p style={{ fontSize: 24, fontWeight: 700, color: '#E85D4A', margin: 0 }}>
                 {fmt(HEALTH_COSTS[healthCategory].monthly)}/mo
               </p>
             </div>
           </div>
           {HEALTH_COSTS[healthCategory].monthly > 0 && (
-            <p style={{ fontSize: 13, color: '#991B1B', margin: 0 }}>
+            <p style={{ fontSize: 13, color: 'var(--ui-red-text)', margin: 0 }}>
               Add <strong>{fmt(HEALTH_COSTS[healthCategory].monthly)}/mo</strong> to your SIP as a buffer against this scenario.
             </p>
           )}
@@ -564,7 +564,7 @@ function StressTestChapter() {
     setOpenPanel(prev => prev === panel ? null : panel);
 
   const cardBase: React.CSSProperties = {
-    background: 'white',
+    background: 'var(--ui-surface)',
     borderRadius: 16,
     boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
     overflow: 'hidden',
@@ -585,12 +585,12 @@ function StressTestChapter() {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             <span style={{ fontSize: 24, flexShrink: 0 }}>💰</span>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Lifestyle Creep</p>
-              <p style={{ fontSize: 14, color: '#6B7280' }}>What if your expenses are 30% higher in retirement than you planned?</p>
+              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ui-text)', marginBottom: 4 }}>Lifestyle Creep</p>
+              <p style={{ fontSize: 14, color: 'var(--ui-text-muted)' }}>What if your expenses are 30% higher in retirement than you planned?</p>
             </div>
           </div>
           {openPanel === 'lifestyle' && (
-            <button onClick={() => setOpenPanel(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', flexShrink: 0, padding: 4 }}>
+            <button onClick={() => setOpenPanel(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ui-text-faint)', flexShrink: 0, padding: 4 }}>
               <X style={{ width: 16, height: 16 }} />
             </button>
           )}
@@ -618,12 +618,12 @@ function StressTestChapter() {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             <span style={{ fontSize: 24, flexShrink: 0 }}>❤️</span>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 4 }}>A Health Shock</p>
-              <p style={{ fontSize: 14, color: '#6B7280' }}>What if a major medical event costs you ₹20L and 2 years of income?</p>
+              <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ui-text)', marginBottom: 4 }}>A Health Shock</p>
+              <p style={{ fontSize: 14, color: 'var(--ui-text-muted)' }}>What if a major medical event costs you ₹20L and 2 years of income?</p>
             </div>
           </div>
           {openPanel === 'health' && (
-            <button onClick={() => setOpenPanel(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', flexShrink: 0, padding: 4 }}>
+            <button onClick={() => setOpenPanel(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ui-text-faint)', flexShrink: 0, padding: 4 }}>
               <X style={{ width: 16, height: 16 }} />
             </button>
           )}
@@ -687,14 +687,14 @@ function SprintModal({ open, onClose }: { open: boolean; onClose: () => void }) 
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'white', borderRadius: 20, padding: 36, maxWidth: 420, width: '100%',
+          background: 'var(--ui-surface)', borderRadius: 20, padding: 36, maxWidth: 420, width: '100%',
           boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
           fontFamily: "'Plus Jakarta Sans', sans-serif",
         }}
       >
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF' }}
+          style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ui-text-faint)' }}
         >
           <X style={{ width: 18, height: 18 }} />
         </button>
@@ -702,8 +702,8 @@ function SprintModal({ open, onClose }: { open: boolean; onClose: () => void }) 
         {success ? (
           <div style={{ textAlign: 'center', padding: '16px 0' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>🎉</div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 8 }}>You're on the list!</h3>
-            <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.6 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>You're on the list!</h3>
+            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)', lineHeight: 1.6 }}>
               We'll reach out when your 1-month sprint is ready to start.
             </p>
             <button
@@ -719,8 +719,8 @@ function SprintModal({ open, onClose }: { open: boolean; onClose: () => void }) 
           </div>
         ) : (
           <>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 8 }}>Start My 1-Month Sprint</h3>
-            <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 24, lineHeight: 1.6 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>Start My 1-Month Sprint</h3>
+            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
               Try investing the extra SIP amount for one month. No long-term commitment. We'll send you a reminder when it's time to start.
             </p>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -731,12 +731,12 @@ function SprintModal({ open, onClose }: { open: boolean; onClose: () => void }) 
                 placeholder="your@email.com"
                 required
                 style={{
-                  border: '2px solid #E5E7EB', borderRadius: 10, padding: '12px 16px',
+                  border: '2px solid var(--ui-line)', borderRadius: 10, padding: '12px 16px',
                   fontSize: 15, outline: 'none', fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  transition: 'border-color 0.2s ease', color: '#111827',
+                  transition: 'border-color 0.2s ease', color: 'var(--ui-text)',
                 }}
                 onFocus={e => (e.target.style.borderColor = 'hsl(158 64% 52%)')}
-                onBlur={e => (e.target.style.borderColor = '#E5E7EB')}
+                onBlur={e => (e.target.style.borderColor = 'var(--ui-line)')}
               />
               <button
                 type="submit"
@@ -788,7 +788,7 @@ function NextMoveChapter() {
         <button
           onClick={() => window.location.href = '/dashboard/compass'}
           style={{
-            background: 'white', color: 'hsl(158 64% 32%)', border: 'none', borderRadius: 12,
+            background: 'var(--ui-surface)', color: 'hsl(158 64% 32%)', border: 'none', borderRadius: 12,
             padding: '15px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer',
             fontFamily: "'Plus Jakarta Sans', sans-serif", width: '100%',
             transition: 'all 0.2s ease', marginBottom: 16,
@@ -808,7 +808,7 @@ function NextMoveChapter() {
         onMouseLeave={() => setSprintHovered(false)}
         style={{
           background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 14, color: '#6B7280', fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontSize: 14, color: 'var(--ui-text-muted)', fontFamily: "'Plus Jakarta Sans', sans-serif",
           textDecoration: sprintHovered ? 'underline' : 'none',
           transition: 'color 0.2s ease',
           padding: 0,
@@ -817,7 +817,7 @@ function NextMoveChapter() {
         Prefer to track this yourself? Join the Sprint waitlist →
       </button>
 
-      <p style={{ fontSize: 12, color: '#D1D5DB', margin: 0 }}>
+      <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', margin: 0 }}>
         Educational platform. No investment advice provided. All transactions via authorised partners.
       </p>
     </div>
@@ -834,8 +834,8 @@ function StickyNav({ activeChapter, refs }: { activeChapter: number; refs: React
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      background: 'white',
-      borderBottom: '1px solid #F3F4F6',
+      background: 'var(--ui-surface)',
+      borderBottom: '1px solid var(--ui-muted)',
       padding: '10px 16px',
       display: 'flex',
       alignItems: 'center',
@@ -857,7 +857,7 @@ function StickyNav({ activeChapter, refs }: { activeChapter: number; refs: React
             <span className="hidden sm:block" style={{
               width: 10, height: 10, borderRadius: '50%',
               background: active ? 'hsl(158 64% 52%)' : 'transparent',
-              border: active ? 'none' : '1.5px solid #D1D5DB',
+              border: active ? 'none' : '1.5px solid var(--ui-text-faint)',
               flexShrink: 0,
               transition: 'background 0.3s ease, border 0.3s ease',
             }} />
@@ -865,14 +865,14 @@ function StickyNav({ activeChapter, refs }: { activeChapter: number; refs: React
             <span className="block sm:hidden" style={{
               width: 8, height: 8, borderRadius: '50%',
               background: active ? 'hsl(158 64% 52%)' : 'transparent',
-              border: active ? 'none' : '1.5px solid #D1D5DB',
+              border: active ? 'none' : '1.5px solid var(--ui-text-faint)',
               flexShrink: 0,
               transition: 'background 0.3s ease, border 0.3s ease',
             }} />
             {/* Desktop label: full text, 12px */}
             <span className="hidden sm:block" style={{
               fontSize: 12, fontWeight: active ? 600 : 400,
-              color: active ? 'hsl(158 64% 32%)' : '#9CA3AF',
+              color: active ? 'hsl(158 64% 32%)' : 'var(--ui-text-faint)',
               whiteSpace: 'nowrap',
               transition: 'color 0.3s ease',
             }}>
@@ -881,7 +881,7 @@ function StickyNav({ activeChapter, refs }: { activeChapter: number; refs: React
             {/* Mobile label: shortened, 10px */}
             <span className="block sm:hidden" style={{
               fontSize: 10, fontWeight: active ? 600 : 400,
-              color: active ? 'hsl(158 64% 32%)' : '#9CA3AF',
+              color: active ? 'hsl(158 64% 32%)' : 'var(--ui-text-faint)',
               whiteSpace: 'nowrap',
               transition: 'color 0.3s ease',
             }}>
@@ -946,24 +946,24 @@ function FFRContent() {
   const headingStyle: React.CSSProperties = {
     fontSize: 20,
     fontWeight: 700,
-    color: '#111827',
+    color: 'var(--ui-text)',
     marginBottom: 8,
     fontFamily: "'Plus Jakarta Sans', sans-serif",
   };
 
   const subStyle: React.CSSProperties = {
     fontSize: 15,
-    color: '#6B7280',
+    color: 'var(--ui-text-muted)',
     marginBottom: 24,
     fontFamily: "'Plus Jakarta Sans', sans-serif",
   };
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#FAFAF8', padding: 24 }}>
+      <div style={{ minHeight: '100vh', background: 'var(--ui-subtle)', padding: 24 }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           {[1, 2, 3].map(i => (
-            <div key={i} style={{ height: 80, background: '#F3F4F6', borderRadius: 12, marginBottom: 16, animation: 'pulse 1.5s infinite' }} />
+            <div key={i} style={{ height: 80, background: 'var(--ui-muted)', borderRadius: 12, marginBottom: 16, animation: 'pulse 1.5s infinite' }} />
           ))}
         </div>
       </div>
@@ -994,13 +994,13 @@ function FFRContent() {
   );
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF8', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--ui-subtle)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <StickyNav activeChapter={activeChapter} refs={chapterRefs as any} />
 
       {/* Fix 2: Compact header row — directly below sticky nav */}
       <div style={{
-        background: 'white',
-        borderBottom: '1px solid #F3F4F6',
+        background: 'var(--ui-surface)',
+        borderBottom: '1px solid var(--ui-muted)',
         position: 'sticky',
         top: 50, // just below the nav (~50px tall)
         zIndex: 40,
@@ -1009,7 +1009,7 @@ function FFRContent() {
           maxWidth: 900, margin: '0 auto', padding: '16px 20px',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
-          <span style={{ fontSize: 18, fontWeight: 700, color: '#111827', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--ui-text)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Financial Freedom Dashboard
           </span>
           {editBtn}
@@ -1021,13 +1021,13 @@ function FFRContent() {
         {/* Chapter 1 — Score */}
         <section ref={chapterRefs[0] as any} style={sectionStyle}>
           {hasCalculated && inputs && results && projections.length > 0 ? (
-            <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <FFRScoreCard inputs={inputs} results={results} projections={projections} checklist={checklist} />
               <FFRScoreBreakdown inputs={inputs} results={results} projections={projections} checklist={checklist} />
             </div>
           ) : (
-            <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 40, textAlign: 'center' }}>
-              <p style={{ color: '#9CA3AF', fontSize: 15, marginBottom: 16 }}>No plan yet. Enter your details to get started.</p>
+            <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 40, textAlign: 'center' }}>
+              <p style={{ color: 'var(--ui-text-faint)', fontSize: 15, marginBottom: 16 }}>No plan yet. Enter your details to get started.</p>
               {editBtn}
             </div>
           )}
@@ -1035,9 +1035,9 @@ function FFRContent() {
 
         {/* Chapter 2 — Gap */}
         {hasCalculated && inputs && results && (
-          <section ref={chapterRefs[1] as any} style={{ ...sectionStyle, borderTop: '1px solid #F3F4F6' }}>
+          <section ref={chapterRefs[1] as any} style={{ ...sectionStyle, borderTop: '1px solid var(--ui-muted)' }}>
             <h2 style={headingStyle}>What happens if nothing changes</h2>
-            <div style={{ background: 'white', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24 }}>
+            <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24 }}>
               <GapChart />
             </div>
           </section>
@@ -1045,7 +1045,7 @@ function FFRContent() {
 
         {/* Chapter 3 — Foundation */}
         {hasCalculated && inputs && results && (
-          <section ref={chapterRefs[2] as any} style={{ ...sectionStyle, borderTop: '1px solid #F3F4F6' }}>
+          <section ref={chapterRefs[2] as any} style={{ ...sectionStyle, borderTop: '1px solid var(--ui-muted)' }}>
             <h2 style={headingStyle}>Before fixing your gap, make sure your base is solid.</h2>
             <p style={subStyle}>These four things protect everything else you build.</p>
             <FoundationChapter />
@@ -1054,7 +1054,7 @@ function FFRContent() {
 
         {/* Chapter 4 — Stress Test */}
         {hasCalculated && inputs && results && (
-          <section ref={chapterRefs[3] as any} style={{ ...sectionStyle, borderTop: '1px solid #F3F4F6' }}>
+          <section ref={chapterRefs[3] as any} style={{ ...sectionStyle, borderTop: '1px solid var(--ui-muted)' }}>
             <h2 style={headingStyle}>What could derail your plan?</h2>
             <p style={subStyle}>Two things kill most retirement plans. Test yours against both.</p>
             <StressTestChapter />
@@ -1063,7 +1063,7 @@ function FFRContent() {
 
         {/* Chapter 5 — Next Move */}
         {hasCalculated && inputs && results && (
-          <section id="chapter-next-move" ref={chapterRefs[4] as any} style={{ ...sectionStyle, borderTop: '1px solid #F3F4F6' }}>
+          <section id="chapter-next-move" ref={chapterRefs[4] as any} style={{ ...sectionStyle, borderTop: '1px solid var(--ui-muted)' }}>
             <h2 style={headingStyle}>Your next move</h2>
             <p style={subStyle}>One action closes the gap. Choose your pace.</p>
             <NextMoveChapter />

@@ -134,7 +134,8 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
-    background-color: #FAFAF8;
+    /* Off-white page base in light mode, theme background in dark mode */
+    background-color: var(--ui-subtle);
   }
 
   /* Set dark mode as default for dashboard */
@@ -381,8 +382,9 @@
 }
 /* Blog post body: shared by the CMS editor and the published article */
 /* Brand green #0fd48f; a deeper shade on light backgrounds so headings stay readable */
-:root { --blog-brand: #0a9466; }
-.dark { --blog-brand: #0fd48f; }
+/* Brand green for text: the original deeper green on light backgrounds, #0fd48f on dark */
+:root { --blog-brand: #0a9466; --brand-text: hsl(158 64% 42%); }
+.dark { --blog-brand: #0fd48f; --brand-text: #0fd48f; }
 
 @layer components {
   .blog-content { @apply text-foreground leading-relaxed; }
@@ -433,4 +435,61 @@
   .blog-content.ProseMirror img.ProseMirror-selectednode { @apply ring-2 ring-primary; }
   .blog-content.ProseMirror .selectedCell { @apply bg-primary/10; }
   .blog-content.ProseMirror .tableWrapper { @apply overflow-x-auto; }
+}
+
+/* Dark mode for sections built with fixed light Tailwind colours (bg-white,
+   text-gray-900, ...): map them to the theme. Elements that set their own
+   dark: colour are left alone. Light mode is unaffected. */
+.dark .bg-white:not([class*="dark:bg-"]) { background-color: hsl(var(--card)); }
+.dark :is(.bg-gray-50, .bg-slate-50, .bg-neutral-50, .bg-zinc-50):not([class*="dark:bg-"]) { background-color: hsl(var(--background)); }
+.dark :is(.bg-gray-100, .bg-slate-100, .bg-neutral-100, .bg-gray-200, .bg-slate-200):not([class*="dark:bg-"]) { background-color: hsl(var(--muted)); }
+.dark :is(.hover\:bg-gray-50, .hover\:bg-gray-100, .hover\:bg-slate-50, .hover\:bg-slate-100):hover:not([class*="dark:hover:bg-"]) { background-color: hsl(var(--muted)); }
+.dark :is(.text-black, .text-gray-900, .text-gray-800, .text-slate-900, .text-slate-800, .text-neutral-900, .text-zinc-900):not([class*="dark:text-"]) { color: hsl(var(--foreground)); }
+.dark :is(.text-gray-700, .text-gray-600, .text-gray-500, .text-slate-700, .text-slate-600, .text-slate-500, .text-neutral-600):not([class*="dark:text-"]) { color: hsl(var(--muted-foreground)); }
+.dark :is(.border-gray-100, .border-gray-200, .border-gray-300, .border-slate-100, .border-slate-200, .border-slate-300):not([class*="dark:border-"]) { border-color: hsl(var(--border)); }
+.dark :is(.divide-gray-100, .divide-gray-200) > :not([hidden]) ~ :not([hidden]) { border-color: hsl(var(--border)); }
+
+/* Named UI colours for components styled with inline colours (calculator,
+   Financial Freedom, dashboard pages). Light values are the original ones. */
+:root {
+  --ui-surface: #ffffff;
+  --ui-subtle: #fafaf8;
+  --ui-muted: #f3f4f6;
+  --ui-text: #111827;
+  --ui-text-body: #374151;
+  --ui-text-muted: #6b7280;
+  --ui-text-faint: #9ca3af;
+  --ui-line: #e5e7eb;
+  --ui-green-bg: #f0fdf4;
+  --ui-green-line: #86efac;
+  --ui-green-text: #166534;
+  --ui-red-bg: #fef2f2;
+  --ui-red-line: #fecaca;
+  --ui-red-text: #991b1b;
+  --ui-amber-bg: #fffbeb;
+  --ui-amber-line: #fde68a;
+  --ui-amber-text: #92400e;
+  --ui-blue-bg: #eff6ff;
+  --ui-blue-text: #1d4ed8;
+}
+.dark {
+  --ui-surface: hsl(var(--card));
+  --ui-subtle: hsl(var(--background));
+  --ui-muted: hsl(var(--muted));
+  --ui-text: hsl(var(--foreground));
+  --ui-text-body: hsl(var(--foreground) / 0.85);
+  --ui-text-muted: hsl(var(--muted-foreground));
+  --ui-text-faint: hsl(var(--muted-foreground) / 0.8);
+  --ui-line: hsl(var(--border));
+  --ui-green-bg: rgba(16, 185, 129, 0.12);
+  --ui-green-line: rgba(16, 185, 129, 0.4);
+  --ui-green-text: #6ee7b7;
+  --ui-red-bg: rgba(239, 68, 68, 0.12);
+  --ui-red-line: rgba(239, 68, 68, 0.4);
+  --ui-red-text: #fca5a5;
+  --ui-amber-bg: rgba(245, 158, 11, 0.12);
+  --ui-amber-line: rgba(245, 158, 11, 0.4);
+  --ui-amber-text: #fcd34d;
+  --ui-blue-bg: rgba(59, 130, 246, 0.14);
+  --ui-blue-text: #93c5fd;
 }

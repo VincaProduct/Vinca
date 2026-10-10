@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Calculator } from "lucide-react";
+import { ChevronDown, Calculator, BookOpen, CalendarDays } from "lucide-react";
 
 interface DesktopNavigationProps {
   scrollToSection: (sectionId: string) => void;
@@ -76,24 +76,28 @@ const DesktopNavigation = ({ scrollToSection }: DesktopNavigationProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Link
-          to="/blog"
-          className="relative px-3 py-2 text-muted-foreground hover:text-primary transition-all duration-300 ease-in-out text-sm xl:text-base whitespace-nowrap group focus:outline-none focus:text-primary rounded-md"
-        >
-          <span className="relative z-10">Blog</span>
-          <div className="absolute inset-0 bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-300 ease-out rounded-md" />
-          <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary group-hover:w-4/5 group-focus:w-4/5 transition-all duration-300 ease-out transform -translate-x-1/2" />
-        </Link>
-
-        <Link
-          to="/events"
-          className="relative px-3 py-2 text-muted-foreground hover:text-primary transition-all duration-300 ease-in-out text-sm xl:text-base whitespace-nowrap group focus:outline-none focus:text-primary rounded-md"
-        >
-          <span className="relative z-10">Events</span>
-          <div className="absolute inset-0 bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-300 ease-out rounded-md" />
-          <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary group-hover:w-4/5 group-focus:w-4/5 transition-all duration-300 ease-out transform -translate-x-1/2" />
-        </Link>
-
+        <DropdownMenu>
+          <DropdownMenuTrigger className="relative px-3 py-2 text-muted-foreground hover:text-primary transition-all duration-300 ease-in-out text-sm xl:text-base whitespace-nowrap group focus:outline-none focus:text-primary rounded-md flex items-center">
+            <span className="relative z-10">Insights</span>
+            <ChevronDown className="ml-1 h-3 w-3 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <div className="absolute inset-0 bg-primary/5 scale-0 group-hover:scale-100 transition-transform duration-300 ease-out rounded-md" />
+            <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary group-hover:w-4/5 group-focus:w-4/5 transition-all duration-300 ease-out transform -translate-x-1/2" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-background/95 backdrop-blur-md border border-border/50 shadow-lg">
+            <DropdownMenuItem asChild>
+              <Link to="/blog" className="flex items-center px-3 py-2 text-sm hover:bg-accent/50 cursor-pointer">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Blog
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/events" className="flex items-center px-3 py-2 text-sm hover:bg-accent/50 cursor-pointer">
+                <CalendarDays className="mr-2 h-4 w-4" />
+                Events
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <button
           onClick={() => scrollToSection('faq')}
           className="relative px-3 py-2 text-muted-foreground hover:text-primary transition-all duration-300 ease-in-out text-sm xl:text-base whitespace-nowrap group focus:outline-none focus:text-primary rounded-md"
