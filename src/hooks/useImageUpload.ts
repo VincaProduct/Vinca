@@ -40,8 +40,15 @@ export const useImageUpload = () => {
 
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${folder}/${Date.now()}.${fileExt}`;
+      const fileExt = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      // Readable, branded name: "nifty-50-chart-vinca-wealth-1791...jpg" (the timestamp keeps it unique)
+      const baseName = file.name
+        .replace(/\.[^.]+$/, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60);
+      const fileName = `${user.id}/${folder}/${baseName ? `${baseName}-` : ''}vinca-wealth-${Date.now()}.${fileExt}`;
 
       const { data, error } = await supabase.storage
         .from('blog-images')
