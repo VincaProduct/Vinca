@@ -12,6 +12,10 @@ import { PostFormActions } from './PostFormActions';
 import { TOCEditor, type TOCItem } from './TOCEditor';
 import { CTASelectionForm } from './CTASelectionForm';
 import { BlogPreviewDialog } from './BlogPreviewDialog';
+import { SeoFieldsForm } from './SeoFieldsForm';
+import { KeyTakeawaysForm, MAX_TAKEAWAYS } from './KeyTakeawaysForm';
+import { PostFaqsForm } from './PostFaqsForm';
+import { cleanFaqs, type FaqItem } from '@/lib/faqs';
 import { sameToc, tocFromMarkdown } from '@/lib/toc';
 import type { Json, Tables } from '@/integrations/supabase/types';
 
@@ -36,7 +40,12 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
     status: 'draft' as 'draft' | 'published' | 'archived',
     author_id: '',
     table_of_contents: [] as TOCItem[],
-    tags: [] as string[],
+    meta_title: '',
+    meta_description: '',
+    focus_keyword: '',
+    key_takeaways: [] as string[],
+    faqs: [] as FaqItem[],
+    hide_global_faqs: false,
   });
   // Table of contents follows the H2/H3 headings unless switched to manual
   const [tocAuto, setTocAuto] = useState(true);
@@ -62,7 +71,12 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         status: post.status as 'draft' | 'published' | 'archived' || 'draft',
         author_id: post.author_id || '',
         table_of_contents: savedToc,
-        tags: post.tags || [],
+        meta_title: post.meta_title || '',
+        meta_description: post.meta_description || '',
+        focus_keyword: post.focus_keyword || '',
+        key_takeaways: post.key_takeaways || [],
+        faqs: cleanFaqs(post.faqs),
+        hide_global_faqs: post.hide_global_faqs ?? false,
       });
       // Keep a hand-edited TOC as it is; otherwise follow the headings
       setTocAuto(savedToc.length === 0 || sameToc(savedToc, tocFromMarkdown(post.content)));
@@ -94,6 +108,18 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
       return;
     }
 
+    // SEO title/description fall back to the post title/excerpt when left empty
+    const metaTitle = formData.meta_title.trim() || formData.title.trim();
+    const metaDescription = formData.meta_description.trim() || formData.excerpt.trim();
+    if (status === 'published' && !metaDescription) {
+      toast({
+        title: 'Meta description needed',
+        description: 'Add a Meta Description (or an Excerpt) in the SEO section before publishing.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (!user) {
       toast({
         title: 'Error',
@@ -110,6 +136,11 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         status,
         published_at: status === 'published' ? new Date().toISOString() : null,
         table_of_contents: tableOfContents as unknown as Json,
+        meta_title: metaTitle,
+        meta_description: metaDescription || null,
+        focus_keyword: formData.focus_keyword.trim() || null,
+        key_takeaways: formData.key_takeaways.map((p) => p.trim()).filter(Boolean).slice(0, MAX_TAKEAWAYS),
+        faqs: cleanFaqs(formData.faqs) as unknown as Json,
         // Legacy fields for backward compatibility
         author_name: '',
         author_title: '',
@@ -178,11 +209,21 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
             read_time: formData.read_time,
             featured_image: formData.featured_image,
             excerpt: formData.excerpt,
-            tags: formData.tags,
           }}
           onUpdate={updateFormData}
           onFeaturedImageUploaded={handleFeaturedImageUploaded}
           onFeaturedImageRemoved={handleFeaturedImageRemoved}
+        />
+
+        <SeoFieldsForm
+          metaTitle={formData.meta_title}
+          metaDescription={formData.meta_description}
+          focusKeyword={formData.focus_keyword}
+          title={formData.title}
+          excerpt={formData.excerpt}
+          slug={formData.slug}
+          content={formData.content}
+          onUpdate={updateFormData}
         />
 
         <AuthorSelect
@@ -195,12 +236,24 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
           onContentChange={(content) => updateFormData({ content })}
         />
 
+        <KeyTakeawaysForm
+          items={formData.key_takeaways}
+          onChange={(key_takeaways) => updateFormData({ key_takeaways })}
+        />
+
         <TOCEditor
           items={formData.table_of_contents}
           onItemsChange={(table_of_contents) => updateFormData({ table_of_contents })}
           auto={tocAuto}
           onAutoChange={setTocAuto}
           autoItems={autoToc}
+        />
+
+        <PostFaqsForm
+          items={formData.faqs}
+          onChange={(faqs) => updateFormData({ faqs })}
+          showGlobalFaqs={!formData.hide_global_faqs}
+          onShowGlobalFaqsChange={(show) => updateFormData({ hide_global_faqs: !show })}
         />
 
         <CTASelectionForm
@@ -223,6 +276,8 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
           ...formData,
           id: post?.id || 'preview',
           table_of_contents: tableOfContents,
+          meta_title: formData.meta_title.trim() || formData.title,
+          meta_description: formData.meta_description.trim() || formData.excerpt,
           published_at: post?.published_at || null,
           created_at: post?.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString(),

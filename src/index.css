@@ -408,10 +408,27 @@
   .blog-content table { @apply w-full border-collapse text-sm my-6; }
   .blog-content th,
   .blog-content td { @apply border border-border px-3 py-2 text-left align-top; }
-  .blog-content th { @apply font-semibold; background-color: #0fd48f; color: #0b1f1a; border-color: #0fd48f; }
+  /* Dark brand green with white bold text (5.4:1 contrast), brand-green accent line */
+  .blog-content th { font-weight: 700; background-color: #077a53; color: #ffffff; border-color: #077a53; }
+  .blog-content thead tr, .blog-content tr:first-child:has(th) { border-bottom: 3px solid #0fd48f; }
+  .blog-content th :is(strong, b, p, span) { color: inherit; font-weight: 700; }
   .blog-content th p,
   .blog-content td p { @apply my-0; }
 
+  /* TL;DR box under the article title */
+  .key-takeaways { @apply rounded-lg border-l-4 p-5 sm:p-6; border-color: var(--blog-brand); background-color: hsl(var(--muted) / 0.4); }
+  .key-takeaways-title { @apply flex items-center gap-2 text-lg font-bold mb-3; color: var(--blog-brand); }
+  .key-takeaways ul { @apply list-disc pl-6 space-y-2 text-foreground; }
+  .key-takeaways li::marker { color: var(--blog-brand); }
+
+  /* FAQ section at the end of a post */
+  .blog-faqs h2 { @apply text-2xl font-bold mb-4; color: var(--blog-brand); }
+  .blog-faqs details { @apply border-b border-border; }
+  .blog-faqs summary { @apply flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold text-foreground; }
+  .blog-faqs summary::-webkit-details-marker { display: none; }
+  .blog-faqs summary::after { content: "+"; @apply text-xl leading-none; color: var(--blog-brand); }
+  .blog-faqs details[open] summary::after { content: "−"; }
+  .blog-faqs details p { @apply pb-4 text-muted-foreground leading-relaxed whitespace-pre-line; }
   /* Editor-only: highlight the selected image and table cells */
   .blog-content.ProseMirror img.ProseMirror-selectednode { @apply ring-2 ring-primary; }
   .blog-content.ProseMirror .selectedCell { @apply bg-primary/10; }

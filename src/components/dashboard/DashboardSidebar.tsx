@@ -7,6 +7,7 @@ import {
   TrendingUp,
   Calendar,
   Video,
+  HelpCircle,
   FileText,
   Users,
   LayoutDashboard,
@@ -143,6 +144,7 @@ const NAV: NavGroup[] = [
 const adminMenuItems = [
   { title: 'Blog CMS',            url: '/dashboard/blog-cms',         icon: FileText       },
   { title: 'Authors',             url: '/dashboard/authors',           icon: Users          },
+  { title: 'Global FAQs',         url: '/dashboard/global-faqs',       icon: HelpCircle     },
   { title: 'CTA Dashboard',       url: '/dashboard/cta-dashboard',     icon: LayoutDashboard },
   { title: 'CTA Placements',      url: '/dashboard/cta-placements',    icon: MapPin         },
   { title: 'CTA Analytics',       url: '/dashboard/cta-analytics',     icon: BarChart3      },

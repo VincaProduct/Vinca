@@ -58,6 +58,7 @@ const AchieversClubDashboard = lazy(() => import("./pages/dashboard/AchieversClu
 const UpgradePage = lazy(() => import("./pages/dashboard/UpgradePage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
+const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
 import NotFound from "./pages/NotFound";
 const PublicPricing = lazy(() => import("./pages/PublicPricing"));
 const DashboardBuyMembershipPage = lazy(() => import("./pages/dashboard/BuyMembershipPage"));
@@ -139,6 +140,14 @@ const App = () => (
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
+                    <Route
+                      path="global-faqs"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <GlobalFaqsPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
                     <Route path="cta-dashboard" element={<CTADashboardPage />} />
                     <Route path="cta-placements" element={<CTAPlacementPage />} />
                     <Route path="cta-analytics" element={<CTAAnalyticsPage />} />

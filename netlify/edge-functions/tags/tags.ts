@@ -175,6 +175,43 @@ const absoluteImage = (src: string | null | undefined) => {
 /* Blog post                                                                 */
 /* ------------------------------------------------------------------------- */
 
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+const cleanFaqs = (value: unknown): Faq[] =>
+  Array.isArray(value)
+    ? value
+        .map((f) => ({ question: String(f?.question ?? "").trim(), answer: String(f?.answer ?? "").trim() }))
+        .filter((f) => f.question && f.answer)
+    : [];
+
+/** The post's own FAQs, then the company FAQs unless the post hides them */
+const postFaqs = (post: Row): Faq[] => [
+  ...cleanFaqs(post.faqs),
+  ...(post.hide_global_faqs ? [] : cleanFaqs(post.global_faqs)),
+];
+
+const renderTakeaways = (items: unknown) => {
+  const points = Array.isArray(items) ? items.map((p) => String(p).trim()).filter(Boolean) : [];
+  if (points.length === 0) return "";
+  return `
+            <aside aria-label="Key takeaways" class="key-takeaways mb-8 sm:mb-10">
+              <p class="key-takeaways-title">Key Takeaways</p>
+              <ul>${points.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+            </aside>`;
+};
+
+const renderFaqs = (faqs: Faq[]) => {
+  if (faqs.length === 0) return "";
+  return `
+            <section aria-labelledby="faqs" class="blog-faqs mt-12 sm:mt-16">
+              <h2 id="faqs">Frequently Asked Questions</h2>
+              ${faqs.map((f) => `<details><summary>${escapeHtml(f.question)}</summary><p>${escapeHtml(f.answer)}</p></details>`).join("")}
+            </section>`;
+};
+
 const renderMarkdown = (content: string, toc: TocItem[]) => {
   const anchors = new Map<string, string>();
   toc.forEach((item) => {
@@ -288,17 +325,15 @@ const renderPost = (post: Row) => {
               </div>
             </div>
 
+            ${renderTakeaways(post.key_takeaways)}
+
             ${hasToc ? `<div class="lg:hidden mb-8">${renderToc(toc)}</div>` : ""}
 
             <div class="blog-content prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
               ${renderMarkdown(post.content, toc)}
             </div>
 
-            ${Array.isArray(post.tags) && post.tags.length > 0 ? `
-            <div class="mt-10 flex flex-wrap items-center gap-2">
-              <span class="text-sm text-muted-foreground mr-1">Tags:</span>
-              ${post.tags.map((tag: string) => `<span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-primary/20 text-primary bg-primary/5">${escapeHtml(tag)}</span>`).join("")}
-            </div>` : ""}
+            ${renderFaqs(postFaqs(post))}
 
             ${authorBio ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
@@ -326,7 +361,6 @@ const postHead = (post: Row) => {
   const modified = post.updated_at || published;
   const noindex = post.noindex === true;
   const words = plainText(post.content || "").split(/\s+/).filter(Boolean).length;
-  const tags: string[] = Array.isArray(post.tags) ? post.tags.filter(Boolean) : [];
 
   const graph: Row[] = [
     organization,
@@ -369,19 +403,18 @@ const postHead = (post: Row) => {
       mainEntityOfPage: { "@id": url },
       isPartOf: { "@id": WEBSITE_ID },
       articleSection: post.category,
-      ...(tags.length > 0 ? { keywords: tags.join(", ") } : {}),
       wordCount: words,
       inLanguage: "en-IN",
     },
   ];
 
-  // FAQ block (added to the CMS in phase 2)
-  const faqs = Array.isArray(post.faqs) ? post.faqs.filter((f: Row) => f?.question && f?.answer) : [];
+  // FAQs shown on the page: the post's own and the company FAQs
+  const faqs = postFaqs(post);
   if (faqs.length > 0) {
     graph.push({
       "@type": "FAQPage",
       "@id": `${url}#faq`,
-      mainEntity: faqs.map((f: Row) => ({
+      mainEntity: faqs.map((f) => ({
         "@type": "Question",
         name: f.question,
         acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -408,7 +441,6 @@ const postHead = (post: Row) => {
     <meta property="article:modified_time" content="${escapeHtml(modified)}">
     <meta property="article:author" content="${escapeHtml(authorName)}">
     <meta property="article:section" content="${escapeHtml(post.category)}">
-    ${tags.map((tag) => `<meta property="article:tag" content="${escapeHtml(tag)}">`).join("\n    ")}
     <script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@graph": graph })}</script>`;
 };
 
@@ -425,6 +457,11 @@ const handlePost = async (slug: string, context: Context) => {
   const posts: Row[] = await response.json();
   const post = posts[0];
 
+  // Company FAQs (shown on every post unless hidden); missing table = none
+  if (post && !post.hide_global_faqs) {
+    const faqResponse = await supabaseGet("global_faqs?select=question,answer&order=position.asc").catch(() => null);
+    post.global_faqs = faqResponse?.ok ? cleanFaqs(await faqResponse.json()) : [];
+  }
   if (!post) {
     // A renamed post: permanently redirect the old slug to the new one
     const redirect = await supabaseGet(

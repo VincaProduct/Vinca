@@ -56,6 +56,12 @@ export type Database = {
           created_at: string
           excerpt: string | null
           featured_image: string | null
+          faqs: Json
+          focus_keyword: string | null
+          hide_global_faqs: boolean
+          key_takeaways: string[]
+          meta_description: string | null
+          meta_title: string | null
           id: string
           published_at: string | null
           quote: string | null
@@ -64,7 +70,6 @@ export type Database = {
           status: string | null
           subtitle: string | null
           table_of_contents: Json | null
-          tags: string[] | null
           title: string
           updated_at: string
         }
@@ -79,6 +84,12 @@ export type Database = {
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
+          faqs?: Json
+          focus_keyword?: string | null
+          hide_global_faqs?: boolean
+          key_takeaways?: string[]
+          meta_description?: string | null
+          meta_title?: string | null
           id?: string
           published_at?: string | null
           quote?: string | null
@@ -87,7 +98,6 @@ export type Database = {
           status?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
-          tags?: string[] | null
           title: string
           updated_at?: string
         }
@@ -102,6 +112,12 @@ export type Database = {
           created_at?: string
           excerpt?: string | null
           featured_image?: string | null
+          faqs?: Json
+          focus_keyword?: string | null
+          hide_global_faqs?: boolean
+          key_takeaways?: string[]
+          meta_description?: string | null
+          meta_title?: string | null
           id?: string
           published_at?: string | null
           quote?: string | null
@@ -110,7 +126,6 @@ export type Database = {
           status?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
-          tags?: string[] | null
           title?: string
           updated_at?: string
         }
@@ -123,6 +138,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      global_faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          position: number
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          position?: number
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          position?: number
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       consultation_bookings: {
         Row: {
