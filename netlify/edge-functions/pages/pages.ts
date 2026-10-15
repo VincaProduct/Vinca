@@ -1,4 +1,5 @@
 import type { Context } from "https://edge.netlify.com";
+import { withSecurityHeaders } from "../shared/security-headers.ts";
 import { COMPANY, HOME_FAQS, PAGE_SEO, SITE_URL, organizationSchema } from "../../../src/content/siteInfo.ts";
 
 /**
@@ -134,7 +135,7 @@ const pageGraph = (path: string, url: string, seo: { title: string; description:
   return graph;
 };
 
-export default async (request: Request, context: Context) => {
+const handler = async (request: Request, context: Context): Promise<Response | undefined> => {
   if (request.method !== "GET" && request.method !== "HEAD") return;
 
   const url = new URL(request.url);
@@ -190,6 +191,9 @@ export default async (request: Request, context: Context) => {
     return; // serve the plain app
   }
 };
+
+// Every response gets the site's security headers (_headers doesn't apply here)
+export default async (request: Request, context: Context) => withSecurityHeaders(await handler(request, context));
 
 export const config = {
   path: ["/", "/financial-freedom-calculator", "/events", "/achievers-club", "/pricing", "/privacy-policy"],
