@@ -304,7 +304,7 @@ const renderPost = (post: Row) => {
               <div class="flex items-center gap-3">
                 ${authorImage ? `<img src="${escapeHtml(optimizedImage(authorImage, 96))}" alt="${escapeHtml(authorName)}" width="48" height="48" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover">` : ""}
                 <div>
-                  <div class="font-semibold text-sm sm:text-base">${escapeHtml(authorName)}</div>
+                  <div class="font-semibold text-sm sm:text-base">${post.author?.profile_url ? `<a href="${escapeHtml(post.author.profile_url)}" rel="author noopener" target="_blank" class="hover:text-primary hover:underline">${escapeHtml(authorName)}</a>` : escapeHtml(authorName)}</div>
                   ${authorTitle ? `<div class="text-xs sm:text-sm text-muted-foreground">${escapeHtml(authorTitle)}</div>` : ""}
                 </div>
               </div>
@@ -384,6 +384,7 @@ const postHead = (post: Row) => {
         "@type": "Person",
         name: authorName,
         ...(post.author?.title || post.author_title ? { jobTitle: post.author?.title || post.author_title } : {}),
+        ...(post.author?.profile_url ? { url: post.author.profile_url, sameAs: [post.author.profile_url] } : {}),
         ...(post.author?.image ? { image: post.author.image } : {}),
       },
       publisher: { "@id": ORG_ID },
@@ -433,7 +434,7 @@ const postHead = (post: Row) => {
 
 const handlePost = async (slug: string, context: Context) => {
   const response = await supabaseGet(
-    `blog_posts?select=*,author:authors(id,name,title,bio,image)&slug=eq.${encodeURIComponent(slug)}&status=eq.published`,
+    `blog_posts?select=*,author:authors(*)&slug=eq.${encodeURIComponent(slug)}&status=eq.published`,
   );
   if (!response.ok) {
     console.error(`[blog-ssr] Failed to fetch post ${slug}: ${response.status}`);

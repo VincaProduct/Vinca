@@ -22,6 +22,7 @@ export const AuthorForm = ({ author, onClose }: AuthorFormProps) => {
     title: author?.title || '',
     bio: author?.bio || '',
     image: author?.image || '',
+    profile_url: author?.profile_url || '',
   });
   const [saving, setSaving] = useState(false);
   
@@ -39,16 +40,29 @@ export const AuthorForm = ({ author, onClose }: AuthorFormProps) => {
       return;
     }
 
+    // Profile link (e.g. LinkedIn): add https:// if it was left out
+    let profileUrl = formData.profile_url.trim();
+    if (profileUrl && !/^https?:\/\//i.test(profileUrl)) profileUrl = `https://${profileUrl}`;
+    if (profileUrl) {
+      try {
+        new URL(profileUrl);
+      } catch {
+        toast({ title: 'Error', description: 'The profile link is not a valid web address', variant: 'destructive' });
+        return;
+      }
+    }
+    const authorData = { ...formData, profile_url: profileUrl || null };
+
     setSaving(true);
     try {
       if (author) {
-        await updateAuthor(author.id, formData);
+        await updateAuthor(author.id, authorData);
         toast({
           title: 'Success',
           description: 'Author updated successfully',
         });
       } else {
-        await createAuthor(formData);
+        await createAuthor(authorData);
         toast({
           title: 'Success',
           description: 'Author created successfully',
@@ -126,6 +140,22 @@ export const AuthorForm = ({ author, onClose }: AuthorFormProps) => {
                 placeholder="Brief author biography"
                 rows={4}
               />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Profile link (LinkedIn)
+              </label>
+              <Input
+                type="url"
+                inputMode="url"
+                value={formData.profile_url}
+                onChange={(e) => setFormData({ ...formData, profile_url: e.target.value })}
+                placeholder="https://www.linkedin.com/in/your-name"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Shown as a link on the author's name in articles. Helps Google and AI tools verify who wrote them.
+              </p>
             </div>
 
             <ImageUpload

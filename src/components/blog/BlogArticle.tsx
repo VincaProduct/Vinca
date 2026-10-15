@@ -27,6 +27,7 @@ type BlogPost = Tables<'blog_posts'> & {
     title: string | null;
     bio: string | null;
     image: string | null;
+    profile_url?: string | null;
   } | null;
 };
 
@@ -304,7 +305,18 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
                   )}
                   <div>
                     <div className="font-semibold text-sm sm:text-base">
-                      {article.author?.name || article.author_name || 'Anonymous'}
+                      {article.author?.profile_url ? (
+                        <a
+                          href={article.author.profile_url}
+                          target="_blank"
+                          rel="author noopener"
+                          className="hover:text-primary hover:underline"
+                        >
+                          {article.author.name}
+                        </a>
+                      ) : (
+                        article.author?.name || article.author_name || 'Anonymous'
+                      )}
                     </div>
                     {(article.author?.title || article.author_title) && (
                       <div className="text-xs sm:text-sm text-muted-foreground">
