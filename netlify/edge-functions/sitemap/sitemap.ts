@@ -97,6 +97,13 @@ export default async (request: Request) => {
     <priority>0.7</priority>
   </url>
 
+  <!-- Events -->
+  <url>
+    <loc>${baseUrl}/events</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Achievers Club -->
   <url>
     <loc>${baseUrl}/achievers-club</loc>

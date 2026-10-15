@@ -1,0 +1,27 @@
+# Vinca Wealth
+
+> Vinca Wealth is a research-driven wealth management firm in Bengaluru (Bangalore), Karnataka, India. It is an AMFI registered mutual fund distributor (ARN-293401) that helps families across India plan for retirement and financial freedom through goal-based mutual fund investing, portfolio monitoring and insurance planning.
+
+- Company: Vinca Wealth (CIN U65999KA2022PTC169569)
+- Registration: AMFI Registered Mutual Fund Distributor, ARN-293401; Insurance POSP Code 1726204591
+- Location: Electronic City, Bengaluru, Karnataka 560100, India. Meetings in person in Bengaluru, or online for clients elsewhere in India and NRIs.
+- Contact: +91-7386809164, support@vincawealth.com
+- Mutual fund investments are subject to market risks. Read all scheme related documents carefully.
+
+## What Vinca Wealth does
+
+- [Retirement planning](https://vincawealth.com/#services): Financial Freedom Readiness (FFR) score, retirement corpus estimation, SIP strategy and timeline, retirement date projection.
+- [Mutual fund portfolio management](https://vincawealth.com/#services): goal-based portfolio construction, SIP setup and management, regular rebalancing and performance tracking.
+- [Insurance planning](https://vincawealth.com/#services): life insurance adequacy check, health insurance review and coverage gap identification.
+- [Financial Freedom Calculator](https://vincawealth.com/financial-freedom-calculator): free tool to estimate your retirement corpus, gap and retirement date.
+
+## Research and articles
+
+- [Blog](https://vincawealth.com/blog): data-backed articles on mutual funds, SIPs, markets, retirement planning and personal finance in India.
+- [Sitemap](https://vincawealth.com/sitemap.xml): every published article.
+
+## Optional
+
+- [Events](https://vincawealth.com/events): webinars and events on investing and retirement.
+- [Frequently asked questions](https://vincawealth.com/#faq): fees (no fee; commission from fund houses), reviews, NRI investing, meeting in Bengaluru.
+- [Privacy policy](https://vincawealth.com/privacy-policy)

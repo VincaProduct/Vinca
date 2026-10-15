@@ -64,8 +64,8 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-muted-foreground max-w-md mb-4">
-              Professional wealth management services. Building financial
-              futures with confidence and expertise.
+              Research-driven wealth management from Bengaluru. Building
+              financial futures with confidence and expertise.
             </p>
             <div className="text-sm text-muted-foreground space-y-1 mb-6">
               <p>
@@ -73,6 +73,7 @@ const Footer = () => {
                 <span className="whitespace-nowrap">ARN-293401</span>
               </p>
               <p>CIN: U65999KA2022PTC169569</p>
+              <p>Insurance POSP Code: 1726204591</p>
             </div>
             <div className="text-sm text-muted-foreground space-y-1">
               <p>📞 +91 7386809164</p>

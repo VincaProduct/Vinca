@@ -4,6 +4,7 @@ import { ChevronDown, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { HOME_FAQS } from "@/content/siteInfo";
 
 interface FAQItem {
   id: number;
@@ -11,88 +12,8 @@ interface FAQItem {
   answer: string;
 }
 
-const faqData: FAQItem[] = [
-  {
-    id: 1,
-    question: "Why should I invest with Vinca Wealth?",
-    answer: "We offer one-to-one consultation to maintain an equilibrium before investing your money. Our Wealth Managers acknowledge your financial goals and develop the best-suited investment plans."
-  },
-  {
-    id: 2,
-    question: "Do you charge any fee for Planning or Investing through VincaWealth?",
-    answer: "No, We don't charge any fee. We get commissions from Fund Houses."
-  },
-  {
-    id: 3,
-    question: "How does Vinca Wealth make money?",
-    answer: "We get commission from the Fund Houses as per SEBI regulations. It may vary from 0.3% to 1.2%"
-  },
-  {
-    id: 4,
-    question: "How can Vinca Wealth help me with my existing investments?",
-    answer: "We will give a free and detailed review of your existing investments"
-  },
-  {
-    id: 5,
-    question: "Does Vinca Wealth have an app to track our investments?",
-    answer: "Yes, We have our app with the name 'Vinca Wealth' in the Google Play store & 'Fund Connect' in the Apple store. Using this app you can track your investments"
-  },
-  {
-    id: 6,
-    question: "Can I meet and talk to any Vinca Wealth Managers in person? If yes, when and how?",
-    answer: "Yes, We will do one-on-one meetings at our registered office in Bangalore or at the place of your choice in Bangalore. For non-Bangalorians, we can connect through zoom call."
-  },
-  {
-    id: 7,
-    question: "Why should I choose Vinca Wealth over others?",
-    answer: "At Vinca Wealth we give unbiased advice based on thorough research. We can also explain you in detail why our advice is the best advice"
-  },
-  {
-    id: 8,
-    question: "What are the different products Vinca Wealth suggest?",
-    answer: "We suggest Mutual Funds, Health Insurance, Life insurance, Equity Baskets, PMS and Fractional Real estate products"
-  },
-  {
-    id: 9,
-    question: "As an NRI, do I have a limitation in terms of funds and schemes?",
-    answer: "If you are a US or Canadian resident, then you have limited options. If you are a resident of any other country, you don't have limitations."
-  },
-  {
-    id: 10,
-    question: "How do you ensure my goals will be met?",
-    answer: "We follow a goal-based exit procedure as we move towards the goal, we reduce the risk exposure gradually and make the goal safer. You won't get short of funds even though the market crashes."
-  },
-  {
-    id: 11,
-    question: "Can I invest through VincaWealth without a financial goal?",
-    answer: "We do wealth management for HNIs without goal based planning if required."
-  },
-  {
-    id: 12,
-    question: "How often my portfolio will be reviewed?",
-    answer: "We will do one-on-one review once a year. But, We monitor your portfolio all the time. We will call you as and when action is required"
-  },
-  {
-    id: 13,
-    question: "What happen when the market fall midway while you have invested for long term?",
-    answer: "Long-term investors shouldn't be concerned about short-term volatility in the market. If you take a time horizon of 5 years and roll it, the market always has given good positive returns."
-  },
-  {
-    id: 14,
-    question: "Should we transfer money to Vinca Wealth while investing?",
-    answer: "We will add the chosen products to the cart and send the link to you. You'll approve and pay the amount directly from your Bank account to the Fund house. Vinca Wealth will not be a part of this transaction."
-  },
-  {
-    id: 15,
-    question: "Do you share my data with other banks?",
-    answer: "No. We dont share the data of customers to any third party. Your data is fully secured."
-  },
-  {
-    id: 16,
-    question: "What happens when a VW account holder passes away?",
-    answer: "All the investments will have nominees. Without Nominees KYCs will not be processed."
-  }
-];
+// Shared with the server-rendered homepage and its FAQPage structured data
+const faqData: FAQItem[] = HOME_FAQS.map((faq, index) => ({ id: index + 1, ...faq }));
 
 const FAQSection = () => {
   const navigate = useNavigate();
