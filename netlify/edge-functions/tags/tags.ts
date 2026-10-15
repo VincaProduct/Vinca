@@ -1,5 +1,6 @@
 import type { Context } from "https://edge.netlify.com";
 import { Marked } from "https://esm.sh/marked@11.1.1";
+import { organizationSchema } from "../../../src/content/siteInfo.ts";
 
 /**
  * Server-renders blog pages for every visitor (browsers, search engines and AI
@@ -108,39 +109,8 @@ const injectPage = (html: string, head: string, body: string, data: { id: string
       `<script id="${data.id}" type="application/json">${scriptJson(data.value)}</script>\n  <div id="root">${body}</div>`,
     );
 
-const organization = {
-  "@type": ["FinancialService", "Organization"],
-  "@id": ORG_ID,
-  name: "Vinca Wealth",
-  url: SITE,
-  logo: { "@type": "ImageObject", "@id": `${SITE}/#logo`, url: LOGO, contentUrl: LOGO, caption: "Vinca Wealth" },
-  description: "AMFI registered mutual fund distributor offering goal-based investing and wealth management.",
-  identifier: [
-    { "@type": "PropertyValue", propertyID: "AMFI ARN", value: "ARN-293401" },
-    { "@type": "PropertyValue", propertyID: "CIN", value: "U65999KA2022PTC169569" },
-  ],
-  address: {
-    "@type": "PostalAddress",
-    streetAddress:
-      "183/8, Adjacent to Daddy's Elixir Appartment Singenagrahara, Huskur Post, Sarjapura, hobli, Phase II",
-    addressLocality: "Electronic City, Bengaluru",
-    addressRegion: "Karnataka",
-    postalCode: "560100",
-    addressCountry: "IN",
-  },
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "customer service",
-    telephone: "+91-7386809164",
-    email: "support@vincawealth.com",
-    availableLanguage: "English",
-  },
-  sameAs: [
-    "https://www.facebook.com/people/Vinca-Wealth/100088393606551/",
-    "https://www.instagram.com/vincawealth/",
-    "https://www.youtube.com/@vincawealth9573",
-  ],
-};
+// Company details shared with the app and the pages edge function
+const organization = organizationSchema();
 
 const website = {
   "@type": "WebSite",

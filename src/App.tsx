@@ -61,6 +61,7 @@ const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
 const SubscribersPage = lazy(() => import("./pages/dashboard/SubscribersPage"));
 import NotFound from "./pages/NotFound";
+import RouteSeo from "./components/RouteSeo";
 const PublicPricing = lazy(() => import("./pages/PublicPricing"));
 const DashboardBuyMembershipPage = lazy(() => import("./pages/dashboard/BuyMembershipPage"));
 const EventsPage = lazy(() => import("./pages/EventsPage"));
@@ -88,6 +89,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <RouteSeo />
                 <Suspense fallback={<RouteFallback />}>
                 <Routes>
 
