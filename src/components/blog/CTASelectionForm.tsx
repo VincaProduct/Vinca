@@ -8,14 +8,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, X, Eye, EyeOff } from 'lucide-react';
 import { useCTAs, useCTAPlacements } from '@/hooks/useCTAs';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import type { CTAPlacementPosition } from '@/types/cta';
 
 interface CTASelectionFormProps {
   blogPostId?: string;
-  onCTASelectionChange?: (ctas: any[]) => void;
+  onCTASelectionChange?: (ctas: SelectedCTA[]) => void;
 }
 
-interface SelectedCTA {
+export interface SelectedCTA {
   id: string;
   cta_id: string;
   name: string;
@@ -23,6 +24,37 @@ interface SelectedCTA {
   priority: number;
   active: boolean;
 }
+
+type Placements = ReturnType<typeof useCTAPlacements>;
+
+/**
+ * Replace a post's CTA placements with the given selection. Used by the
+ * "Save CTA Placements" button and when the post itself is saved (which is
+ * the only way to attach CTAs to a brand-new post, as it has no id before).
+ */
+export const saveCTAPlacements = async (
+  blogPostId: string,
+  selectedCTAs: SelectedCTA[],
+  { createPlacement }: Pick<Placements, 'createPlacement'>,
+) => {
+  // Remove the post's current placements, read fresh from the database (a
+  // component's cached list may be out of date), then add the selection
+  const { error } = await supabase.from('cta_placements').delete().eq('blog_post_id', blogPostId);
+  if (error) throw error;
+  for (const selectedCTA of selectedCTAs) {
+    if (!selectedCTA.active) continue;
+    for (const position of selectedCTA.placement_positions) {
+      await createPlacement({
+        cta_id: selectedCTA.cta_id,
+        blog_post_id: blogPostId,
+        placement_position: position,
+        position_config: {},
+        priority: selectedCTA.priority,
+        active: selectedCTA.active,
+      });
+    }
+  }
+};
 
 export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
   blogPostId,
@@ -139,27 +171,7 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
     }
 
     try {
-      // Delete all existing placements for this blog post
-      const existingPlacements = placements.filter(p => p.blog_post_id === blogPostId);
-      for (const placement of existingPlacements) {
-        await deletePlacement(placement.id);
-      }
-
-      // Create new placements
-      for (const selectedCTA of selectedCTAs) {
-        if (!selectedCTA.active) continue;
-        
-        for (const position of selectedCTA.placement_positions) {
-          await createPlacement({
-            cta_id: selectedCTA.cta_id,
-            blog_post_id: blogPostId,
-            placement_position: position,
-            position_config: {},
-            priority: selectedCTA.priority,
-            active: selectedCTA.active
-          });
-        }
-      }
+      await saveCTAPlacements(blogPostId, selectedCTAs, { createPlacement });
 
       toast({
         title: 'Success',
@@ -310,10 +322,16 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
               Add CTA
             </Button>
             
-            {blogPostId && (
+            {blogPostId ? (
               <Button onClick={savePlacements}>
                 Save CTA Placements
               </Button>
+            ) : (
+              selectedCTAs.length > 0 && (
+                <p className="text-sm text-muted-foreground text-right">
+                  These CTAs will be saved with the post when you click Save as Draft or Publish.
+                </p>
+              )
             )}
           </div>
         </CardContent>

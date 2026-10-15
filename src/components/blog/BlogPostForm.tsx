@@ -10,7 +10,8 @@ import { AuthorSelect } from './AuthorSelect';
 import { ContentForm } from './ContentForm';
 import { PostFormActions } from './PostFormActions';
 import { TOCEditor, type TOCItem } from './TOCEditor';
-import { CTASelectionForm } from './CTASelectionForm';
+import { CTASelectionForm, saveCTAPlacements, type SelectedCTA } from './CTASelectionForm';
+import { useCTAPlacements } from '@/hooks/useCTAs';
 import { BlogPreviewDialog } from './BlogPreviewDialog';
 import { SeoFieldsForm } from './SeoFieldsForm';
 import { KeyTakeawaysForm, MAX_TAKEAWAYS } from './KeyTakeawaysForm';
@@ -55,6 +56,9 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const { createPost, updatePost } = useBlogPosts();
+  const ctaPlacements = useCTAPlacements();
+  // CTAs added/changed in the CTA section (null = untouched); saved with the post
+  const [ctaSelection, setCtaSelection] = useState<SelectedCTA[] | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -157,17 +161,27 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         author_image: '',
       };
 
-      if (post) {
-        await updatePost(post.id, postData);
+      const saved = post ? await updatePost(post.id, postData) : await createPost(postData);
+
+      // Attach the CTAs chosen in the CTA section (a new post only has an id now)
+      let ctaError = false;
+      if (ctaSelection && saved?.id) {
+        try {
+          await saveCTAPlacements(saved.id, ctaSelection, ctaPlacements);
+        } catch {
+          ctaError = true;
+        }
+      }
+
+      toast({
+        title: 'Success',
+        description: post ? 'Post updated successfully' : 'Post created successfully',
+      });
+      if (ctaError) {
         toast({
-          title: 'Success',
-          description: 'Post updated successfully',
-        });
-      } else {
-        await createPost(postData);
-        toast({
-          title: 'Success',
-          description: 'Post created successfully',
+          title: "CTAs weren't saved",
+          description: 'The post was saved, but its CTAs could not be. Open the post again and save the CTAs.',
+          variant: 'destructive',
         });
       }
 
@@ -270,6 +284,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
 
         <CTASelectionForm
           blogPostId={post?.id}
+          onCTASelectionChange={setCtaSelection}
         />
 
         <PostFormActions
