@@ -1,4 +1,5 @@
 import type { Context } from "https://edge.netlify.com";
+import { withSecurityHeaders } from "../shared/security-headers.ts";
 import { Marked } from "https://esm.sh/marked@11.1.1";
 import { organizationSchema } from "../../../src/content/siteInfo.ts";
 
@@ -626,7 +627,7 @@ const handleListing = async (url: URL, context: Context) => {
 
 /* ------------------------------------------------------------------------- */
 
-export default async (request: Request, context: Context) => {
+const handler = async (request: Request, context: Context): Promise<Response | undefined> => {
   const url = new URL(request.url);
   if (request.method !== "GET" && request.method !== "HEAD") return;
 
@@ -643,6 +644,9 @@ export default async (request: Request, context: Context) => {
     return new Response("Service Unavailable", { status: 503, headers: { "Retry-After": "300" } });
   }
 };
+
+// Every response gets the site's security headers (_headers doesn't apply here)
+export default async (request: Request, context: Context) => withSecurityHeaders(await handler(request, context));
 
 export const config = {
   path: ["/blog", "/blog/*"],
