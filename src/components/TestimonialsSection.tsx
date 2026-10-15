@@ -88,7 +88,9 @@ const TestimonialsSection = () => {
                   {/* Client info */}
                   <div className="flex items-center gap-4">
                       <img 
-                        src={testimonial.image} 
+                        src={testimonial.image}
+                        loading="lazy"
+                        decoding="async" 
                         alt={testimonial.name}
                         className="object-fill w-14 h-14 "
                       />

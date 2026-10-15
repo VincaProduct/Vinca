@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Calendar } from "lucide-react";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import type { Tables } from "@/integrations/supabase/types";
+import { optimizedImage } from "@/lib/images";
 
 type BlogPost = Tables<'blog_posts'>;
 
@@ -53,8 +54,12 @@ const BlogSection = () => {
                     {article.featured_image && (
                       <div className="aspect-video overflow-hidden">
                         <img 
-                          src={article.featured_image} 
+                          src={optimizedImage(article.featured_image, 640)} 
                           alt={article.title}
+                          width={640}
+                          height={360}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
