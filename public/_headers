@@ -15,6 +15,10 @@
 /*.css
   Cache-Control: public, max-age=31536000, immutable
 
+# Self-hosted fonts (fixed file names, so cache for 30 days rather than forever)
+/fonts/*
+  Cache-Control: public, max-age=2592000
+
 # Blog posts should be cached but revalidated for social media crawlers
 /blog/*
   Cache-Control: public, max-age=3600, s-maxage=3600
