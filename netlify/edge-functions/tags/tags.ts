@@ -175,6 +175,58 @@ const absoluteImage = (src: string | null | undefined) => {
 /* Blog post                                                                 */
 /* ------------------------------------------------------------------------- */
 
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+const cleanFaqs = (value: unknown): Faq[] =>
+  Array.isArray(value)
+    ? value
+        .map((f) => ({ question: String(f?.question ?? "").trim(), answer: String(f?.answer ?? "").trim() }))
+        .filter((f) => f.question && f.answer)
+    : [];
+
+/** The post's own FAQs, then the company FAQs unless the post hides them */
+const postFaqs = (post: Row): Faq[] => [
+  ...cleanFaqs(post.faqs),
+  ...(post.hide_global_faqs ? [] : cleanFaqs(post.global_faqs)),
+];
+
+const renderTakeaways = (items: unknown) => {
+  const points = Array.isArray(items) ? items.map((p) => String(p).trim()).filter(Boolean) : [];
+  if (points.length === 0) return "";
+  return `
+            <aside aria-label="Key takeaways" class="key-takeaways mb-8 sm:mb-10">
+              <p class="key-takeaways-title">Key Takeaways</p>
+              <ul>${points.map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>
+            </aside>`;
+};
+
+/** Same markup as the app's BlogSubscribe, so the layout doesn't move when it takes over */
+const renderSubscribe = (id: string, extraClass = "") => `
+            <section aria-labelledby="${id}-title" class="not-prose rounded-lg border border-border p-4 ${extraClass}">
+              <p id="${id}-title" class="font-semibold text-foreground">Get data-backed market insights</p>
+              <p class="mt-1 text-sm text-muted-foreground">Well-researched articles on markets, equities, mutual funds and investing, delivered to your inbox.</p>
+              <form class="mt-3" onsubmit="return false">
+                <div class="flex gap-2">
+                  <label for="${id}-email" class="sr-only">Email address</label>
+                  <input id="${id}-email" type="email" required autocomplete="email" placeholder="Your email" class="flex w-full rounded-md border border-input px-3 py-2 text-sm placeholder:text-muted-foreground h-9 min-w-0 bg-background">
+                  <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground px-3 h-9 shrink-0">Subscribe</button>
+                </div>
+                <p class="mt-2 text-xs text-muted-foreground">By subscribing you agree to receive emails from Vinca Wealth. Unsubscribe anytime.</p>
+              </form>
+            </section>`;
+
+const renderFaqs = (faqs: Faq[]) => {
+  if (faqs.length === 0) return "";
+  return `
+            <section aria-labelledby="faqs" class="blog-faqs mt-12 sm:mt-16">
+              <h2 id="faqs">Frequently Asked Questions</h2>
+              ${faqs.map((f) => `<details><summary>${escapeHtml(f.question)}</summary><p>${escapeHtml(f.answer)}</p></details>`).join("")}
+            </section>`;
+};
+
 const renderMarkdown = (content: string, toc: TocItem[]) => {
   const anchors = new Map<string, string>();
   toc.forEach((item) => {
@@ -288,11 +340,17 @@ const renderPost = (post: Row) => {
               </div>
             </div>
 
+            ${renderTakeaways(post.key_takeaways)}
+
             ${hasToc ? `<div class="lg:hidden mb-8">${renderToc(toc)}</div>` : ""}
+
+            ${renderSubscribe("subscribe-mobile", "lg:hidden mb-8")}
 
             <div class="blog-content prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
               ${renderMarkdown(post.content, toc)}
             </div>
+
+            ${renderFaqs(postFaqs(post))}
 
             ${authorBio ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
@@ -303,7 +361,7 @@ const renderPost = (post: Row) => {
             </div>` : ""}
           </div>
 
-          ${hasToc ? `<aside class="hidden lg:block w-80 flex-shrink-0"><div class="sticky top-24">${renderToc(toc)}</div></aside>` : ""}
+          <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6"><div class="min-h-0 flex-1 space-y-6 overflow-y-auto">${hasToc ? renderToc(toc) : ""}</div>${renderSubscribe("subscribe-sidebar", "shrink-0")}</div></aside>
         </div>
       </div>
     </article>`;
@@ -367,13 +425,13 @@ const postHead = (post: Row) => {
     },
   ];
 
-  // FAQ block (added to the CMS in phase 2)
-  const faqs = Array.isArray(post.faqs) ? post.faqs.filter((f: Row) => f?.question && f?.answer) : [];
+  // FAQs shown on the page: the post's own and the company FAQs
+  const faqs = postFaqs(post);
   if (faqs.length > 0) {
     graph.push({
       "@type": "FAQPage",
       "@id": `${url}#faq`,
-      mainEntity: faqs.map((f: Row) => ({
+      mainEntity: faqs.map((f) => ({
         "@type": "Question",
         name: f.question,
         acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -416,6 +474,11 @@ const handlePost = async (slug: string, context: Context) => {
   const posts: Row[] = await response.json();
   const post = posts[0];
 
+  // Company FAQs (shown on every post unless hidden); missing table = none
+  if (post && !post.hide_global_faqs) {
+    const faqResponse = await supabaseGet("global_faqs?select=question,answer&order=position.asc").catch(() => null);
+    post.global_faqs = faqResponse?.ok ? cleanFaqs(await faqResponse.json()) : [];
+  }
   if (!post) {
     // A renamed post: permanently redirect the old slug to the new one
     const redirect = await supabaseGet(

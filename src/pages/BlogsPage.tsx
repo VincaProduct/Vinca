@@ -10,7 +10,7 @@ import CategoryFilter from "@/components/blog/CategoryFilter";
 import SearchBar from "@/components/blog/SearchBar";
 import BlogGrid from "@/components/blog/BlogGrid";
 import PopularArticles from "@/components/blog/PopularArticles";
-// import NewsletterSignup from "@/components/blog/NewsletterSignup";
+import { BlogSubscribe } from "@/components/blog/BlogSubscribe";
 import BlogArticle from "@/components/blog/BlogArticle";
 import { BlogCTARenderer } from "@/components/cta/BlogCTARenderer";
 
@@ -99,7 +99,7 @@ const BlogsPage = () => {
             {/* Sidebar */}
             <div className="lg:w-1/3 space-y-8">
               <PopularArticles />
-              {/* <NewsletterSignup /> */}
+              <BlogSubscribe id="subscribe-list" />
               
               {/* Sidebar CTAs */}
               <BlogCTARenderer

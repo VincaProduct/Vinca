@@ -8,9 +8,11 @@ import type { TOCItem } from './TOCEditor';
 interface TableOfContentsProps {
   items: TOCItem[];
   className?: string;
+  /** Stay in view while scrolling (off when a parent column is sticky instead) */
+  sticky?: boolean;
 }
 
-export const TableOfContents = ({ items, className = '' }: TableOfContentsProps) => {
+export const TableOfContents = ({ items, className = '', sticky = true }: TableOfContentsProps) => {
   const [activeSection, setActiveSection] = useState<string>('');
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -66,7 +68,7 @@ export const TableOfContents = ({ items, className = '' }: TableOfContentsProps)
   };
 
   return (
-    <div className={`sticky top-24 ${className}`}>
+    <div className={`${sticky ? 'sticky top-24' : ''} ${className}`}>
       <Card className="border-0 shadow-none bg-transparent">
         <CardHeader className="px-0 pb-3">
           <CardTitle className="flex items-center justify-between text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -91,8 +93,14 @@ export const TableOfContents = ({ items, className = '' }: TableOfContentsProps)
               <ul className="space-y-2 border-l border-border/40">
                 {items.map((item) => (
                   <li key={item.id}>
-                    <button
-                      onClick={() => scrollToSection(item.anchor)}
+                    {/* A real link, so the TOC works for search engines and without JavaScript */}
+                    <a
+                      href={`#${item.anchor}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection(item.anchor);
+                        window.history.replaceState(null, '', `#${item.anchor}`);
+                      }}
                       className={`block w-full text-left py-1.5 px-4 -ml-px border-l-2 transition-all duration-200 hover:border-primary/50 hover:text-foreground ${
                         getLevelStyles(item.level)
                       } ${
@@ -104,7 +112,7 @@ export const TableOfContents = ({ items, className = '' }: TableOfContentsProps)
                       <span className="line-clamp-2 leading-relaxed">
                         {item.title}
                       </span>
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>

@@ -1,16 +1,21 @@
 
 import { Button } from '@/components/ui/button';
-import { Save, Eye } from 'lucide-react';
+import { Save, Eye, Send } from 'lucide-react';
 
 interface PostFormActionsProps {
   onSaveDraft: () => void;
   onPublish: () => void;
+  onPreview: () => void;
   saving: boolean;
 }
 
-export const PostFormActions = ({ onSaveDraft, onPublish, saving }: PostFormActionsProps) => {
+export const PostFormActions = ({ onSaveDraft, onPublish, onPreview, saving }: PostFormActionsProps) => {
   return (
-    <div className="flex justify-end gap-4">
+    <div className="flex flex-wrap justify-end gap-3 sm:gap-4">
+      <Button variant="outline" onClick={onPreview}>
+        <Eye className="w-4 h-4 mr-2" />
+        Preview
+      </Button>
       <Button
         variant="outline"
         onClick={onSaveDraft}
@@ -23,7 +28,7 @@ export const PostFormActions = ({ onSaveDraft, onPublish, saving }: PostFormActi
         onClick={onPublish}
         disabled={saving}
       >
-        <Eye className="w-4 h-4 mr-2" />
+        <Send className="w-4 h-4 mr-2" />
         Publish
       </Button>
     </div>

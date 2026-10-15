@@ -180,11 +180,12 @@ export const cleanPastedHtml = (html: string): string => {
     if (!/^https?:/i.test(img.getAttribute('src') || '')) img.remove();
   });
 
-  // Word's "Title" style is a paragraph, treat it as the main heading
-  doc.querySelectorAll('p.MsoTitle').forEach((p) => {
-    const heading = doc.createElement('h1');
-    heading.innerHTML = p.innerHTML;
-    p.replaceWith(heading);
+  // The post title is the page's H1, so pasted top-level headings (and Word's
+  // "Title" style) become H2 section headings, which also feed the TOC
+  doc.querySelectorAll('h1, p.MsoTitle').forEach((el) => {
+    const heading = doc.createElement('h2');
+    heading.innerHTML = el.innerHTML;
+    el.replaceWith(heading);
   });
 
   return doc.body.innerHTML;

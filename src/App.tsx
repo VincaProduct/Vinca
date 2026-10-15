@@ -57,6 +57,9 @@ const AchieversClubLanding = lazy(() => import("./pages/AchieversClubLanding"));
 const AchieversClubDashboard = lazy(() => import("./pages/dashboard/AchieversClubDashboard"));
 const UpgradePage = lazy(() => import("./pages/dashboard/UpgradePage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
+const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
+const SubscribersPage = lazy(() => import("./pages/dashboard/SubscribersPage"));
 import NotFound from "./pages/NotFound";
 const PublicPricing = lazy(() => import("./pages/PublicPricing"));
 const DashboardBuyMembershipPage = lazy(() => import("./pages/dashboard/BuyMembershipPage"));
@@ -92,6 +95,7 @@ const App = () => (
                   <Route path="/" element={<PublicRoute><Index /></PublicRoute>} />
                   <Route path="/blog" element={<BlogsPage />} />
                   <Route path="/blog/:slug" element={<BlogsPage />} />
+                  <Route path="/blog-preview" element={<BlogPreviewPage />} />
                   <Route path="/thank-you" element={<PublicRoute><ThankYou /></PublicRoute>} />
                   <Route path="/financial-freedom-calculator" element={<PublicRoute><FinancialFreedomCalculator /></PublicRoute>} />
                   <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
@@ -137,6 +141,22 @@ const App = () => (
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
+                    <Route
+                      path="global-faqs"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <GlobalFaqsPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="subscribers"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <SubscribersPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
                     <Route path="cta-dashboard" element={<CTADashboardPage />} />
                     <Route path="cta-placements" element={<CTAPlacementPage />} />
                     <Route path="cta-analytics" element={<CTAAnalyticsPage />} />

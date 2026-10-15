@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { cleanPastedHtml, htmlToMarkdown, markdownToHtml } from '@/lib/blogContent';
+import { ImageAltDialog } from './ImageAltDialog';
 
 interface RichTextEditorProps {
   content: string;
@@ -36,9 +37,9 @@ interface RichTextEditorProps {
 
 type BlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'h4';
 
+// The post title is the page's only H1, so section headings start at H2
 const blockTypes: { value: BlockType; label: string }[] = [
   { value: 'paragraph', label: 'Paragraph' },
-  { value: 'h1', label: 'Heading 1' },
   { value: 'h2', label: 'Heading 2' },
   { value: 'h3', label: 'Heading 3' },
   { value: 'h4', label: 'Heading 4' },
@@ -159,18 +160,44 @@ export const RichTextEditor = ({ content, onContentChange }: RichTextEditorProps
   // Markdown most recently emitted by the editor, so external changes can be told apart
   const lastMarkdown = useRef(content);
   const editorRef = useRef<Editor | null>(null);
+  // Image whose alt text is being asked for / edited
+  const [altImage, setAltImage] = useState<{ src: string; alt: string } | null>(null);
 
   const insertImageFiles = async (editor: Editor, files: File[], pos?: number) => {
+    let last: { src: string; alt: string } | null = null;
     for (const file of files) {
       const src = await uploadRef.current(file, 'content');
       if (!src) continue;
-      const image = { type: 'image', attrs: { src, alt: file.name.replace(/\.[^.]+$/, '') } };
+      // Start from the file name ("nifty_50-chart.png" -> "nifty 50 chart")
+      const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim();
+      const image = { type: 'image', attrs: { src, alt } };
       if (pos !== undefined) {
         editor.chain().focus().insertContentAt(pos, image).run();
       } else {
         editor.chain().focus().insertContent(image).run();
       }
+      last = { src, alt };
     }
+    // Ask for a proper description of the (last) uploaded image
+    if (last) setAltImage(last);
+  };
+
+  const saveAlt = (alt: string) => {
+    const editor = editorRef.current;
+    const target = altImage;
+    setAltImage(null);
+    if (!editor || !target) return;
+    editor
+      .chain()
+      .command(({ tr }) => {
+        tr.doc.descendants((node, nodePos) => {
+          if (node.type.name === 'image' && node.attrs.src === target.src) {
+            tr.setNodeMarkup(nodePos, undefined, { ...node.attrs, alt });
+          }
+        });
+        return true;
+      })
+      .run();
   };
 
   const editor = useEditor({
@@ -235,6 +262,7 @@ export const RichTextEditor = ({ content, onContentChange }: RichTextEditorProps
         bulletList: editor.isActive('bulletList'),
         orderedList: editor.isActive('orderedList'),
         blockquote: editor.isActive('blockquote'),
+        image: editor.isActive('image'),
         table: editor.isActive('table'),
         canUndo: editor.can().undo(),
         canRedo: editor.can().redo(),
@@ -283,6 +311,8 @@ export const RichTextEditor = ({ content, onContentChange }: RichTextEditorProps
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      {/* Older posts may still contain an H1: show it so it can be changed */}
+                      {state.blockType === 'h1' && <SelectItem value="h1">Heading 1</SelectItem>}
                       {blockTypes.map((t) => (
                         <SelectItem key={t.value} value={t.value}>
                           {t.label}
@@ -323,6 +353,22 @@ export const RichTextEditor = ({ content, onContentChange }: RichTextEditorProps
                     {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
                   </ToolbarButton>
 
+                  {state.image && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2 text-xs"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        const { src, alt } = editor.getAttributes('image');
+                        if (src) setAltImage({ src, alt: alt || '' });
+                      }}
+                    >
+                      Alt text
+                    </Button>
+                  )}
+
                   {state.table && (
                     <div className="flex w-full flex-wrap gap-1 border-t pt-2 mt-1">
                       <span className="text-xs text-muted-foreground self-center mr-1">Table:</span>
@@ -351,6 +397,13 @@ export const RichTextEditor = ({ content, onContentChange }: RichTextEditorProps
               )}
               <EditorContent editor={editor} />
             </div>
+            <ImageAltDialog
+              open={!!altImage}
+              initialAlt={altImage?.alt || ''}
+              previewSrc={altImage?.src}
+              onSave={saveAlt}
+              onCancel={() => setAltImage(null)}
+            />
             <input
               ref={fileInputRef}
               type="file"

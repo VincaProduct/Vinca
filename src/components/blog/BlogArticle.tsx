@@ -6,7 +6,9 @@ import remarkGfm from 'remark-gfm';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, Calendar, User, Share2, Bookmark, ArrowDown, ChevronRight, ArrowUp } from "lucide-react";
+import { Clock, Calendar, User, ArrowDown, ChevronRight, ArrowUp } from "lucide-react";
+import { ShareButton } from "@/components/blog/ShareButton";
+import { BlogSubscribe } from "@/components/blog/BlogSubscribe";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
 import { SimpleCTARenderer, BlogContentWithInlineCTAs } from '@/components/cta/SimpleCTARenderer';
 import { TableOfContents } from "@/components/blog/TableOfContents";
@@ -15,6 +17,8 @@ import type { TOCItem } from "@/components/blog/TOCEditor";
 import type { Tables } from "@/integrations/supabase/types";
 import { readSsrData } from "@/lib/ssrData";
 import { optimizedImage, imageSrcSet } from "@/lib/images";
+import { KeyTakeawaysBox } from "@/components/blog/KeyTakeawaysBox";
+import { BlogFaqSection } from "@/components/blog/BlogFaqSection";
 
 type BlogPost = Tables<'blog_posts'> & {
   author?: {
@@ -28,14 +32,17 @@ type BlogPost = Tables<'blog_posts'> & {
 
 interface BlogArticleProps {
   slug?: string;
+  /** Unsaved post from the CMS preview: shown as-is instead of loading by slug */
+  previewPost?: BlogPost;
 }
 
-const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
+const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   const { slug: paramSlug } = useParams();
-  const slug = propSlug || paramSlug;
+  const slug = previewPost ? previewPost.slug : propSlug || paramSlug;
 
   // Post embedded by the server-rendered page, so the article shows without a refetch
   const [initialPost] = useState(() => {
+    if (previewPost) return previewPost;
     const ssrPost = readSsrData<BlogPost>('blog-post-data');
     return ssrPost && ssrPost.slug === slug ? ssrPost : null;
   });
@@ -75,7 +82,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
 
   useEffect(() => {
     const loadArticle = async () => {
-      if (!slug || initialPost?.slug === slug) return;
+      if (previewPost || !slug || initialPost?.slug === slug) return;
 
       setLoading(true);
       let reloading = false;
@@ -104,6 +111,10 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
     loadArticle();
     fetchPublishedPosts();
   }, [slug]);
+
+  useEffect(() => {
+    if (previewPost) setArticle(previewPost);
+  }, [previewPost]);
 
   useEffect(() => {
     if (article && posts.length > 0) {
@@ -145,16 +156,17 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
 
   const blogUrl = `https://vincawealth.com/blog/${article.slug}`;
   const ogImage = article.featured_image || 'https://vincawealth.com/og-image.png';
-  const description = article.excerpt || article.subtitle || 'Read the latest insights on wealth management, mutual funds, and financial planning from Vinca Wealth.';
+  const seoTitle = article.meta_title || article.title;
+  const description = article.meta_description || article.excerpt || article.subtitle || 'Read the latest insights on wealth management, mutual funds, and financial planning from Vinca Wealth.';
 
   return (
     <>
       <Helmet>
         {/* Primary Meta Tags */}
-        <title>{article.title} | Vinca Wealth Blog</title>
-        <meta name="title" content={`${article.title} | Vinca Wealth Blog`} />
+        <title>{`${seoTitle} | Vinca Wealth Blog`}</title>
+        <meta name="title" content={`${seoTitle} | Vinca Wealth Blog`} />
         <meta name="description" content={description} />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="robots" content={previewPost ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
 
         {/* Canonical URL */}
         <link rel="canonical" href={blogUrl} />
@@ -162,7 +174,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta property="og:url" content={blogUrl} />
-        <meta property="og:title" content={article.title} />
+        <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={ogImage} />
         <meta property="og:image:secure_url" content={ogImage} />
@@ -176,7 +188,7 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={blogUrl} />
-        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:title" content={seoTitle} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={ogImage} />
         <meta name="twitter:image:alt" content={article.title} />
@@ -301,15 +313,11 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">
-                    <Share2 className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Bookmark className="w-4 h-4" />
-                  </Button>
-                </div>
+                <ShareButton url={blogUrl} />
               </div>
+
+              {/* TL;DR */}
+              <KeyTakeawaysBox items={article.key_takeaways || []} />
 
               {/* Top Article CTAs */}
               <SimpleCTARenderer
@@ -328,6 +336,9 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
                 </div>
               )}
 
+              {/* Newsletter sign-up (phones; on large screens it sits under the sidebar TOC) */}
+              <BlogSubscribe id="subscribe-mobile" className="lg:hidden mb-8" />
+
               {/* Article Content with integrated CTAs */}
               {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 ? (
                 <BlogContentWithAnchors
@@ -343,6 +354,9 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
                   category={article.category}
                 />
               )}
+
+              {/* FAQs: the post's own, then the company FAQs */}
+              <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
 
               {/* Bottom CTAs */}
               <SimpleCTARenderer
@@ -383,19 +397,30 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
 
             {/* Table of Contents Sidebar */}
             <div className="hidden lg:block w-80 flex-shrink-0 space-y-6">
-              {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
-                <TableOfContents
-                  items={article.table_of_contents as unknown as TOCItem[]}
-                  className="w-full"
-                />
-              )}
+              {/* Stays in view while reading: the TOC scrolls in its own area so the
+                  newsletter box underneath is always visible */}
+              <div className="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6">
+                <div className="min-h-0 flex-1 space-y-6 overflow-y-auto">
+                  {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
+                    <TableOfContents
+                      items={article.table_of_contents as unknown as TOCItem[]}
+                      className="w-full"
+                      sticky={false}
+                    />
+                  )}
 
-              {/* Below TOC CTAs */}
-              <SimpleCTARenderer
-                blogPostId={article.id}
-                category={article.category}
-                position="below_toc"
-              />
+                  {/* Below TOC CTAs */}
+                  <SimpleCTARenderer
+                    blogPostId={article.id}
+                    category={article.category}
+                    position="below_toc"
+                  />
+                </div>
+
+                {/* Newsletter sign-up */}
+                <BlogSubscribe id="subscribe-sidebar" className="shrink-0" />
+              </div>
+
             </div>
           </div>
 
