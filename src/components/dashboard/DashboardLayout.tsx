@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, TrendingUp, Shield, Sprout, Star, User, LogOut, LineChart, UserPlus, ExternalLink } from 'lucide-react';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -250,7 +250,15 @@ function DashboardLayoutInner() {
 
             {/* Page content — bottom padding on mobile for tab bar clearance */}
             <main className="flex-1 bg-background pb-16 md:pb-0">
-              <Outlet />
+              <Suspense
+                fallback={
+                  <div className="flex justify-center py-16">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                  </div>
+                }
+              >
+                <Outlet />
+              </Suspense>
             </main>
           </div>
 

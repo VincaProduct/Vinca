@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { remarkUnderline } from "@/lib/remarkUnderline";
+import { markdownElements } from "./markdownElements";
 import { SimpleCTAComponent } from '@/components/cta/SimpleCTAComponent';
 import { useCTAs } from '@/hooks/useCTAs';
 import type { TOCItem } from "./TOCEditor";
@@ -23,7 +25,10 @@ export const BlogContentWithAnchors = ({
 }: BlogContentWithAnchorsProps) => {
   const { getBlogPostCTAs } = useCTAs();
   const [inlineCTAs, setInlineCTAs] = useState<CTAWithPlacement[]>([]);
-  const [processedContent, setProcessedContent] = useState<string>('');
+  // Show the text straight away; CTA markers are filled in once CTAs have loaded
+  const [processedContent, setProcessedContent] = useState<string>(() =>
+    content.replace(/\[\[CTA:[^\]]+\]\]/g, ''),
+  );
 
   useEffect(() => {
     const fetchAndProcessCTAs = async () => {
@@ -140,10 +145,11 @@ export const BlogContentWithAnchors = ({
   });
 
   return (
-    <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
+    <div className="blog-content prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkUnderline]}
         components={{
+          ...markdownElements,
           h1: ({ children, ...props }) => {
             const text = extractCleanText(children);
             const anchor =

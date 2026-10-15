@@ -44,10 +44,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet" />
+  <!-- Google Fonts (loaded without blocking the first paint; text shows in a fallback font until they arrive) -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" media="print" onload="this.media='all'"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" />
+  </noscript>
 
   <!-- Favicon and Icons -->
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -106,14 +111,17 @@
             "logo": {
               "@type": "ImageObject",
               "@id": "https://vincawealth.com/#logo",
-              "url": "https://vincawealth.com/logo.png",
-              "contentUrl": "https://vincawealth.com/logo.png",
+              "url": "https://vincawealth.com/images/vinca-logo.webp",
+              "contentUrl": "https://vincawealth.com/images/vinca-logo.webp",
               "caption": "Vinca Wealth",
               "inLanguage": "en-US",
               "width": "200",
               "height": "100"
             },
-            "description": "Professional wealth management services specializing in mutual funds and goal-based investing",
+            "description": "Professional wealth management services specializing in mutual funds and goal-based investing",            "identifier": [
+              { "@type": "PropertyValue", "propertyID": "AMFI ARN", "value": "ARN-293401" },
+              { "@type": "PropertyValue", "propertyID": "CIN", "value": "U65999KA2022PTC169569" }
+            ],
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "183/8, Adjacent to Daddy's Elixir Appartment Singenagrahara, Huskur Post, Sarjapura, hobli, Phase II",
@@ -144,12 +152,8 @@
             "publisher": {
               "@id": "https://vincawealth.com/#organization"
             },
-            "inLanguage": "en-US",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://vincawealth.com/search?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
+            "inLanguage": "en-US"
+
           },
           {
             "@type": "WebPage",

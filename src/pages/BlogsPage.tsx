@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
 import Header from "@/components/Header";
@@ -19,8 +19,13 @@ const BlogsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Scroll to top with smooth animation when component mounts or slug changes
+  // Scroll to top when the slug changes (not on first load of a server-rendered page)
+  const isFirstRender = useRef(true);
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [slug]);
 

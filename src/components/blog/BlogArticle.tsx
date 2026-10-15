@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
@@ -13,6 +13,8 @@ import { TableOfContents } from "@/components/blog/TableOfContents";
 import { BlogContentWithAnchors } from "@/components/blog/BlogContentWithAnchors";
 import type { TOCItem } from "@/components/blog/TOCEditor";
 import type { Tables } from "@/integrations/supabase/types";
+import { readSsrData } from "@/lib/ssrData";
+import { optimizedImage, imageSrcSet } from "@/lib/images";
 
 type BlogPost = Tables<'blog_posts'> & {
   author?: {
@@ -32,15 +34,27 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
   const { slug: paramSlug } = useParams();
   const slug = propSlug || paramSlug;
 
+  // Post embedded by the server-rendered page, so the article shows without a refetch
+  const [initialPost] = useState(() => {
+    const ssrPost = readSsrData<BlogPost>('blog-post-data');
+    return ssrPost && ssrPost.slug === slug ? ssrPost : null;
+  });
+
   const [readingProgress, setReadingProgress] = useState(0);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
-  const [article, setArticle] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [article, setArticle] = useState<BlogPost | null>(initialPost);
+  const [loading, setLoading] = useState(!initialPost);
   const [relatedArticles, setRelatedArticles] = useState<BlogPost[]>([]);
   const { getPostBySlug, posts, fetchPublishedPosts } = useBlogPosts();
+  const isFirstRender = useRef(true);
 
-  // Scroll to top with smooth animation when component mounts or slug changes
+  // Scroll to top when moving to another article (not on first load, where
+  // the reader may already have scrolled the server-rendered page)
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [slug]);
 
@@ -61,16 +75,29 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
 
   useEffect(() => {
     const loadArticle = async () => {
-      if (!slug) return;
+      if (!slug || initialPost?.slug === slug) return;
 
       setLoading(true);
+      let reloading = false;
       try {
         const post = await getPostBySlug(slug);
         setArticle(post);
       } catch (error) {
         console.error('Error loading article:', error);
+        // The request failed (network, blocked, ...): load the page normally
+        // once, so the server-rendered article is shown instead of "not found"
+        const reloadKey = `blog-reload:${slug}`;
+        try {
+          if (!sessionStorage.getItem(reloadKey)) {
+            sessionStorage.setItem(reloadKey, '1');
+            reloading = true;
+            window.location.assign(window.location.href);
+          }
+        } catch {
+          // sessionStorage unavailable: fall through to the not-found message
+        }
       } finally {
-        setLoading(false);
+        if (!reloading) setLoading(false);
       }
     };
 
@@ -155,37 +182,6 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
         <meta name="twitter:image:alt" content={article.title} />
         <meta name="twitter:site" content="@vincawealth" />
         <meta name="twitter:creator" content="@vincawealth" />
-
-        {/* Structured Data for Article */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": article.title,
-            "description": description,
-            "image": ogImage,
-            "author": {
-              "@type": "Person",
-              "name": article.author?.name || article.author_name || "Vinca Wealth",
-              "jobTitle": article.author?.title || article.author_title
-            },
-            "publisher": {
-              "@type": "Organization",
-              "name": "Vinca Wealth",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://vincawealth.com/logo.png"
-              }
-            },
-            "datePublished": article.published_at || article.created_at,
-            "dateModified": article.updated_at,
-            "mainEntityOfPage": {
-              "@type": "WebPage",
-              "@id": blogUrl
-            },
-            "articleSection": article.category
-          })}
-        </script>
       </Helmet>
 
       {/* Scroll to Top Button */}
@@ -271,8 +267,14 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
               {article.featured_image && (
                 <div className="aspect-video w-full mb-8 sm:mb-12 overflow-hidden rounded-lg">
                   <img
-                    src={article.featured_image}
+                    src={optimizedImage(article.featured_image, 1280)}
+                    srcSet={imageSrcSet(article.featured_image, [640, 960, 1280, 1600])}
+                    sizes="(min-width: 1024px) 896px, 100vw"
                     alt={article.title}
+                    width={1280}
+                    height={720}
+                    fetchPriority="high"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -414,8 +416,10 @@ const BlogArticle = ({ slug: propSlug }: BlogArticleProps) => {
                         {relatedArticle.featured_image && (
                           <div className="aspect-video overflow-hidden rounded-t-lg">
                             <img
-                              src={relatedArticle.featured_image}
+                              src={optimizedImage(relatedArticle.featured_image, 640)}
                               alt={relatedArticle.title}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                           </div>
