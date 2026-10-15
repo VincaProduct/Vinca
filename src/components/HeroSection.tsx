@@ -6,7 +6,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center justify-center px-6 lg:px-16 py-20" style={{ background: '#FAFAF8' }}>
+    <section className="relative overflow-hidden min-h-screen flex items-center justify-center px-6 lg:px-16 py-20" style={{ background: 'hsl(var(--background))' }}>
       {/* Animated gradient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
@@ -26,14 +26,14 @@ const HeroSection = () => {
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
         <div className="space-y-4 mb-10">
           <h1 className="font-bold leading-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            <span className="block" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#111827' }}>
+            <span className="block" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: 'hsl(var(--foreground))' }}>
               Are you on track for
             </span>
-            <span className="block" style={{ fontSize: 'clamp(2.25rem, 6vw, 4rem)', color: 'hsl(158 64% 42%)' }}>
+            <span className="block" style={{ fontSize: 'clamp(2.25rem, 6vw, 4rem)', color: 'var(--brand-text)' }}>
               Financial Freedom?
             </span>
           </h1>
-          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: '#6B7280', fontWeight: 500 }}>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: 'hsl(var(--muted-foreground))', fontWeight: 500 }}>
             Find out in 2 minutes — free
           </p>
         </div>
@@ -54,7 +54,7 @@ const HeroSection = () => {
           >
             Calculate My Freedom Score
           </Button>
-          <p style={{ fontSize: 14, color: '#6B7280' }}>
+          <p style={{ fontSize: 14, color: 'hsl(var(--muted-foreground))' }}>
             Used by investors across India to find their retirement gap.
           </p>
         </div>
@@ -65,7 +65,7 @@ const HeroSection = () => {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
         style={{ animation: 'scrollBounce 2s ease-in-out infinite' }}
       >
-        <ChevronDown style={{ width: 20, height: 20, color: '#9CA3AF' }} />
+        <ChevronDown style={{ width: 20, height: 20, color: 'hsl(var(--muted-foreground))' }} />
       </div>
 
       <style>{`

@@ -77,7 +77,7 @@ function ProgressDots({ current }: { current: 0 | 1 | 2 }) {
     <div className="flex items-center gap-2 mb-8">
       {[0, 1, 2].map((i) => (
         <div key={i} className="h-2 rounded-full transition-all duration-300"
-          style={{ width: i === current ? 24 : 8, background: i <= current ? GREEN : '#E5E7EB' }} />
+          style={{ width: i === current ? 24 : 8, background: i <= current ? GREEN : 'var(--ui-line)' }} />
       ))}
     </div>
   );
@@ -353,11 +353,11 @@ export default function ElevatePage() {
       {/* ══════════════════════════════════════════════════════
           SECTION 2 — HOW IT WORKS
       ══════════════════════════════════════════════════════ */}
-      <section className="w-full" style={{ background: '#F7FAF8' }}>
+      <section className="w-full" style={{ background: 'var(--ui-subtle)' }}>
         <div className="max-w-6xl mx-auto px-20 py-20 max-md:px-5 max-md:py-12">
           <p className="text-[11px] tracking-widest uppercase text-gray-400 mb-12">How Compass works</p>
 
-          <div className="grid grid-cols-3 gap-0 max-md:grid-cols-1" style={{ borderLeft: '1px solid #E5E7EB' }}>
+          <div className="grid grid-cols-3 gap-0 max-md:grid-cols-1" style={{ borderLeft: '1px solid var(--ui-line)' }}>
             {[
               { step: '01', time: '2 minutes',  title: 'Check eligibility',
                 body: 'Answer 3 questions about your investment capacity. Compass is selective — we want the programme to be right for you before we activate it.' },
@@ -366,7 +366,7 @@ export default function ElevatePage() {
               { step: '03', time: 'Every month', title: 'Active management, ongoing',
                 body: 'Compass handles the work — reviews, rebalancing, tax, insurance. You stay informed. Your retirement date stays on track.' },
             ].map(s => (
-              <div key={s.step} className="px-10 py-10 max-md:px-6 max-md:py-8" style={{ borderRight: '1px solid #E5E7EB' }}>
+              <div key={s.step} className="px-10 py-10 max-md:px-6 max-md:py-8" style={{ borderRight: '1px solid var(--ui-line)' }}>
                 <div className="flex items-center gap-3 mb-6">
                   <span className="text-4xl font-black" style={{ color: 'rgba(13,40,24,0.18)' }}>{s.step}</span>
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.1)', color: GREEN }}>{s.time}</span>
@@ -437,13 +437,13 @@ export default function ElevatePage() {
                 { label: 'You want to retire on time. Not approximately. On time.',
                   body: 'Compass holds your retirement date accountable — with monthly reviews, proactive course corrections, and a wealth expert who knows your numbers.' },
               ].map((item, i) => (
-                <div key={i} className="py-8" style={{ borderTop: '1px solid #F0F0F0' }}>
+                <div key={i} className="py-8" style={{ borderTop: '1px solid var(--ui-muted)' }}>
                   <p className="font-bold text-gray-900 text-lg mb-2">{item.label}</p>
                   <p className="text-gray-500 text-sm leading-relaxed">{item.body}</p>
                 </div>
               ))}
 
-              <div className="pt-8 mt-2" style={{ borderTop: '1px solid #F0F0F0' }}>
+              <div className="pt-8 mt-2" style={{ borderTop: '1px solid var(--ui-muted)' }}>
                 <p className="text-sm text-gray-400 mb-1">Not ready for Compass yet?</p>
                 <button onClick={() => navigate('/dashboard/ffr')}
                   className="text-sm font-semibold underline-offset-2 underline transition-colors"
@@ -460,7 +460,7 @@ export default function ElevatePage() {
       {/* ══════════════════════════════════════════════════════
           SECTION 5 — WHAT CLIENTS SAY
       ══════════════════════════════════════════════════════ */}
-      <section className="w-full" style={{ background: '#F7FAF8' }}>
+      <section className="w-full" style={{ background: 'var(--ui-subtle)' }}>
         <div className="max-w-6xl mx-auto px-20 py-24 max-md:px-5 max-md:py-14">
           <p className="text-[11px] tracking-widest uppercase text-gray-400 mb-16">What clients say</p>
 
@@ -478,7 +478,7 @@ export default function ElevatePage() {
                   </div>
                 </div>
                 <p className="text-base font-semibold text-gray-800 leading-relaxed italic flex-1 mb-6">{s.quote}</p>
-                <div className="pt-4" style={{ borderTop: '1px solid #F0F0F0' }}>
+                <div className="pt-4" style={{ borderTop: '1px solid var(--ui-muted)' }}>
                   <p className="text-xs font-semibold" style={{ color: GREEN }}>{s.result}</p>
                 </div>
               </div>
@@ -494,7 +494,7 @@ export default function ElevatePage() {
         <div className="max-w-3xl mx-auto px-20 py-20 max-md:px-5 max-md:py-14">
           <p className="text-[11px] tracking-widest uppercase text-gray-400 mb-10">Questions</p>
           {faqs.map((faq, i) => (
-            <div key={i} style={{ borderBottom: '1px solid #F0F0F0' }}>
+            <div key={i} style={{ borderBottom: '1px solid var(--ui-muted)' }}>
               <button onClick={() => setOpenFAQ(openFAQ === i ? null : i)}
                 className="w-full flex items-center justify-between py-6 text-left bg-transparent border-none cursor-pointer group">
                 <span className="text-base font-semibold text-gray-900 pr-6 group-hover:text-gray-700 transition-colors">{faq.q}</span>
@@ -554,7 +554,7 @@ export default function ElevatePage() {
             {step === 'phone' && (
               <div>
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg mb-6"
-                  style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}>✓</div>
+                  style={{ background: 'var(--ui-green-bg)', border: `2px solid ${GREEN}`, color: GREEN }}>✓</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">You're eligible for Compass</h2>
                 <p className="text-gray-500 text-sm mb-8">What number should your navigator call you on?</p>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210"
@@ -576,7 +576,7 @@ export default function ElevatePage() {
                 <div>
                   <div className="flex items-center gap-3 mb-8">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: '#F0FDF4', border: `1.5px solid ${GREEN}`, color: GREEN, fontSize: 16 }}>✓</div>
+                      style={{ background: 'var(--ui-green-bg)', border: `1.5px solid ${GREEN}`, color: GREEN, fontSize: 16 }}>✓</div>
                     <div>
                       <h2 className="text-xl font-bold text-gray-900 leading-tight">Book your free consultation</h2>
                       <p className="text-sm text-gray-400">Your navigator will call at the chosen slot.</p>
@@ -633,7 +633,7 @@ export default function ElevatePage() {
                       {TIME_SLOTS.map(slot => (
                         <button key={slot} onClick={() => setSelectedSlot(slot)}
                           className="py-2.5 px-3 rounded-xl text-sm font-medium border transition-all duration-150"
-                          style={selectedSlot === slot ? { background: GREEN, color: 'white', border: `1.5px solid ${GREEN}` } : { background: 'white', color: '#374151', border: '1.5px solid #E5E7EB' }}>
+                          style={selectedSlot === slot ? { background: GREEN, color: 'white', border: `1.5px solid ${GREEN}` } : { background: 'var(--ui-surface)', color: 'var(--ui-text-body)', border: '1.5px solid var(--ui-line)' }}>
                           {slot}
                         </button>
                       ))}
@@ -657,7 +657,7 @@ export default function ElevatePage() {
             {step === 'booked' && (
               <div className="text-center py-4">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-6"
-                  style={{ background: '#F0FDF4', border: `2px solid ${GREEN}`, color: GREEN }}>✓</div>
+                  style={{ background: 'var(--ui-green-bg)', border: `2px solid ${GREEN}`, color: GREEN }}>✓</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Consultation booked.</h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-2">
                   {selectedSlot} · {selectedDate && format(selectedDate, 'dd MMMM yyyy')}
@@ -674,7 +674,7 @@ export default function ElevatePage() {
             {step === 'ineligible' && (
               <div className="text-center">
                 <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mx-auto mb-5"
-                  style={{ background: '#FEF3C7', border: '2px solid #F59E0B', color: '#92400E' }}>ℹ</div>
+                  style={{ background: 'var(--ui-amber-bg)', border: '2px solid #F59E0B', color: 'var(--ui-amber-text)' }}>ℹ</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">Not the right moment — yet.</h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-sm mx-auto">
                   Compass works best with at least ₹25K/month via SIP or ₹10 lakh lump sum. Build your foundation first — then come back.

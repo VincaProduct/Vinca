@@ -314,12 +314,12 @@ const FinancialFreedomCalculator = () => {
       <Header />
 
       {/* Header */}
-      <div style={{ background: '#FAFAF8', borderBottom: '1px solid #F3F4F6', paddingTop: 96 }}>
+      <div style={{ background: 'var(--ui-subtle)', borderBottom: '1px solid var(--ui-muted)', paddingTop: 96 }}>
         <div style={{ maxWidth: 640, margin: '0 auto', padding: '32px 16px 24px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#111827', marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Financial Freedom Calculator
           </h1>
-          <p style={{ fontSize: 16, color: '#6B7280', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <p style={{ fontSize: 16, color: 'var(--ui-text-muted)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Find out in 2 minutes — free
           </p>
         </div>
@@ -330,7 +330,7 @@ const FinancialFreedomCalculator = () => {
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '48px 0' }}>
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p style={{ color: '#9CA3AF', fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Loading your data...</p>
+            <p style={{ color: 'var(--ui-text-faint)', fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Loading your data...</p>
           </div>
         )}
 

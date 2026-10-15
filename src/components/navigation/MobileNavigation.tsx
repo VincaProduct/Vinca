@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
-import { Calculator, ChevronDown } from "lucide-react";
+import { Calculator, ChevronDown, BookOpen, CalendarDays } from "lucide-react";
 
 interface MobileNavigationProps {
   scrollToSection: (sectionId: string) => void;
@@ -12,6 +12,7 @@ interface MobileNavigationProps {
 const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
+  const [isInsightsOpen, setIsInsightsOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -141,26 +142,43 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                 )}
               </div>
               
-              <Link
-                to="/blog"
-                className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
-                  Blog
-                </span>
-              </Link>
-
-              <Link
-                to="/events"
-                className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
-                  Events
-                </span>
-              </Link>
-
+              {/* Insights Dropdown */}
+              <div>
+                <button
+                  onClick={() => setIsInsightsOpen(!isInsightsOpen)}
+                  className="w-full text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group flex items-center justify-between"
+                  aria-expanded={isInsightsOpen}
+                >
+                  <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
+                    Insights
+                  </span>
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isInsightsOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isInsightsOpen && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    <Link
+                      to="/blog"
+                      className="flex items-center text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-2 px-3 rounded-lg hover:bg-accent/30 focus:outline-none focus:bg-accent/30 focus:text-primary group"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
+                        Blog
+                      </span>
+                    </Link>
+                    <Link
+                      to="/events"
+                      className="flex items-center text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-2 px-3 rounded-lg hover:bg-accent/30 focus:outline-none focus:bg-accent/30 focus:text-primary group"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
+                        Events
+                      </span>
+                    </Link>
+                  </div>
+                )}
+              </div>
               <button
                 onClick={() => handleMenuItemClick(() => scrollToSection('faq'))}
                 className="text-left text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-3 px-3 rounded-lg hover:bg-accent/50 focus:outline-none focus:bg-accent/50 focus:text-primary group"

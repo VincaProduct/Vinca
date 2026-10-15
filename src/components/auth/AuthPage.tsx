@@ -69,7 +69,7 @@ const AuthPage = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#FAFAF8',
+      background: 'var(--ui-subtle)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -79,7 +79,7 @@ const AuthPage = () => {
       <div style={{
         width: '100%',
         maxWidth: 420,
-        background: 'white',
+        background: 'var(--ui-surface)',
         borderRadius: 24,
         boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
         padding: 48,
@@ -98,8 +98,8 @@ const AuthPage = () => {
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              background: '#F0FDF4',
-              border: '1px solid #BBF7D0',
+              background: 'var(--ui-green-bg)',
+              border: '1px solid var(--ui-green-line)',
               borderRadius: 100,
               padding: '8px 20px',
               marginBottom: 24,
@@ -108,39 +108,39 @@ const AuthPage = () => {
                 Your score: {ffrState.score}/100
               </span>
             </div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>
               {ffrState.retirementYear
                 ? `See exactly how to retire by ${ffrState.retirementYear}`
                 : 'Sign in to see your full plan'}
             </h1>
-            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 15, color: 'var(--ui-text-muted)', marginBottom: 32, lineHeight: 1.5 }}>
               Your numbers are saved. Unlock your month-by-month action plan.
             </p>
           </>
         ) : isConsultation ? (
           <>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>
               Book your free consultation
             </h1>
-            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 15, color: 'var(--ui-text-muted)', marginBottom: 32, lineHeight: 1.5 }}>
               Sign in to schedule a call with a dedicated wealth manager. No commitment, no sales pitch.
             </p>
           </>
         ) : blogContext ? (
           <>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>
               Calculate your Financial Freedom Score
             </h1>
-            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 15, color: 'var(--ui-text-muted)', marginBottom: 32, lineHeight: 1.5 }}>
               You were reading <em>"{blogContext.title.replace(' | Vinca Wealth', '').replace(' - Vinca Wealth', '')}"</em>. Sign in to find out exactly where you stand — free, in 2 minutes.
             </p>
           </>
         ) : (
           <>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>
               Are you on track to retire when you want?
             </h1>
-            <p style={{ fontSize: 15, color: '#6B7280', marginBottom: 32, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 15, color: 'var(--ui-text-muted)', marginBottom: 32, lineHeight: 1.5 }}>
               Find out your Financial Freedom Score in 2 minutes. Free.
             </p>
           </>
@@ -154,8 +154,8 @@ const AuthPage = () => {
           onMouseLeave={() => setHovered(false)}
           style={{
             width: '100%',
-            background: 'white',
-            border: `1px solid ${hovered ? '#9CA3AF' : '#E5E7EB'}`,
+            background: 'var(--ui-surface)',
+            border: `1px solid ${hovered ? 'var(--ui-text-faint)' : 'var(--ui-line)'}`,
             borderRadius: 12,
             padding: '14px 24px',
             display: 'flex',
@@ -165,7 +165,7 @@ const AuthPage = () => {
             cursor: loading ? 'not-allowed' : 'pointer',
             fontWeight: 500,
             fontSize: 15,
-            color: '#111827',
+            color: 'var(--ui-text)',
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             boxShadow: hovered ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
             transition: 'all 0.2s ease',
@@ -177,7 +177,7 @@ const AuthPage = () => {
         </button>
 
         {/* Footer */}
-        <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 32 }}>
+        <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', marginTop: 32 }}>
           No spam. No credit card. Cancel anytime.
         </p>
       </div>
