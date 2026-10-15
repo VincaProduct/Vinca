@@ -88,7 +88,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: 'Why should I invest with Vinca Wealth?',
     answer:
-      'We offer one-to-one consultation to maintain an equilibrium before investing your money. Our Wealth Managers acknowledge your financial goals and develop the best-suited investment plans.',
+      'We offer one-to-one consultation to maintain an equilibrium before investing your money. Our Wealth Managers acknowledge your financial goals and recommend investments that suit your goals, time horizon and risk profile.',
   },
   {
     question: 'Do you charge any fee for Planning or Investing through VincaWealth?',
@@ -115,7 +115,7 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: 'Why should I choose Vinca Wealth over others?',
     answer:
-      'At Vinca Wealth we give unbiased advice based on thorough research. We can also explain you in detail why our advice is the best advice',
+      'Every recommendation we make is backed by research, and we explain the reasoning behind it in plain language, including the risks and costs, so you can make an informed decision. As an AMFI registered mutual fund distributor, we are paid commission by fund houses, and we disclose this upfront.',
   },
   {
     question: 'What are the different products Vinca Wealth suggest?',
@@ -129,21 +129,21 @@ export const HOME_FAQS: HomeFaq[] = [
   {
     question: 'How do you ensure my goals will be met?',
     answer:
-      "We follow a goal-based exit procedure as we move towards the goal, we reduce the risk exposure gradually and make the goal safer. You won't get short of funds even though the market crashes.",
+      'No investment can guarantee a goal, but we plan carefully to improve your chances. As your goal date approaches, we follow a goal-based exit approach: we gradually move money from equity to lower-risk options, so a market fall close to your goal has less impact on the amount you need.',
   },
   {
     question: 'Can I invest through VincaWealth without a financial goal?',
     answer: 'We do wealth management for HNIs without goal based planning if required.',
   },
   {
-    question: 'How often my portfolio will be reviewed?',
+    question: 'How often will my portfolio be reviewed?',
     answer:
-      'We will do one-on-one review once a year. But, We monitor your portfolio all the time. We will call you as and when action is required',
+      "We do a one-on-one review with you once a year, and we keep track of your portfolio in between. We'll contact you when we think a change is needed.",
   },
   {
-    question: 'What happen when the market fall midway while you have invested for long term?',
+    question: 'What happens when the market falls midway while I have invested for the long term?',
     answer:
-      "Long-term investors shouldn't be concerned about short-term volatility in the market. If you take a time horizon of 5 years and roll it, the market always has given good positive returns.",
+      "Short-term market falls are a normal part of equity investing. Historically, equity markets in India have recovered from falls over longer periods, though past performance does not guarantee future returns. That's why we match your investments to your time horizon and review your portfolio regularly, rather than reacting to short-term movements.",
   },
   {
     question: 'Should we transfer money to Vinca Wealth while investing?',
@@ -152,7 +152,8 @@ export const HOME_FAQS: HomeFaq[] = [
   },
   {
     question: 'Do you share my data with other banks?',
-    answer: 'No. We dont share the data of customers to any third party. Your data is fully secured.',
+    answer:
+      "No. We don't share your data with any third party except where required to process your investments or by law. We take reasonable steps to keep your data safe.",
   },
   {
     question: 'What happens when a VW account holder passes away?',
