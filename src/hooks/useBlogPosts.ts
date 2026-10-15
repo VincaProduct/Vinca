@@ -80,13 +80,7 @@ export const useBlogPosts = () => {
         .from('blog_posts')
         .select(`
           *,
-          author:authors(
-            id,
-            name,
-            title,
-            bio,
-            image
-          )
+          author:authors(*)
         `)
         .eq('slug', slug)
         .maybeSingle();
