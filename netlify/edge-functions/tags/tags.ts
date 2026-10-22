@@ -2,6 +2,7 @@ import type { Context } from "https://edge.netlify.com";
 import { withSecurityHeaders } from "../shared/security-headers.ts";
 import { Marked } from "https://esm.sh/marked@11.1.1";
 import { organizationSchema } from "../../../src/content/siteInfo.ts";
+import { CALCULATOR_CTA, pickRelatedPosts, type RelatedCandidate } from "../../../src/lib/relatedPosts.ts";
 
 /**
  * Server-renders blog pages for every visitor (browsers, search engines and AI
@@ -25,6 +26,13 @@ const POSTS_PER_PAGE = 12;
 const LISTING_TITLE = "Vinca Wealth Blog | Mutual Funds, Investing & Financial Planning";
 const LISTING_DESCRIPTION =
   "Read expert articles on mutual funds, goal-based investing, wealth management, and financial planning from the Vinca Wealth team.";
+
+/** Old addresses that never had a post of their own (still linked or in Google) */
+const LEGACY_REDIRECTS: Record<string, string> = {
+  "start-sip-early": "benefits-of-starting-sip-early",
+};
+
+const RELATED_COLUMNS = "id,title,slug,category,featured_image,published_at,created_at";
 
 // deno-lint-ignore no-explicit-any
 type Row = Record<string, any>;
@@ -254,6 +262,39 @@ const renderToc = (toc: TocItem[]) => {
     </nav>`;
 };
 
+const renderCalculatorCta = () => `
+            <aside class="mt-12 sm:mt-16 rounded-lg border border-primary/20 bg-primary/5 p-6 sm:p-8">
+              <h2 class="text-xl sm:text-2xl font-display font-bold mb-2">${escapeHtml(CALCULATOR_CTA.heading)}</h2>
+              <p class="text-muted-foreground mb-5">${escapeHtml(CALCULATOR_CTA.text)}</p>
+              <a href="${CALCULATOR_CTA.href}" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground">${escapeHtml(CALCULATOR_CTA.button)}</a>
+            </aside>`;
+
+const renderRelated = (posts: Row[]) => {
+  if (posts.length === 0) return "";
+  return `
+      <div class="bg-muted/30 py-12 sm:py-16 lg:py-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl sm:text-3xl font-display font-bold mb-8 sm:mb-12">Related Articles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              ${posts
+                .map(
+                  (p) => `
+              <a href="/blog/${escapeHtml(p.slug)}" class="block rounded-lg border bg-card overflow-hidden">
+                ${p.featured_image ? `<div class="aspect-video overflow-hidden"><img src="${escapeHtml(optimizedImage(p.featured_image, 640))}" alt="${escapeHtml(p.title)}" width="640" height="360" loading="lazy" decoding="async" class="w-full h-full object-cover"></div>` : ""}
+                <div class="p-4">
+                  <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold mb-2 border-primary/20 text-primary bg-primary/5">${escapeHtml(p.category)}</span>
+                  <h3 class="text-base font-semibold line-clamp-2">${escapeHtml(p.title)}</h3>
+                </div>
+              </a>`,
+                )
+                .join("")}
+            </div>
+          </div>
+        </div>
+      </div>`;
+};
+
 const renderPost = (post: Row) => {
   const toc: TocItem[] = Array.isArray(post.table_of_contents) ? post.table_of_contents : [];
   const hasToc = toc.length > 0;
@@ -323,6 +364,8 @@ const renderPost = (post: Row) => {
 
             ${renderFaqs(postFaqs(post))}
 
+            ${renderCalculatorCta()}
+
             ${authorBio ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
               <h2 class="text-lg sm:text-xl font-display font-bold mb-4">About the Author</h2>
@@ -335,6 +378,7 @@ const renderPost = (post: Row) => {
           <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6"><div class="min-h-0 flex-1 space-y-6 overflow-y-auto">${hasToc ? renderToc(toc) : ""}</div>${renderSubscribe("subscribe-sidebar", "shrink-0")}</div></aside>
         </div>
       </div>
+      ${renderRelated(post.related_posts || [])}
     </article>`;
 };
 
@@ -433,6 +477,14 @@ const postHead = (post: Row) => {
     <script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@graph": graph })}</script>`;
 };
 
+/** Published posts that can be suggested (indexable ones, if the noindex column exists) */
+const loadRelatedCandidates = async (): Promise<Row[] | null> => {
+  const base = `blog_posts?select=${RELATED_COLUMNS}&status=eq.published&order=published_at.desc&limit=300`;
+  let response = await supabaseGet(`${base}&or=(noindex.is.null,noindex.is.false)`);
+  if (!response.ok) response = await supabaseGet(base);
+  return response.ok ? await response.json() : null;
+};
+
 const handlePost = async (slug: string, context: Context) => {
   const response = await supabaseGet(
     `blog_posts?select=*,author:authors(*)&slug=eq.${encodeURIComponent(slug)}&status=eq.published`,
@@ -446,12 +498,25 @@ const handlePost = async (slug: string, context: Context) => {
   const posts: Row[] = await response.json();
   const post = posts[0];
 
-  // Company FAQs (shown on every post unless hidden); missing table = none
-  if (post && !post.hide_global_faqs) {
-    const faqResponse = await supabaseGet("global_faqs?select=question,answer&order=position.asc").catch(() => null);
-    post.global_faqs = faqResponse?.ok ? cleanFaqs(await faqResponse.json()) : [];
+  if (post) {
+    // Company FAQs (shown on every post unless hidden; missing table = none) and related articles
+    const [faqResponse, relatedResponse] = await Promise.all([
+      post.hide_global_faqs ? null : supabaseGet("global_faqs?select=question,answer&order=position.asc").catch(() => null),
+      loadRelatedCandidates().catch(() => null),
+    ]);
+    // (the related posts are also embedded in the page data, so the app shows them straight away)
+    if (!post.hide_global_faqs) post.global_faqs = faqResponse?.ok ? cleanFaqs(await faqResponse.json()) : [];
+    post.related_posts = relatedResponse ? pickRelatedPosts(post as RelatedCandidate, relatedResponse as RelatedCandidate[]) : [];
   }
   if (!post) {
+    if (LEGACY_REDIRECTS[slug]) {
+      return new Response(null, {
+        status: 301,
+        headers: { Location: `/blog/${LEGACY_REDIRECTS[slug]}`, "Cache-Control": "public, max-age=3600" },
+      });
+    }
+
+
     // A renamed post: permanently redirect the old slug to the new one
     const redirect = await supabaseGet(
       `blog_slug_redirects?select=post:blog_posts(slug,status)&old_slug=eq.${encodeURIComponent(slug)}`,

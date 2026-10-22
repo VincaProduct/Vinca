@@ -19,6 +19,8 @@ import { readSsrData } from "@/lib/ssrData";
 import { optimizedImage, imageSrcSet } from "@/lib/images";
 import { KeyTakeawaysBox } from "@/components/blog/KeyTakeawaysBox";
 import { BlogFaqSection } from "@/components/blog/BlogFaqSection";
+import { CalculatorCta } from "@/components/blog/CalculatorCta";
+import { pickRelatedPosts, type RelatedCandidate } from "@/lib/relatedPosts";
 
 type BlogPost = Tables<'blog_posts'> & {
   author?: {
@@ -29,7 +31,11 @@ type BlogPost = Tables<'blog_posts'> & {
     image: string | null;
     profile_url?: string | null;
   } | null;
+  /** Picked by the server-rendered page, so they show before the post list loads */
+  related_posts?: RelatedPost[];
 };
+
+type RelatedPost = RelatedCandidate & { featured_image?: string | null };
 
 interface BlogArticleProps {
   slug?: string;
@@ -52,7 +58,7 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [article, setArticle] = useState<BlogPost | null>(initialPost);
   const [loading, setLoading] = useState(!initialPost);
-  const [relatedArticles, setRelatedArticles] = useState<BlogPost[]>([]);
+  const [relatedArticles, setRelatedArticles] = useState<RelatedPost[]>(initialPost?.related_posts ?? []);
   const { getPostBySlug, posts, fetchPublishedPosts } = useBlogPosts();
   const isFirstRender = useRef(true);
 
@@ -119,11 +125,8 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
   useEffect(() => {
     if (article && posts.length > 0) {
-      // Find related articles by category, excluding current article
-      const related = posts
-        .filter(post => post.category === article.category && post.id !== article.id)
-        .slice(0, 3);
-      setRelatedArticles(related);
+      // Same category first, topped up with the newest articles
+      setRelatedArticles(pickRelatedPosts(article, posts));
     }
   }, [article, posts]);
 
@@ -369,6 +372,9 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
               {/* FAQs: the post's own, then the company FAQs */}
               <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
+
+              {/* Link to the Financial Freedom Calculator */}
+              <CalculatorCta />
 
               {/* Bottom CTAs */}
               <SimpleCTARenderer
