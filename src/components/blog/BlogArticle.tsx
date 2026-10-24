@@ -380,11 +380,11 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
                 <BlogContentWithInlineCTAs content={article.content} ctas={ctas} blogPostId={article.id} />
               )}
 
+              {/* Bottom CTAs, just before the FAQs */}
+              <SimpleCTARenderer ctas={ctas} blogPostId={article.id} position="bottom" />
+
               {/* FAQs: the post's own, then the company FAQs */}
               <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
-
-              {/* Bottom CTAs */}
-              <SimpleCTARenderer ctas={ctas} blogPostId={article.id} position="bottom" />
 
               {/* Author Bio */}
               {(article.author?.bio || article.author_bio) && (

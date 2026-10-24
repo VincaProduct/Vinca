@@ -396,9 +396,9 @@ const renderPost = (post: Row) => {
               ${renderMarkdown(post.content, toc, ctas)}
             </div>
 
-            ${renderFaqs(postFaqs(post))}
-
             ${renderCtas(ctas, "bottom")}
+
+            ${renderFaqs(postFaqs(post))}
 
             ${authorBio ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
