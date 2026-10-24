@@ -2,7 +2,16 @@ import type { Context } from "https://edge.netlify.com";
 import { withSecurityHeaders } from "../shared/security-headers.ts";
 import { Marked } from "https://esm.sh/marked@11.1.1";
 import { organizationSchema } from "../../../src/content/siteInfo.ts";
-import { CALCULATOR_CTA, pickRelatedPosts, type RelatedCandidate } from "../../../src/lib/relatedPosts.ts";
+import { pickRelatedPosts, type RelatedCandidate } from "../../../src/lib/relatedPosts.ts";
+import {
+  CTA_SLOT_PATTERN,
+  ctaHref,
+  placeCtasInMarkdown,
+  resolvePostCtas,
+  type CtaRow,
+  type PlacedCta,
+  type PlacementRow,
+} from "../../../src/lib/ctas.ts";
 
 /**
  * Server-renders blog pages for every visitor (browsers, search engines and AI
@@ -206,7 +215,7 @@ const renderFaqs = (faqs: Faq[]) => {
             </section>`;
 };
 
-const renderMarkdown = (content: string, toc: TocItem[]) => {
+const renderMarkdown = (content: string, toc: TocItem[], ctas: PlacedCta[]) => {
   const anchors = new Map<string, string>();
   toc.forEach((item) => {
     anchors.set(item.title, item.anchor);
@@ -242,9 +251,12 @@ const renderMarkdown = (content: string, toc: TocItem[]) => {
     },
   });
 
-  // Inline CTA markers are filled in by the React app
-  const withoutMarkers = (content || "").replace(/\[\[CTA:[^\]]+\]\]/g, "");
-  return marked.parse(withoutMarkers) as string;
+  // Middle-of-article and inline-marker CTAs, the same places the app puts them
+  const { markdown, slots } = placeCtasInMarkdown(content, ctas);
+  return (marked.parse(markdown) as string).replace(/<p>(\[\[CTA_SLOT:\d+\]\])<\/p>/g, (_match, marker: string) => {
+    const cta = slots[Number(marker.match(CTA_SLOT_PATTERN)?.[1])];
+    return cta ? `<div class="my-8 not-prose">${renderCta(cta)}</div>` : "";
+  });
 };
 
 const renderToc = (toc: TocItem[]) => {
@@ -262,12 +274,31 @@ const renderToc = (toc: TocItem[]) => {
     </nav>`;
 };
 
-const renderCalculatorCta = () => `
-            <aside class="mt-12 sm:mt-16 rounded-lg border border-primary/20 bg-primary/5 p-6 sm:p-8">
-              <h2 class="text-xl sm:text-2xl font-display font-bold mb-2">${escapeHtml(CALCULATOR_CTA.heading)}</h2>
-              <p class="text-muted-foreground mb-5">${escapeHtml(CALCULATOR_CTA.text)}</p>
-              <a href="${CALCULATOR_CTA.href}" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground">${escapeHtml(CALCULATOR_CTA.button)}</a>
-            </aside>`;
+/** A CTA as the app shows it (SimpleCTAComponent), with its button as a real link */
+const BUTTON_CLASS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium bg-primary text-primary-foreground hover:bg-primary/90 px-8 cta-button-enhanced h-12 text-base font-semibold";
+
+const renderCta = (cta: PlacedCta) => {
+  const href = ctaHref(cta);
+  const newTab = cta.open_in_new_tab ? ' target="_blank" rel="noopener"' : "";
+  const button = (extra: string) =>
+    `<a href="${escapeHtml(href)}"${newTab} class="${BUTTON_CLASS} ${extra}">${escapeHtml(cta.button_text)}</a>`;
+  const description = cta.description ? `<p class="text-muted-foreground leading-relaxed">${escapeHtml(cta.description)}</p>` : "";
+  const headline = (extra = "") => `<h3 class="text-xl font-bold text-foreground leading-tight ${extra}">${escapeHtml(cta.headline)}</h3>`;
+
+  if (cta.type === "banner") {
+    return `<div class="cta-container cta-banner w-full"><div class="flex flex-col lg:flex-row items-center justify-between gap-6"><div class="flex-1 text-center lg:text-left">${headline("mb-3")}${description}</div><div class="flex-shrink-0">${button("min-w-[180px]")}</div></div></div>`;
+  }
+  if (cta.type === "card") {
+    return `<div class="rounded-lg border bg-card text-card-foreground shadow-sm cta-card-elevated max-w-sm mx-auto border-0"><div class="p-8 text-center space-y-6"><div class="space-y-3">${headline()}${description}</div>${button("w-full")}</div></div>`;
+  }
+  return `<div class="cta-container flex flex-col items-center space-y-4 text-center max-w-md mx-auto">${headline()}${description}${button("min-w-[200px]")}</div>`;
+};
+
+const renderCtas = (ctas: PlacedCta[], position: string, wrapperClass = "space-y-8") => {
+  const list = ctas.filter((c) => c.placement_position === position);
+  return list.length ? `<div class="${wrapperClass}">${list.map(renderCta).join("")}</div>` : "";
+};
 
 const renderRelated = (posts: Row[]) => {
   if (posts.length === 0) return "";
@@ -296,6 +327,7 @@ const renderRelated = (posts: Row[]) => {
 };
 
 const renderPost = (post: Row) => {
+  const ctas: PlacedCta[] = post.ctas || [];
   const toc: TocItem[] = Array.isArray(post.table_of_contents) ? post.table_of_contents : [];
   const hasToc = toc.length > 0;
   const authorName = post.author?.name || post.author_name || "Vinca Wealth";
@@ -354,17 +386,19 @@ const renderPost = (post: Row) => {
 
             ${renderTakeaways(post.key_takeaways)}
 
+            ${renderCtas(ctas, "top")}
+
             ${hasToc ? `<div class="lg:hidden mb-8">${renderToc(toc)}</div>` : ""}
 
             ${renderSubscribe("subscribe-mobile", "lg:hidden mb-8")}
 
             <div class="blog-content prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
-              ${renderMarkdown(post.content, toc)}
+              ${renderMarkdown(post.content, toc, ctas)}
             </div>
 
             ${renderFaqs(postFaqs(post))}
 
-            ${renderCalculatorCta()}
+            ${renderCtas(ctas, "bottom")}
 
             ${authorBio ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
@@ -375,7 +409,7 @@ const renderPost = (post: Row) => {
             </div>` : ""}
           </div>
 
-          <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6"><div class="min-h-0 flex-1 space-y-6 overflow-y-auto">${hasToc ? renderToc(toc) : ""}</div>${renderSubscribe("subscribe-sidebar", "shrink-0")}</div></aside>
+          <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6"><div class="min-h-0 flex-1 space-y-6 overflow-y-auto">${hasToc ? renderToc(toc) : ""}${renderCtas(ctas, "below_toc")}</div>${renderSubscribe("subscribe-sidebar", "shrink-0")}</div></aside>
         </div>
       </div>
       ${renderRelated(post.related_posts || [])}
@@ -477,6 +511,19 @@ const postHead = (post: Row) => {
     <script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@graph": graph })}</script>`;
 };
 
+/** The post's CTAs: its own placements, ones for all posts (or its category), and the defaults it shows */
+const loadPostCtas = async (post: Row): Promise<PlacedCta[]> => {
+  const scope = `or=(blog_post_id.eq.${post.id},and(blog_post_id.is.null,or(category_filter.is.null,category_filter.cs.{${encodeURIComponent(`"${String(post.category || "").replace(/"/g, "")}"`)}})))`;
+  const [placementsResponse, defaultsResponse] = await Promise.all([
+    supabaseGet(`cta_placements?select=*,cta:ctas!inner(*)&active=eq.true&ctas.status=eq.active&${scope}`),
+    // Fails (and gives no defaults) until the default CTAs database update has been run
+    supabaseGet("ctas?select=*&default_position=not.is.null&status=eq.active"),
+  ]);
+  const placements: PlacementRow[] = placementsResponse.ok ? await placementsResponse.json() : [];
+  const defaults: CtaRow[] = defaultsResponse.ok ? await defaultsResponse.json() : [];
+  return resolvePostCtas(placements, defaults, Array.isArray(post.hidden_default_ctas) ? post.hidden_default_ctas : []);
+};
+
 /** Published posts that can be suggested (indexable ones, if the noindex column exists) */
 const loadRelatedCandidates = async (): Promise<Row[] | null> => {
   const base = `blog_posts?select=${RELATED_COLUMNS}&status=eq.published&order=published_at.desc&limit=300`;
@@ -500,10 +547,12 @@ const handlePost = async (slug: string, context: Context) => {
 
   if (post) {
     // Company FAQs (shown on every post unless hidden; missing table = none) and related articles
-    const [faqResponse, relatedResponse] = await Promise.all([
+    const [faqResponse, relatedResponse, ctas] = await Promise.all([
       post.hide_global_faqs ? null : supabaseGet("global_faqs?select=question,answer&order=position.asc").catch(() => null),
       loadRelatedCandidates().catch(() => null),
+      loadPostCtas(post).catch(() => []),
     ]);
+    post.ctas = ctas;
     // (the related posts are also embedded in the page data, so the app shows them straight away)
     if (!post.hide_global_faqs) post.global_faqs = faqResponse?.ok ? cleanFaqs(await faqResponse.json()) : [];
     post.related_posts = relatedResponse ? pickRelatedPosts(post as RelatedCandidate, relatedResponse as RelatedCandidate[]) : [];

@@ -1,6 +1,6 @@
 /**
  * Shared by the app (BlogArticle) and the blog edge function, so the related
- * articles and calculator box look the same before and after the app loads.
+ * articles are the same before and after the app loads.
  * Keep it free of imports.
  */
 
@@ -21,12 +21,4 @@ export const pickRelatedPosts = <T extends RelatedCandidate>(current: { id: stri
     ...others.filter((p) => p.category === current.category),
     ...others.filter((p) => p.category !== current.category),
   ].slice(0, count);
-};
-
-/** Box after every article linking to the Financial Freedom Calculator */
-export const CALCULATOR_CTA = {
-  href: "/financial-freedom-calculator",
-  heading: "Are you on track for financial freedom?",
-  text: "Find your retirement corpus, your gap and your projected retirement date in 2 minutes. Free.",
-  button: "Calculate My Freedom Score",
 };

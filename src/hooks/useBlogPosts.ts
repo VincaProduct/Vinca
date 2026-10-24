@@ -94,7 +94,8 @@ export const useBlogPosts = () => {
     }
   };
 
-  const createPost = async (postData: Omit<BlogPost, 'id' | 'created_at' | 'updated_at'>) => {
+  // hidden_default_ctas has a database default, so a new post can leave it out
+  const createPost = async (postData: Omit<BlogPost, 'id' | 'created_at' | 'updated_at' | 'hidden_default_ctas'> & Partial<Pick<BlogPost, 'hidden_default_ctas'>>) => {
     try {
       const { data, error } = await supabase
         .from('blog_posts')

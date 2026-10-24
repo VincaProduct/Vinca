@@ -10,6 +10,8 @@ import { Clock, Calendar, User, ArrowDown, ChevronRight, ArrowUp } from "lucide-
 import { ShareButton } from "@/components/blog/ShareButton";
 import { BlogSubscribe } from "@/components/blog/BlogSubscribe";
 import { useBlogPosts } from "@/hooks/useBlogPosts";
+import { useCTAs } from "@/hooks/useCTAs";
+import type { CTAWithPlacement } from "@/types/cta";
 import { SimpleCTARenderer, BlogContentWithInlineCTAs } from '@/components/cta/SimpleCTARenderer';
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import { BlogContentWithAnchors } from "@/components/blog/BlogContentWithAnchors";
@@ -19,7 +21,6 @@ import { readSsrData } from "@/lib/ssrData";
 import { optimizedImage, imageSrcSet } from "@/lib/images";
 import { KeyTakeawaysBox } from "@/components/blog/KeyTakeawaysBox";
 import { BlogFaqSection } from "@/components/blog/BlogFaqSection";
-import { CalculatorCta } from "@/components/blog/CalculatorCta";
 import { pickRelatedPosts, type RelatedCandidate } from "@/lib/relatedPosts";
 
 type BlogPost = Tables<'blog_posts'> & {
@@ -33,6 +34,8 @@ type BlogPost = Tables<'blog_posts'> & {
   } | null;
   /** Picked by the server-rendered page, so they show before the post list loads */
   related_posts?: RelatedPost[];
+  /** The post's CTAs (own and default), embedded by the server-rendered page */
+  ctas?: CTAWithPlacement[];
 };
 
 type RelatedPost = RelatedCandidate & { featured_image?: string | null };
@@ -60,6 +63,9 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   const [loading, setLoading] = useState(!initialPost);
   const [relatedArticles, setRelatedArticles] = useState<RelatedPost[]>(initialPost?.related_posts ?? []);
   const { getPostBySlug, posts, fetchPublishedPosts } = useBlogPosts();
+  const { getBlogPostCTAs } = useCTAs();
+  // CTAs for every position, loaded once (straight from the page data when server-rendered)
+  const [ctas, setCtas] = useState<CTAWithPlacement[]>(initialPost?.ctas ?? []);
   const isFirstRender = useRef(true);
 
   // Scroll to top when moving to another article (not on first load, where
@@ -122,6 +128,18 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   useEffect(() => {
     if (previewPost) setArticle(previewPost);
   }, [previewPost]);
+
+  useEffect(() => {
+    if (!article) return;
+    if (article.ctas && !previewPost) {
+      setCtas(article.ctas);
+      return;
+    }
+    let cancelled = false;
+    getBlogPostCTAs(article.id, article.category, undefined, article.hidden_default_ctas ?? [])
+      .then((loaded) => { if (!cancelled) setCtas(loaded); });
+    return () => { cancelled = true; };
+  }, [article?.id, article?.hidden_default_ctas?.join(',')]);
 
   useEffect(() => {
     if (article && posts.length > 0) {
@@ -335,11 +353,7 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
               <KeyTakeawaysBox items={article.key_takeaways || []} />
 
               {/* Top Article CTAs */}
-              <SimpleCTARenderer
-                blogPostId={article.id}
-                category={article.category}
-                position="top"
-              />
+              <SimpleCTARenderer ctas={ctas} blogPostId={article.id} position="top" />
 
               {/* Mobile Table of Contents */}
               {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 && (
@@ -359,29 +373,18 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
                 <BlogContentWithAnchors
                   content={article.content}
                   tocItems={article.table_of_contents as unknown as TOCItem[]}
+                  ctas={ctas}
                   blogPostId={article.id}
-                  category={article.category}
                 />
               ) : (
-                <BlogContentWithInlineCTAs
-                  content={article.content}
-                  blogPostId={article.id}
-                  category={article.category}
-                />
+                <BlogContentWithInlineCTAs content={article.content} ctas={ctas} blogPostId={article.id} />
               )}
 
               {/* FAQs: the post's own, then the company FAQs */}
               <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
 
-              {/* Link to the Financial Freedom Calculator */}
-              <CalculatorCta />
-
               {/* Bottom CTAs */}
-              <SimpleCTARenderer
-                blogPostId={article.id}
-                category={article.category}
-                position="bottom"
-              />
+              <SimpleCTARenderer ctas={ctas} blogPostId={article.id} position="bottom" />
 
               {/* Author Bio */}
               {(article.author?.bio || article.author_bio) && (
@@ -428,11 +431,7 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
                   )}
 
                   {/* Below TOC CTAs */}
-                  <SimpleCTARenderer
-                    blogPostId={article.id}
-                    category={article.category}
-                    position="below_toc"
-                  />
+                  <SimpleCTARenderer ctas={ctas} blogPostId={article.id} position="below_toc" />
                 </div>
 
                 {/* Newsletter sign-up */}

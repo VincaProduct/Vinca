@@ -65,6 +65,7 @@ export type Database = {
           key_takeaways: string[]
           meta_description: string | null
           meta_title: string | null
+          hidden_default_ctas: string[]
           id: string
           published_at: string | null
           quote: string | null
@@ -93,6 +94,7 @@ export type Database = {
           key_takeaways?: string[]
           meta_description?: string | null
           meta_title?: string | null
+          hidden_default_ctas?: string[]
           id?: string
           published_at?: string | null
           quote?: string | null
@@ -121,6 +123,7 @@ export type Database = {
           key_takeaways?: string[]
           meta_description?: string | null
           meta_title?: string | null
+          hidden_default_ctas?: string[]
           id?: string
           published_at?: string | null
           quote?: string | null
@@ -407,6 +410,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           custom_css: string | null
+          default_position: Database["public"]["Enums"]["cta_placement_position"] | null
           description: string | null
           display_condition:
             | Database["public"]["Enums"]["cta_display_condition"]
@@ -435,6 +439,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           custom_css?: string | null
+          default_position?: Database["public"]["Enums"]["cta_placement_position"] | null
           description?: string | null
           display_condition?:
             | Database["public"]["Enums"]["cta_display_condition"]
@@ -463,6 +468,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           custom_css?: string | null
+          default_position?: Database["public"]["Enums"]["cta_placement_position"] | null
           description?: string | null
           display_condition?:
             | Database["public"]["Enums"]["cta_display_condition"]

@@ -1,11 +1,40 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
-import type { CTAWithPlacement, CTAFormData, CTAAnalyticsData, CTAPlacementFormData, CTAPlacementDBData, CTAPlacementPosition } from '@/types/cta';
+import type { CTAWithPlacement, CTAFormData, CTAAnalyticsData, CTAPlacementDBData } from '@/types/cta';
+import { resolvePostCtas, type CtaRow, type PlacementRow } from '@/lib/ctas';
 
 type CTA = Tables<'ctas'>;
 type CTAPlacement = Tables<'cta_placements'> & {
   cta: CTA;
+};
+
+/** Active CTAs shown on every article (none if the default_position column doesn't exist yet) */
+export const fetchDefaultCTAs = async (): Promise<CtaRow[]> => {
+  const { data, error } = await supabase
+    .from('ctas')
+    .select('*')
+    .not('default_position', 'is', null)
+    .eq('status', 'active');
+  return error ? [] : ((data || []) as unknown as CtaRow[]);
+};
+
+/**
+ * Make a CTA the default for a position (or no longer a default, with null).
+ * Only one CTA can be the default for each position, so the current one
+ * gives up its place first.
+ */
+export const setDefaultCTAPosition = async (ctaId: string, position: 'middle_article' | 'bottom' | null) => {
+  if (position) {
+    const { error } = await supabase
+      .from('ctas')
+      .update({ default_position: null })
+      .eq('default_position', position)
+      .neq('id', ctaId);
+    if (error) throw error;
+  }
+  const { error } = await supabase.from('ctas').update({ default_position: position }).eq('id', ctaId);
+  if (error) throw error;
 };
 
 export const useCTAs = () => {
@@ -117,14 +146,15 @@ export const useCTAs = () => {
     fetchCTAs();
   }, [fetchCTAs]);
 
-  // Get CTAs for a specific blog post with proper placement filtering
+  // CTAs for a blog post: its own placements, the placements that apply to all
+  // posts (or its category), and the default CTAs it hasn't switched off
   const getBlogPostCTAs = async (
-    blogPostId: string, 
-    category?: string, 
-    tags?: string[]
+    blogPostId: string,
+    category?: string,
+    tags?: string[],
+    hiddenDefaults: string[] = [],
   ): Promise<CTAWithPlacement[]> => {
     try {
-      // Get active placements with their associated CTAs
       let query = supabase
         .from('cta_placements')
         .select(`
@@ -147,17 +177,14 @@ export const useCTAs = () => {
         );
       }
 
-      const { data, error } = await query;
-      
+      const [{ data, error }, defaults] = await Promise.all([query, fetchDefaultCTAs()]);
       if (error) throw error;
 
-      // Transform the data to match CTAWithPlacement interface
-      return (data || []).map(placement => ({
-        ...placement.cta,
-        placement_position: placement.placement_position as CTAPlacementPosition,
-        position_config: placement.position_config,
-        priority: placement.priority
-      })) as CTAWithPlacement[];
+      return resolvePostCtas(
+        (data || []) as unknown as PlacementRow[],
+        defaults,
+        hiddenDefaults,
+      ) as unknown as CTAWithPlacement[];
     } catch (err) {
       console.error('Error fetching blog post CTAs:', err);
       return [];

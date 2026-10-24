@@ -48,6 +48,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
     key_takeaways: [] as string[],
     faqs: [] as FaqItem[],
     hide_global_faqs: false,
+    hidden_default_ctas: [] as string[],
   });
   // Table of contents follows the H2/H3 headings unless switched to manual
   const [tocAuto, setTocAuto] = useState(true);
@@ -84,6 +85,7 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         key_takeaways: post.key_takeaways || [],
         faqs: cleanFaqs(post.faqs),
         hide_global_faqs: post.hide_global_faqs ?? false,
+        hidden_default_ctas: post.hidden_default_ctas ?? [],
       });
       // Keep a hand-edited TOC as it is; otherwise follow the headings
       setTocAuto(savedToc.length === 0 || sameToc(savedToc, tocFromMarkdown(post.content)));
@@ -143,8 +145,12 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
 
     setSaving(true);
     try {
+      // Sent only once the database has the column (posts loaded with it) or
+      // when a default CTA has been switched off
+      const { hidden_default_ctas, ...fields } = formData;
       const postData = {
-        ...formData,
+        ...fields,
+        ...((post && 'hidden_default_ctas' in post) || hidden_default_ctas.length > 0 ? { hidden_default_ctas } : {}),
         status,
         published_at: status === 'published' ? new Date().toISOString() : null,
         table_of_contents: tableOfContents as unknown as Json,
@@ -285,6 +291,8 @@ export const BlogPostForm = ({ post, onClose }: BlogPostFormProps) => {
         <CTASelectionForm
           blogPostId={post?.id}
           onCTASelectionChange={setCtaSelection}
+          hiddenDefaults={formData.hidden_default_ctas}
+          onHiddenDefaultsChange={(ids) => updateFormData({ hidden_default_ctas: ids })}
         />
 
         <PostFormActions

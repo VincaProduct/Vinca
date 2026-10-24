@@ -5,8 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { Plus, X, Eye, EyeOff } from 'lucide-react';
-import { useCTAs, useCTAPlacements } from '@/hooks/useCTAs';
+import { useCTAs, useCTAPlacements, fetchDefaultCTAs } from '@/hooks/useCTAs';
+import { DEFAULT_POSITIONS, type CtaRow } from '@/lib/ctas';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { CTAPlacementPosition } from '@/types/cta';
@@ -14,6 +16,9 @@ import type { CTAPlacementPosition } from '@/types/cta';
 interface CTASelectionFormProps {
   blogPostId?: string;
   onCTASelectionChange?: (ctas: SelectedCTA[]) => void;
+  /** Default CTAs switched off for this post (saved with the post) */
+  hiddenDefaults?: string[];
+  onHiddenDefaultsChange?: (ids: string[]) => void;
 }
 
 export interface SelectedCTA {
@@ -58,13 +63,24 @@ export const saveCTAPlacements = async (
 
 export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
   blogPostId,
-  onCTASelectionChange
+  onCTASelectionChange,
+  hiddenDefaults = [],
+  onHiddenDefaultsChange,
 }) => {
   const [selectedCTAs, setSelectedCTAs] = useState<SelectedCTA[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const { ctas } = useCTAs();
   const { createPlacement, deletePlacement, placements } = useCTAPlacements();
   const { toast } = useToast();
+  // CTAs set as defaults in CTA Management: on every post unless switched off here
+  const [defaultCTAs, setDefaultCTAs] = useState<CtaRow[]>([]);
+  useEffect(() => {
+    fetchDefaultCTAs().then(setDefaultCTAs);
+  }, []);
+
+  const toggleDefault = (ctaId: string, show: boolean) => {
+    onHiddenDefaultsChange?.(show ? hiddenDefaults.filter((id) => id !== ctaId) : [...hiddenDefaults, ctaId]);
+  };
 
   const placementOptions = [
     { value: 'top', label: 'Top of Article' },
@@ -172,6 +188,11 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
 
     try {
       await saveCTAPlacements(blogPostId, selectedCTAs, { createPlacement });
+      // Default CTAs switched off for this post
+      if (defaultCTAs.length > 0) {
+        const { error } = await supabase.from('blog_posts').update({ hidden_default_ctas: hiddenDefaults }).eq('id', blogPostId);
+        if (error) throw error;
+      }
 
       toast({
         title: 'Success',
@@ -185,6 +206,8 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
       });
     }
   };
+
+  const shownDefaults = defaultCTAs.filter((c) => !hiddenDefaults.includes(c.id)).length;
 
   if (ctas.length === 0) {
     return (
@@ -209,12 +232,12 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
           <div>
             <CardTitle className="flex items-center gap-2">
               CTA Management
-              {selectedCTAs.length > 0 && (
-                <Badge variant="secondary">{selectedCTAs.length} Selected</Badge>
+              {selectedCTAs.length + shownDefaults > 0 && (
+                <Badge variant="secondary">{selectedCTAs.length + shownDefaults} on this post</Badge>
               )}
             </CardTitle>
             <CardDescription>
-              Select and configure CTAs for this blog post
+              Default CTAs appear on every post automatically; add more for this post below
             </CardDescription>
           </div>
           <Button
@@ -229,6 +252,39 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
       
       {isExpanded && (
         <CardContent className="space-y-4">
+          {/* Default CTAs (set in CTA Management) */}
+          <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
+            <div>
+              <Label className="text-sm font-medium">Default CTAs</Label>
+              <p className="text-xs text-muted-foreground">
+                Added to every post automatically. Switch one off to hide it on this post only. Change which CTAs are defaults in CTA Management.
+              </p>
+            </div>
+            {defaultCTAs.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No default CTAs yet. In CTA Management, edit a CTA and choose where it shows by default.</p>
+            ) : (
+              defaultCTAs.map((cta) => (
+                <div key={cta.id} className="flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{cta.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {DEFAULT_POSITIONS.find((p) => p.value === cta.default_position)?.label}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs text-muted-foreground">{hiddenDefaults.includes(cta.id) ? 'Hidden' : 'Shown'}</span>
+                    <Switch
+                      checked={!hiddenDefaults.includes(cta.id)}
+                      onCheckedChange={(show) => toggleDefault(cta.id, show)}
+                      aria-label={`Show ${cta.name} on this post`}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {selectedCTAs.length > 0 && <Label className="text-sm font-medium block pt-2">CTAs for this post only</Label>}
           {selectedCTAs.map((selectedCTA, index) => (
             <div key={selectedCTA.id} className="border rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
@@ -319,7 +375,7 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
           <div className="flex justify-between items-center pt-4 border-t">
             <Button variant="outline" onClick={addCTA} className="gap-2">
               <Plus className="w-4 h-4" />
-              Add CTA
+              Add CTA for this post
             </Button>
             
             {blogPostId ? (
@@ -327,7 +383,7 @@ export const CTASelectionForm: React.FC<CTASelectionFormProps> = ({
                 Save CTA Placements
               </Button>
             ) : (
-              selectedCTAs.length > 0 && (
+              (selectedCTAs.length > 0 || hiddenDefaults.length > 0) && (
                 <p className="text-sm text-muted-foreground text-right">
                   These CTAs will be saved with the post when you click Save as Draft or Publish.
                 </p>
