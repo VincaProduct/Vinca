@@ -9,6 +9,7 @@ import { CalculatorInputs, CalculationResults } from "@/types/calculator";
 import { calculateFinancialFreedom } from "@/utils/calculatorUtils";
 import { Edit } from "lucide-react";
 import MinimalResultsCard from "@/components/calculator/MinimalResultsCard";
+import CalculatorInfo from "@/components/calculator/CalculatorInfo";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 interface UserLumpsumData {
@@ -351,6 +352,8 @@ const FinancialFreedomCalculator = () => {
           />
         )}
       </div>
+
+      <CalculatorInfo />
 
       <Footer />
     </div>

@@ -85,10 +85,17 @@ const AuthPage = () => {
         padding: 48,
         textAlign: 'center',
       }}>
-        {/* Logo */}
+        {/* Logo: dark-text version on light, light-text version on dark */}
         <img
           src="/images/black-logo-Photoroom.png"
           alt="Vinca Wealth"
+          className="dark:hidden"
+          style={{ height: 40, width: 'auto', maxWidth: 200, objectFit: 'contain', margin: '0 auto 24px' }}
+        />
+        <img
+          src="/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png"
+          alt="Vinca Wealth"
+          className="hidden dark:block"
           style={{ height: 40, width: 'auto', maxWidth: 200, objectFit: 'contain', margin: '0 auto 24px' }}
         />
 
