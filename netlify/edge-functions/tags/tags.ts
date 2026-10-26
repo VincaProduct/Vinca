@@ -1,8 +1,8 @@
 import type { Context } from "https://edge.netlify.com";
 import { withSecurityHeaders } from "../shared/security-headers.ts";
 import { Marked } from "https://esm.sh/marked@11.1.1";
-import { organizationSchema } from "../../../src/content/siteInfo.ts";
 import { postDescription, postPageTitle } from "../../../src/lib/postSeo.ts";
+import { organizationSchema } from "../../../src/content/siteInfo.ts";
 
 /**
  * Server-renders blog pages for every visitor (browsers, search engines and AI
