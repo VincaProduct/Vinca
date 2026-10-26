@@ -92,25 +92,25 @@ export const HOME_FAQS: HomeFaq[] = [
   },
   {
     question: 'Do you charge any fee for Planning or Investing through VincaWealth?',
-    answer: "No, We don't charge any fee. We get commissions from Fund Houses.",
+    answer: "No, we don't charge any fee. We get commissions from fund houses.",
   },
   {
     question: 'How does Vinca Wealth make money?',
-    answer: 'We get commission from the Fund Houses as per SEBI regulations. It may vary from 0.3% to 1.2%',
+    answer: 'We get commission from the fund houses as per SEBI regulations. It may vary from 0.3% to 1.2%.',
   },
   {
     question: 'How can Vinca Wealth help me with my existing investments?',
-    answer: 'We will give a free and detailed review of your existing investments',
+    answer: 'We will give a free and detailed review of your existing investments.',
   },
   {
     question: 'Does Vinca Wealth have an app to track our investments?',
     answer:
-      "Yes, We have our app with the name 'Vinca Wealth' in the Google Play store & 'Fund Connect' in the Apple store. Using this app you can track your investments",
+      "Yes, we have our app named 'Vinca Wealth' on the Google Play Store and 'Fund Connect' on the Apple App Store. You can use it to track your investments.",
   },
   {
     question: 'Can I meet and talk to any Vinca Wealth Managers in person? If yes, when and how?',
     answer:
-      'Yes, We will do one-on-one meetings at our registered office in Bangalore or at the place of your choice in Bangalore. For non-Bangalorians, we can connect through zoom call.',
+      'Yes, we do one-on-one meetings at our registered office in Bangalore or at a place of your choice in Bangalore. If you are outside Bangalore, we can connect on a Zoom call.',
   },
   {
     question: 'Why should I choose Vinca Wealth over others?',
@@ -118,13 +118,13 @@ export const HOME_FAQS: HomeFaq[] = [
       'Every recommendation we make is backed by research, and we explain the reasoning behind it in plain language, including the risks and costs, so you can make an informed decision. As an AMFI registered mutual fund distributor, we are paid commission by fund houses, and we disclose this upfront.',
   },
   {
-    question: 'What are the different products Vinca Wealth suggest?',
-    answer: 'We suggest Mutual Funds, Health Insurance, Life insurance, Equity Baskets, PMS and Fractional Real estate products',
+    question: 'What are the different products Vinca Wealth suggests?',
+    answer: 'We suggest mutual funds, health insurance, life insurance, equity baskets, PMS and fractional real estate products.',
   },
   {
     question: 'As an NRI, do I have a limitation in terms of funds and schemes?',
     answer:
-      "If you are a US or Canadian resident, then you have limited options. If you are a resident of any other country, you don't have limitations.",
+      "If you are a US or Canadian resident, you have limited options. If you are a resident of any other country, you don't have these limitations.",
   },
   {
     question: 'How do you ensure my goals will be met?',
@@ -133,7 +133,7 @@ export const HOME_FAQS: HomeFaq[] = [
   },
   {
     question: 'Can I invest through VincaWealth without a financial goal?',
-    answer: 'We do wealth management for HNIs without goal based planning if required.',
+    answer: 'Yes. For HNIs, we also manage wealth without goal-based planning if required.',
   },
   {
     question: 'How often will my portfolio be reviewed?',
@@ -156,8 +156,8 @@ export const HOME_FAQS: HomeFaq[] = [
       "No. We don't share your data with any third party except where required to process your investments or by law. We take reasonable steps to keep your data safe.",
   },
   {
-    question: 'What happens when a VW account holder passes away?',
-    answer: 'All the investments will have nominees. Without Nominees KYCs will not be processed.',
+    question: 'What happens when a Vinca Wealth account holder passes away?',
+    answer: 'All investments will have nominees. KYC will not be processed without nominees.',
   },
 ];
 

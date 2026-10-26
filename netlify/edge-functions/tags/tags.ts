@@ -2,6 +2,7 @@ import type { Context } from "https://edge.netlify.com";
 import { withSecurityHeaders } from "../shared/security-headers.ts";
 import { Marked } from "https://esm.sh/marked@11.1.1";
 import { organizationSchema } from "../../../src/content/siteInfo.ts";
+import { postDescription, postPageTitle } from "../../../src/lib/postSeo.ts";
 
 /**
  * Server-renders blog pages for every visitor (browsers, search engines and AI
@@ -214,7 +215,9 @@ const renderMarkdown = (content: string, toc: TocItem[]) => {
         const id =
           anchors.get(clean) || anchors.get(clean.toLowerCase()) || anchors.get(generateAnchor(clean)) ||
           generateAnchor(clean);
-        return `<h${level} id="${escapeHtml(id)}" class="scroll-mt-24">${text}</h${level}>\n`;
+        // The page title is the only H1; H1s inside the article show as H2
+        const tag = `h${Math.max(level, 2)}`;
+        return `<${tag} id="${escapeHtml(id)}" class="scroll-mt-24">${text}</${tag}>\n`;
       },
       link(href: string, title: string | null, text: string) {
         const external = /^https?:\/\//i.test(href) && !href.startsWith(SITE);
@@ -341,8 +344,7 @@ const renderPost = (post: Row) => {
 const postHead = (post: Row) => {
   const url = `${SITE}/blog/${post.slug}`;
   const title = post.meta_title || post.title;
-  const description = post.meta_description || post.excerpt || post.subtitle ||
-    "Read the latest insights on wealth management, mutual funds, and financial planning from Vinca Wealth.";
+  const description = postDescription(post);
   const image = absoluteImage(post.og_image || post.featured_image);
   const authorName = post.author?.name || post.author_name || "Vinca Wealth";
   const published = post.published_at || post.created_at;
@@ -419,7 +421,7 @@ const postHead = (post: Row) => {
     : "";
 
   return `
-    <title>${escapeHtml(title)} | Vinca Wealth Blog</title>
+    <title>${escapeHtml(postPageTitle(title))}</title>
     <meta name="description" content="${escapeHtml(description)}">
     <meta name="author" content="${escapeHtml(authorName)}">
     <meta name="robots" content="${noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}">
@@ -471,7 +473,7 @@ const handlePost = async (slug: string, context: Context) => {
     return new Response(
       stripDefaultHead(html).replace(
         "<head>",
-        '<head>\n    <title>Article not found | Vinca Wealth Blog</title>\n    <meta name="robots" content="noindex">',
+        '<head>\n    <title>Article not found | Vinca Wealth</title>\n    <meta name="robots" content="noindex">',
       ),
       { status: 404, headers: { "content-type": "text/html; charset=utf-8" } },
     );

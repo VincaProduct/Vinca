@@ -52,6 +52,13 @@ export default async (request: Request) => {
     }
   };
 
+  // Published events, each with a page of its own (none if the request fails)
+  const { data: events } = await supabase
+    .from('events')
+    .select('id, created_at')
+    .eq('is_published', true)
+    .order('event_date', { ascending: false });
+
   // Use the most recently published post date for the blog listing page lastmod
   const latestPostDate = posts && posts.length > 0
     ? formatDate(posts[0].published_at || posts[0].updated_at)
@@ -65,10 +72,9 @@ export default async (request: Request) => {
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   
-  <!-- Homepage -->
+  <!-- Homepage (pages without a reliable last-changed date leave lastmod out) -->
   <url>
     <loc>${baseUrl}/</loc>
-    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -92,7 +98,6 @@ export default async (request: Request) => {
   <!-- Financial Freedom Calculator -->
   <url>
     <loc>${baseUrl}/financial-freedom-calculator</loc>
-    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -103,11 +108,23 @@ export default async (request: Request) => {
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
+${(events || []).map((event) => `  <url>
+    <loc>${baseUrl}/events/${event.id}</loc>
+    <lastmod>${formatDate(event.created_at)}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>`).join('\n')}
+
+  <!-- Pricing -->
+  <url>
+    <loc>${baseUrl}/pricing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 
   <!-- Achievers Club -->
   <url>
     <loc>${baseUrl}/achievers-club</loc>
-    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -115,7 +132,6 @@ export default async (request: Request) => {
   <!-- Privacy Policy -->
   <url>
     <loc>${baseUrl}/privacy-policy</loc>
-    <lastmod>2025-01-01T00:00:00.000Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

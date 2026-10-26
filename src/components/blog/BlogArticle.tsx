@@ -16,6 +16,7 @@ import { BlogContentWithAnchors } from "@/components/blog/BlogContentWithAnchors
 import type { TOCItem } from "@/components/blog/TOCEditor";
 import type { Tables } from "@/integrations/supabase/types";
 import { readSsrData } from "@/lib/ssrData";
+import { postDescription, postPageTitle } from "@/lib/postSeo";
 import { optimizedImage, imageSrcSet } from "@/lib/images";
 import { KeyTakeawaysBox } from "@/components/blog/KeyTakeawaysBox";
 import { BlogFaqSection } from "@/components/blog/BlogFaqSection";
@@ -158,14 +159,14 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   const blogUrl = `https://vincawealth.com/blog/${article.slug}`;
   const ogImage = article.featured_image || 'https://vincawealth.com/og-image.png';
   const seoTitle = article.meta_title || article.title;
-  const description = article.meta_description || article.excerpt || article.subtitle || 'Read the latest insights on wealth management, mutual funds, and financial planning from Vinca Wealth.';
+  const description = postDescription(article);
 
   return (
     <>
       <Helmet>
         {/* Primary Meta Tags */}
-        <title>{`${seoTitle} | Vinca Wealth Blog`}</title>
-        <meta name="title" content={`${seoTitle} | Vinca Wealth Blog`} />
+        <title>{postPageTitle(seoTitle)}</title>
+        <meta name="title" content={postPageTitle(seoTitle)} />
         <meta name="description" content={description} />
         <meta name="robots" content={previewPost ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
 
