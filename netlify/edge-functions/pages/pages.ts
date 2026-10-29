@@ -19,6 +19,99 @@ import {
  */
 
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
+const SUPABASE_URL = "https://xmmyjphoaqazwlifehxs.supabase.co";
+// Public anon key (same one the browser app uses)
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtbXlqcGhvYXFhendsaWZlaHhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTY4NjMsImV4cCI6MjA2NDA5Mjg2M30.E7O_Q0Zcz0S-6ERl0JE-6SUth-lMLMbzTNGrdhDq_1k";
+
+// deno-lint-ignore no-explicit-any
+type EventRow = Record<string, any>;
+// Only what the public pages show (never the meeting link)
+const EVENT_COLUMNS = "id,title,description,event_date,duration_minutes,host_name,image_url";
+
+const loadEvents = async (filter: string): Promise<EventRow[] | null> => {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/events?select=${EVENT_COLUMNS}&is_published=eq.true&${filter}`,
+    { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } },
+  );
+  return response.ok ? await response.json() : null;
+};
+
+const formatEventDate = (iso: string) =>
+  new Date(iso).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }) + " IST";
+
+/** schema.org Event for an online Vinca Wealth event */
+const eventSchema = (event: EventRow) => {
+  const start = new Date(event.event_date);
+  const end = new Date(start.getTime() + (Number(event.duration_minutes) || 60) * 60000);
+  const url = `${SITE_URL}/events/${event.id}`;
+  return {
+    "@type": "Event",
+    "@id": `${url}#event`,
+    name: event.title,
+    description: String(event.description || "").slice(0, 500),
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+    eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location: { "@type": "VirtualLocation", url },
+    ...(event.image_url ? { image: [event.image_url] } : {}),
+    organizer: { "@id": `${SITE_URL}/#organization` },
+    ...(event.host_name ? { performer: { "@type": "Person", name: event.host_name } } : {}),
+    offers: { "@type": "Offer", price: "0", priceCurrency: "INR", availability: "https://schema.org/InStock", url },
+    isAccessibleForFree: true,
+  };
+};
+
+const eventMeta = (event: EventRow) =>
+  `<time datetime="${escapeHtml(event.event_date)}">${escapeHtml(formatEventDate(event.event_date))}</time>` +
+  (event.duration_minutes ? ` · ${escapeHtml(event.duration_minutes)} minutes` : "") +
+  " · Online";
+
+const renderEventCard = (event: EventRow) => {
+  const description = String(event.description || "");
+  return `
+          <article class="rounded-lg border p-6 mt-4">
+            <h3 class="text-xl font-semibold"><a href="/events/${escapeHtml(event.id)}">${escapeHtml(event.title)}</a></h3>
+            <p class="text-sm text-muted-foreground">${eventMeta(event)}${event.host_name ? ` · Hosted by ${escapeHtml(event.host_name)}` : ""}</p>
+            ${description ? `<p>${escapeHtml(description.slice(0, 300))}${description.length > 300 ? "…" : ""}</p>` : ""}
+          </article>`;
+};
+
+/** Readable version of the events list (same events the app shows) */
+const renderEvents = (events: EventRow[]) => {
+  const now = Date.now();
+  const upcoming = events.filter((e) => new Date(e.event_date).getTime() >= now);
+  const past = events.filter((e) => new Date(e.event_date).getTime() < now);
+  return `
+    <main style="padding-top: 96px" class="container mx-auto px-6 py-12 max-w-4xl">
+      <h1 class="text-3xl font-bold mb-4">Events &amp; Webinars</h1>
+      <p>Free Vinca Wealth webinars and events on mutual funds, retirement planning and financial freedom.</p>
+      <h2 class="text-2xl font-semibold mt-8">Upcoming events</h2>
+      ${upcoming.length ? upcoming.map(renderEventCard).join("") : "<p>No upcoming events right now. New sessions are announced here and in our newsletter.</p>"}
+      ${past.length ? `<h2 class="text-2xl font-semibold mt-8">Past events</h2>${past.map(renderEventCard).join("")}` : ""}
+    </main>`;
+};
+
+/** Readable version of one event's page */
+const renderEvent = (event: EventRow) => `
+    <main style="padding-top: 96px" class="container mx-auto px-6 py-12 max-w-3xl">
+      <p><a href="/events">← All events</a></p>
+      <h1 class="text-3xl font-bold mb-4">${escapeHtml(event.title)}</h1>
+      <p>${eventMeta(event)}</p>
+      ${event.host_name ? `<p>Hosted by ${escapeHtml(event.host_name)}</p>` : ""}
+      ${event.image_url ? `<img src="${escapeHtml(event.image_url)}" alt="${escapeHtml(event.title)}" width="1200" height="630" style="max-width:100%;height:auto">` : ""}
+      ${String(event.description || "").split(/\n\s*\n/).filter((para) => para.trim()).map((para) => `<p>${escapeHtml(para.trim())}</p>`).join("")}
+      <p>Registration is free.</p>
+    </main>`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
 const escapeHtml = (text: unknown) =>
@@ -60,6 +153,7 @@ const renderHome = () => `
       <section class="relative overflow-hidden min-h-screen flex items-center justify-center px-6 lg:px-16 py-20" style="background: hsl(var(--background))">
         <div class="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
           <h1 class="font-bold leading-tight" style="font-family: 'Plus Jakarta Sans', sans-serif">
+            <span class="block mb-4 uppercase" style="font-size: clamp(0.75rem, 1.8vw, 0.875rem); letter-spacing: 0.08em; font-weight: 600; color: var(--brand-text)">Retirement planning &amp; mutual fund investing in Bengaluru</span>
             <span class="block" style="font-size: clamp(2rem, 5vw, 3.5rem); color: hsl(var(--foreground))">Are you on track for</span>
             <span class="block" style="font-size: clamp(2.25rem, 6vw, 4rem); color: var(--brand-text)">Financial Freedom?</span>
           </h1>
@@ -187,10 +281,37 @@ const handler = async (request: Request, context: Context): Promise<Response | u
 
   const url = new URL(request.url);
   const path = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, "") : "/";
-  const seo = PAGE_SEO[path];
-  if (!seo) return;
+  const eventId = path.match(/^\/events\/([^/]+)$/)?.[1];
+  let seo = PAGE_SEO[path];
+  if (!seo && !eventId) return;
 
   try {
+    // Events: the list, or one event (a real 404 when it doesn't exist)
+    let events: EventRow[] = [];
+    let event: EventRow | undefined;
+    let image = DEFAULT_IMAGE;
+    if (path === "/events") {
+      events = (await loadEvents("order=event_date.desc")) || [];
+    } else if (eventId) {
+      const found = /^[0-9a-f-]{36}$/i.test(eventId) ? await loadEvents(`id=eq.${eventId}`) : [];
+      if (found === null) return; // database unreachable: serve the plain app
+      event = found[0];
+      if (!event) {
+        const notFound = (await (await context.next()).text())
+          .replace(/<title>[\s\S]*?<\/title>/i, "<title>Event not found | Vinca Wealth</title>")
+          .replace(/<meta\s+name="robots"[\s\S]*?\/?>/i, '<meta name="robots" content="noindex" />');
+        return new Response(notFound, { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+      }
+      const summary = String(event.description || "").replace(/\s+/g, " ").trim();
+      seo = {
+        title: `${event.title} | Vinca Wealth Events`,
+        description: summary.length > 155
+          ? `${summary.slice(0, 152).replace(/\s+\S*$/, "")}…`
+          : summary || `Free Vinca Wealth webinar: ${event.title}.`,
+      };
+      if (event.image_url) image = event.image_url;
+    }
+
     const response = await context.next();
     if (!(response.headers.get("content-type") || "").includes("text/html")) return response;
 
@@ -204,7 +325,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
     <meta property="og:url" content="${canonical}">
     <meta property="og:title" content="${escapeHtml(seo.title)}">
     <meta property="og:description" content="${escapeHtml(seo.description)}">
-    <meta property="og:image" content="${DEFAULT_IMAGE}">
+    <meta property="og:image" content="${escapeHtml(image)}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="Vinca Wealth">
@@ -213,11 +334,11 @@ const handler = async (request: Request, context: Context): Promise<Response | u
     <meta name="twitter:site" content="@vincawealth">
     <meta name="twitter:title" content="${escapeHtml(seo.title)}">
     <meta name="twitter:description" content="${escapeHtml(seo.description)}">
-    <meta name="twitter:image" content="${DEFAULT_IMAGE}">
+    <meta name="twitter:image" content="${escapeHtml(image)}">
     <meta name="geo.region" content="IN-KA">
     <meta name="geo.placename" content="Bengaluru">
     <meta name="geo.position" content="${COMPANY.geo.latitude};${COMPANY.geo.longitude}">
-    <script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@graph": pageGraph(path, canonical, seo) })}</script>`;
+    <script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@graph": [...pageGraph(path, canonical, seo), ...(event ? [eventSchema(event)] : events.map(eventSchema))] })}</script>`;
 
     let html = stripDefaultHead(await response.text())
       // index.html's generic geo tags are replaced by the Bengaluru ones above
@@ -225,6 +346,8 @@ const handler = async (request: Request, context: Context): Promise<Response | u
       .replace("<head>", `<head>\n${head}`);
     if (path === "/") html = html.replace('<div id="root"></div>', `<div id="root">${renderHome()}</div>`);
     if (path === CALCULATOR_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderCalculator()}</div>`);
+    if (path === "/events") html = html.replace('<div id="root"></div>', `<div id="root">${renderEvents(events)}</div>`);
+    if (event) html = html.replace('<div id="root"></div>', `<div id="root">${renderEvent(event)}</div>`);
 
     return new Response(html, {
       status: response.status,
@@ -244,7 +367,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
 export default async (request: Request, context: Context) => withSecurityHeaders(await handler(request, context));
 
 export const config = {
-  path: ["/", "/financial-freedom-calculator", "/events", "/achievers-club", "/pricing", "/privacy-policy"],
+  path: ["/", "/financial-freedom-calculator", "/events", "/events/*", "/achievers-club", "/pricing", "/privacy-policy"],
   // Responses opt in to CDN caching with Netlify-CDN-Cache-Control
   cache: "manual",
 };

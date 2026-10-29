@@ -26,6 +26,10 @@ const HeroSection = () => {
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
         <div className="space-y-4 mb-10">
           <h1 className="font-bold leading-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            {/* What we do and where, so the page's main heading says it */}
+            <span className="block mb-4 uppercase" style={{ fontSize: 'clamp(0.75rem, 1.8vw, 0.875rem)', letterSpacing: '0.08em', fontWeight: 600, color: 'var(--brand-text)' }}>
+              Retirement planning &amp; mutual fund investing in Bengaluru
+            </span>
             <span className="block" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: 'hsl(var(--foreground))' }}>
               Are you on track for
             </span>

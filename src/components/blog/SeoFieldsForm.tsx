@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { postPageTitle } from '@/lib/postSeo';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, Circle, Search } from 'lucide-react';
@@ -124,7 +125,7 @@ export const SeoFieldsForm = ({
           <p className="text-xs text-muted-foreground mb-1">Google preview</p>
           <p className="text-xs text-muted-foreground truncate">vincawealth.com › blog › {slug || 'your-slug'}</p>
           <p className="text-blue-600 dark:text-blue-400 text-lg leading-snug truncate">
-            {effectiveTitle || 'SEO title'} | Vinca Wealth Blog
+            {postPageTitle(effectiveTitle || 'SEO title')}
           </p>
           <p className="text-sm text-muted-foreground line-clamp-2">{effectiveDescription || 'Meta description'}</p>
         </div>

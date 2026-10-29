@@ -6,6 +6,8 @@ import { optimizedImage, imageSrcSet } from "@/lib/images";
  * posts look the same with or without a table of contents.
  */
 export const markdownElements: Components = {
+  // The page title is the only H1; H1s inside an article are section headings
+  h1: ({ node: _node, ...props }) => <h2 {...props} />,
   a: ({ href, children, node: _node, ...props }) => {
     const isExternal = /^https?:\/\//i.test(href || "");
     return (
