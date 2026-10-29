@@ -10,6 +10,7 @@ import { useCTAs } from '@/hooks/useCTAs';
 import { toast } from '@/hooks/use-toast';
 import { Plus, MoreHorizontal, Edit, Copy, Trash, Eye, BarChart3 } from 'lucide-react';
 import type { CTA } from '@/types/cta';
+import { DEFAULT_POSITIONS } from '@/lib/ctas';
 
 export const CTADashboard: React.FC = () => {
   const { ctas, loading, fetchCTAs, deleteCTA, duplicateCTA } = useCTAs();
@@ -179,6 +180,7 @@ export const CTADashboard: React.FC = () => {
                 <TableHead>Status</TableHead>
                 <TableHead>Headline</TableHead>
                 <TableHead>Button Text</TableHead>
+                <TableHead>Default</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -191,6 +193,15 @@ export const CTADashboard: React.FC = () => {
                   <TableCell>{getStatusBadge(cta.status || 'active')}</TableCell>
                   <TableCell className="max-w-xs truncate">{cta.headline}</TableCell>
                   <TableCell className="max-w-xs truncate">{cta.button_text}</TableCell>
+                  <TableCell>
+                    {cta.default_position ? (
+                      <Badge variant="secondary" className="whitespace-nowrap">
+                        {DEFAULT_POSITIONS.find((p) => p.value === cta.default_position)?.label}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {new Date(cta.created_at).toLocaleDateString()}
                   </TableCell>

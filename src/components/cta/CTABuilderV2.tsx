@@ -10,7 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { SimpleCTAPreview } from './SimpleCTAPreview';
-import { useCTAs } from '@/hooks/useCTAs';
+import { useCTAs, setDefaultCTAPosition } from '@/hooks/useCTAs';
+import { DEFAULT_POSITIONS } from '@/lib/ctas';
 import { toast } from '@/hooks/use-toast';
 import type { CTAFormData } from '@/types/cta';
 
@@ -24,7 +25,10 @@ const ctaSchema = z.object({
   action_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   open_in_new_tab: z.boolean().default(false),
   status: z.string().default('active'),
+  default_position: z.enum(['none', 'middle_article', 'bottom']).default('none'),
 });
+
+type BuilderFormData = CTAFormData & { default_position: 'none' | 'middle_article' | 'bottom' };
 
 interface CTABuilderProps {
   cta?: any;
@@ -36,7 +40,7 @@ export const CTABuilderV2: React.FC<CTABuilderProps> = ({ cta, onSave, onCancel 
   const { createCTA, updateCTA } = useCTAs();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<CTAFormData>({
+  const form = useForm<BuilderFormData>({
     resolver: zodResolver(ctaSchema),
     defaultValues: cta ? {
       name: cta.name,
@@ -48,6 +52,7 @@ export const CTABuilderV2: React.FC<CTABuilderProps> = ({ cta, onSave, onCancel 
       action_url: cta.action_url || '',
       open_in_new_tab: cta.open_in_new_tab || false,
       status: cta.status || 'active',
+      default_position: cta.default_position || 'none',
     } : {
       name: '',
       type: 'button',
@@ -58,12 +63,13 @@ export const CTABuilderV2: React.FC<CTABuilderProps> = ({ cta, onSave, onCancel 
       action_url: '',
       open_in_new_tab: false,
       status: 'active',
+      default_position: 'none',
     },
   });
 
   const watchedValues = form.watch();
 
-  const onSubmit = async (data: CTAFormData) => {
+  const onSubmit = async ({ default_position, ...data }: BuilderFormData) => {
     try {
       setIsSubmitting(true);
       
@@ -80,6 +86,22 @@ export const CTABuilderV2: React.FC<CTABuilderProps> = ({ cta, onSave, onCancel 
           title: "Success",
           description: "CTA created successfully",
         });
+      }
+
+      // Default position saved separately: making this CTA the default for a
+      // position takes it over from the CTA that had it
+      const position = default_position === 'none' ? null : default_position;
+      if (result && position !== (cta?.default_position ?? null)) {
+        try {
+          await setDefaultCTAPosition(result.id, position);
+        } catch (error) {
+          console.error('Error saving default position:', error);
+          toast({
+            title: "Default not saved",
+            description: "The CTA was saved, but not its default position. Has the default CTAs database update been run?",
+            variant: "destructive",
+          });
+        }
       }
 
       onSave?.(result);
@@ -262,8 +284,11 @@ export const CTABuilderV2: React.FC<CTABuilderProps> = ({ cta, onSave, onCancel 
                       <FormItem>
                         <FormLabel>Action URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com" {...field} />
+                          <Input placeholder="https://vincawealth.com/financial-freedom-calculator" {...field} />
                         </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Where the button goes. Use https://vincawealth.com/auth for the sign-in page (visitors then land on consultation booking).
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -290,6 +315,34 @@ export const CTABuilderV2: React.FC<CTABuilderProps> = ({ cta, onSave, onCancel 
                     )}
                   />
                 </div>
+
+                {/* Default: shown on every article automatically */}
+                <FormField
+                  control={form.control}
+                  name="default_position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Show on every article (default CTA)</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">No, only where I add it</SelectItem>
+                          {DEFAULT_POSITIONS.map((p) => (
+                            <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-sm text-muted-foreground">
+                        Added automatically to all articles, past and future. Only one CTA can be the default for each place; choosing a place another CTA has moves it here. Any article can still hide it.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="flex justify-end space-x-2 pt-4">
                   <Button type="submit" disabled={isSubmitting}>

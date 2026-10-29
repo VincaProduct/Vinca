@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCTAAnalytics } from '@/hooks/useCTAs';
 import type { CTAWithPlacement } from '@/types/cta';
+import { ctaHref, isInternalHref } from '@/lib/ctas';
 
 interface SimpleCTAComponentProps {
   cta: CTAWithPlacement;
@@ -11,7 +12,6 @@ interface SimpleCTAComponentProps {
 }
 
 export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blogPostId }) => {
-  const navigate = useNavigate();
   const { trackCTAEvent } = useCTAAnalytics();
   const ctaRef = useRef<HTMLDivElement>(null);
   const hasTrackedView = useRef(false);
@@ -48,19 +48,35 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
     };
   }, [cta.id, blogPostId, trackCTAEvent]);
 
+  const href = ctaHref(cta);
+
   const handleCTAClick = useCallback(() => {
-    // Track click event
     trackCTAEvent({
       cta_id: cta.id,
       blog_post_id: blogPostId,
       event_type: 'click'
     });
 
-    // Redirect all CTAs to auth page
-    localStorage.setItem('redirect_after_login', '/dashboard/compass');
-    sessionStorage.setItem('auth_context_consultation', 'true');
-    navigate('/auth');
-  }, [cta.id, blogPostId, trackCTAEvent, navigate]);
+    // CTAs that go to sign-in are consultation requests: after signing in,
+    // the visitor lands on the booking page
+    if (href.startsWith('/auth')) {
+      localStorage.setItem('redirect_after_login', '/dashboard/compass');
+      sessionStorage.setItem('auth_context_consultation', 'true');
+    }
+  }, [cta.id, blogPostId, trackCTAEvent, href]);
+
+  // The button is a real link (so search engines follow it), with the click tracked
+  const ctaButton = (className: string) => (
+    <Button asChild className={className} size="lg">
+      {isInternalHref(href) && !cta.open_in_new_tab ? (
+        <Link to={href} onClick={handleCTAClick}>{cta.button_text}</Link>
+      ) : (
+        <a href={href} onClick={handleCTAClick} {...(cta.open_in_new_tab ? { target: '_blank', rel: 'noopener' } : {})}>
+          {cta.button_text}
+        </a>
+      )}
+    </Button>
+  );
 
   if (cta.type === 'button') {
     return (
@@ -69,13 +85,7 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
         {cta.description && (
           <p className="text-muted-foreground leading-relaxed">{cta.description}</p>
         )}
-        <Button 
-          onClick={handleCTAClick} 
-          className="cta-button-enhanced min-w-[200px] h-12 text-base font-semibold"
-          size="lg"
-        >
-          {cta.button_text}
-        </Button>
+        {ctaButton("cta-button-enhanced min-w-[200px] h-12 text-base font-semibold")}
       </div>
     );
   }
@@ -91,13 +101,7 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
             )}
           </div>
           <div className="flex-shrink-0">
-            <Button 
-              onClick={handleCTAClick} 
-              className="cta-button-enhanced min-w-[180px] h-12 text-base font-semibold"
-              size="lg"
-            >
-              {cta.button_text}
-            </Button>
+            {ctaButton("cta-button-enhanced min-w-[180px] h-12 text-base font-semibold")}
           </div>
         </div>
       </div>
@@ -114,13 +118,7 @@ export const SimpleCTAComponent: React.FC<SimpleCTAComponentProps> = ({ cta, blo
               <p className="text-muted-foreground leading-relaxed">{cta.description}</p>
             )}
           </div>
-          <Button 
-            onClick={handleCTAClick} 
-            className="cta-button-enhanced w-full h-12 text-base font-semibold"
-            size="lg"
-          >
-            {cta.button_text}
-          </Button>
+          {ctaButton("cta-button-enhanced w-full h-12 text-base font-semibold")}
         </CardContent>
       </Card>
     );
