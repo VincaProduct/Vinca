@@ -161,6 +161,60 @@ export const HOME_FAQS: HomeFaq[] = [
   },
 ];
 
+/**
+ * Text under the Financial Freedom Calculator, also server-rendered for search
+ * engines (with FAQPage data). Keep the numbers in step with the calculator's
+ * defaults in src/pages/FinancialFreedomCalculator.tsx and src/utils/ffrScore.ts.
+ */
+export const CALCULATOR_INFO = {
+  heading: 'How the Financial Freedom Calculator works',
+  intro:
+    'Enter your age, the age you want to retire, your monthly expenses, your current monthly SIP and your existing investments. The calculator estimates the retirement corpus you will need, whether your current investments are on track to reach it, the monthly SIP you would need instead, and whether your money is likely to last through retirement.',
+  steps: [
+    'Your monthly expenses are increased for inflation up to your retirement age, to estimate what you will spend each month once you retire.',
+    'The required corpus is the amount needed at retirement to fund those withdrawals, rising each year, until age 85.',
+    'Your existing investments and SIPs are projected forward to retirement and compared with the required corpus.',
+    'The result is a Financial Freedom Score from 0 to 100, your gap, and the monthly SIP that would close it.',
+  ],
+  assumptions: [
+    'Life expectancy: 85 years',
+    'Inflation: 7% a year',
+    'Return while investing: 12% a year; after retirement: 10% a year',
+    'SIP increases by 10% every year and runs for up to 20 years, or until retirement if that comes first',
+    'Monthly withdrawals in retirement increase by 7% every year',
+  ],
+  disclaimer:
+    'This calculator gives an illustrative estimate for education only and is not investment advice. Returns are assumptions, not guarantees; actual returns will vary. Mutual fund investments are subject to market risks, read all scheme related documents carefully.',
+};
+
+export const CALCULATOR_FAQS: HomeFaq[] = [
+  {
+    question: 'What is a Financial Freedom Score?',
+    answer:
+      'It is a score from 0 to 100 that shows how prepared you are for retirement. It combines how close your projected corpus is to the corpus you need (30 points), how early you reach financial freedom compared with your target (20 points), how much of your income you invest (20 points), whether essentials like life insurance, health insurance and an emergency fund are in place (20 points), and whether your money lasts through your life expectancy (10 points).',
+  },
+  {
+    question: 'How much money do I need to retire in India?',
+    answer:
+      'It depends on your monthly expenses today, how many years are left until you retire, inflation, and how long your retirement lasts. The calculator increases your expenses for inflation up to your retirement age and estimates the corpus needed to fund them, rising every year, until age 85.',
+  },
+  {
+    question: 'What assumptions does the calculator use?',
+    answer:
+      'It assumes inflation of 7% a year, a return of 12% a year while you invest and 10% a year after retirement, a SIP that increases by 10% every year, withdrawals that increase by 7% every year, and a life expectancy of 85. These are assumptions, not guaranteed returns.',
+  },
+  {
+    question: 'Is the Financial Freedom Calculator free?',
+    answer:
+      'Yes. It is free and takes about 2 minutes. You can see your score without signing up; sign in with Google if you want to save your numbers and see a detailed plan.',
+  },
+  {
+    question: 'Is the calculator result investment advice?',
+    answer:
+      'No. It is an illustrative estimate for education only. Actual returns will vary, and mutual fund investments are subject to market risks. Read all scheme related documents carefully before investing.',
+  },
+];
+
 /** schema.org Organization / FinancialService (a kind of LocalBusiness) for Vinca Wealth */
 export const organizationSchema = () => ({
   '@type': ['FinancialService', 'Organization'],

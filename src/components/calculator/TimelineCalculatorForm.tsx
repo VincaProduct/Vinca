@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { CalculatorInputs } from '@/types/calculator';
 import { Loader2 } from 'lucide-react';
 
+const MIN_AGE = 18;
+const MAX_AGE = 80;
+
 interface TimelineCalculatorFormProps {
   inputs: CalculatorInputs;
   onInputChange: (inputs: CalculatorInputs) => void;
@@ -45,12 +48,14 @@ interface FocusableInputProps {
   placeholder?: string;
   prefix?: string;
   helper?: string;
+  /** Shown instead of the helper, in red */
+  error?: string;
   type?: string;
   min?: number;
   step?: number;
 }
 
-function FocusableInput({ label, value, onChange, placeholder, prefix, helper, type = 'number', min = 0, step }: FocusableInputProps) {
+function FocusableInput({ label, value, onChange, placeholder, prefix, helper, error, type = 'number', min = 0, step }: FocusableInputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -77,12 +82,14 @@ function FocusableInput({ label, value, onChange, placeholder, prefix, helper, t
           style={{
             ...inputStyle,
             paddingLeft: prefix ? 36 : 20,
-            borderColor: focused ? 'hsl(158 64% 52%)' : 'var(--ui-line)',
+            borderColor: error ? 'hsl(0 72% 55%)' : focused ? 'hsl(158 64% 52%)' : 'var(--ui-line)',
             boxShadow: focused ? '0 0 0 4px hsl(158 64% 52% / 0.1)' : 'none',
           }}
         />
       </div>
-      {helper && <p style={helperStyle}>{helper}</p>}
+      {error
+        ? <p style={{ ...helperStyle, color: 'hsl(0 72% 55%)' }}>{error}</p>
+        : helper && <p style={helperStyle}>{helper}</p>}
     </div>
   );
 }
@@ -95,7 +102,26 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
   const [step, setStep] = useState(0);
   const [calculating, setCalculating] = useState(false);
 
-  const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
+  // Typed as free text so any age can be entered; the inputs are only updated
+  // with it once it's a valid retirement age
+  const [retirementText, setRetirementText] = useState(() =>
+    String(inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP));
+  const retirementAge = Number(retirementText) || 0;
+
+  // How long SIPs run, as the calculator has always assumed (20 years by
+  // default); remembered so a short retirement horizon doesn't shrink it for good
+  const [sipLength] = useState(() => Math.max(inputs.yearsForSIP, 1));
+
+  /** SIP years and waiting years for a retirement age: SIPs run for their usual
+      length, or stop at retirement if that comes first; the corpus then waits */
+  const splitYears = (age: number, retireAt: number) => {
+    const years = Math.max(0, retireAt - age);
+    const sipYears = Math.min(sipLength, years);
+    return { yearsForSIP: sipYears, waitingYearsBeforeSWP: years - sipYears };
+  };
+
+  const ageValid = inputs.age >= MIN_AGE && inputs.age <= MAX_AGE;
+  const retirementValid = retirementAge > inputs.age && retirementAge < inputs.lifeExpectancy;
 
   const handleChange = (field: keyof CalculatorInputs, value: string) => {
     const num = value === '' ? 0 : Number(value);
@@ -104,15 +130,31 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
     }
   };
 
+  const handleAge = (value: string) => {
+    const age = value === '' ? 0 : Number(value);
+    if (isNaN(age) || age < 0) return;
+    // Keep the chosen retirement age when the current age changes
+    const next = { ...inputs, age };
+    if (retirementAge > age) Object.assign(next, splitYears(age, retirementAge));
+    onInputChange(next);
+  };
+
   const handleRetirementAge = (value: string) => {
-    const age = Number(value);
-    if (!isNaN(age) && age > 0) {
-      const waiting = Math.max(0, age - (inputs.age + inputs.yearsForSIP));
-      onInputChange({ ...inputs, waitingYearsBeforeSWP: waiting });
+    if (!/^\d{0,3}$/.test(value)) return;
+    setRetirementText(value);
+    const retireAt = Number(value);
+    if (retireAt > inputs.age && retireAt < inputs.lifeExpectancy) {
+      onInputChange({ ...inputs, ...splitYears(inputs.age, retireAt) });
     }
   };
 
-  const step1Valid = inputs.age > 0 && inputs.currentMonthlyExpenses > 0 && retirementAge >= inputs.age;
+  // Errors wait for a second digit, so they don't flash up mid-typing
+  const ageError = inputs.age >= 10 && !ageValid ? `Enter an age between ${MIN_AGE} and ${MAX_AGE}` : undefined;
+  const retirementError = retirementText.length >= 2 && ageValid && !retirementValid
+    ? `Enter an age above ${inputs.age} and below ${inputs.lifeExpectancy}`
+    : undefined;
+
+  const step1Valid = ageValid && retirementValid && inputs.currentMonthlyExpenses > 0;
   const step2Valid = inputs.sipAmount > 0;
 
   const handleCalculate = async () => {
@@ -153,15 +195,17 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
           <FocusableInput
             label="How old are you?"
             value={inputs.age}
-            onChange={v => handleChange('age', v)}
+            onChange={handleAge}
             placeholder="e.g. 30"
+            error={ageError}
           />
           <FocusableInput
             label="When do you want to retire?"
-            value={retirementAge || ''}
+            value={retirementText}
             onChange={handleRetirementAge}
             placeholder="e.g. 55"
             helper="The age you'd like to stop working"
+            error={retirementError}
           />
           <FocusableInput
             label="What are your monthly expenses?"
@@ -212,31 +256,6 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
             helper="Include mutual funds, FDs, stocks, PPF"
           />
 
-          {/* Preview card */}
-          <div style={{
-            background: 'var(--ui-surface)',
-            borderRadius: 12,
-            padding: '16px 20px',
-            border: '1px solid var(--ui-line)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}>
-            <div style={{ display: 'flex', gap: 4 }}>
-              {[0, 1, 2].map(i => (
-                <span key={i} style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: 'hsl(158 64% 52%)',
-                  display: 'inline-block',
-                  animation: `dotPulse 1.2s ease-in-out infinite ${i * 0.2}s`,
-                }} />
-              ))}
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--ui-text-muted)', margin: 0 }}>
-              Based on your inputs, your score will be ready in seconds.
-            </p>
-          </div>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <Button
               onClick={handleCalculate}
@@ -273,10 +292,6 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
       )}
 
       <style>{`
-        @keyframes dotPulse {
-          0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-          40% { opacity: 1; transform: scale(1); }
-        }
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }

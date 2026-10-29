@@ -1,13 +1,21 @@
 import type { Context } from "https://edge.netlify.com";
 import { withSecurityHeaders } from "../shared/security-headers.ts";
-import { COMPANY, HOME_FAQS, PAGE_SEO, SITE_URL, organizationSchema } from "../../../src/content/siteInfo.ts";
+import {
+  CALCULATOR_FAQS,
+  CALCULATOR_INFO,
+  COMPANY,
+  HOME_FAQS,
+  PAGE_SEO,
+  SITE_URL,
+  organizationSchema,
+} from "../../../src/content/siteInfo.ts";
 
 /**
  * Per-page SEO for the public (non-blog) pages: each gets its own title,
  * description, canonical, social tags and JSON-LD instead of the homepage
- * defaults in index.html. The homepage also gets a server-rendered summary of
- * its content (replaced by the app once it loads) so search engines and AI
- * crawlers that don't run JavaScript can read it.
+ * defaults in index.html. The homepage and the calculator also get a
+ * server-rendered version of their content (replaced by the app once it loads)
+ * so search engines and AI crawlers that don't run JavaScript can read it.
  */
 
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
@@ -95,6 +103,38 @@ const renderHome = () => `
       </section>
     </main>`;
 
+const CALCULATOR_PATH = "/financial-freedom-calculator";
+
+/** Readable version of the calculator page: what it does, assumptions and FAQs (same text the app shows) */
+const renderCalculator = () => `
+    <main style="padding-top: 96px">
+      <div style="text-align: center; padding: 32px 16px 24px">
+        <h1 style="font-size: 28px; font-weight: 700">Financial Freedom Calculator</h1>
+        <p>Find out in 2 minutes — free</p>
+      </div>
+      <section style="max-width: 640px; margin: 0 auto; padding: 0 16px 80px">
+        <h2>${escapeHtml(CALCULATOR_INFO.heading)}</h2>
+        <p>${escapeHtml(CALCULATOR_INFO.intro)}</p>
+        <ol>${CALCULATOR_INFO.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
+        <h3>Assumptions used</h3>
+        <ul>${CALCULATOR_INFO.assumptions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        <h2>Frequently Asked Questions</h2>
+        ${CALCULATOR_FAQS.map((faq) => `<details><summary>${escapeHtml(faq.question)}</summary><p>${escapeHtml(faq.answer)}</p></details>`).join("")}
+        <p><small>${escapeHtml(CALCULATOR_INFO.disclaimer)}</small></p>
+        <p><a href="/blog">Read our articles on retirement planning and mutual funds</a></p>
+      </section>
+    </main>`;
+
+const faqPage = (url: string, faqs: { question: string; answer: string }[]) => ({
+  "@type": "FAQPage",
+  "@id": `${url}#faq`,
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: { "@type": "Answer", text: faq.answer },
+  })),
+});
+
 const pageGraph = (path: string, url: string, seo: { title: string; description: string }) => {
   const graph: Record<string, unknown>[] = [
     organizationSchema(),
@@ -113,15 +153,7 @@ const pageGraph = (path: string, url: string, seo: { title: string; description:
   ];
 
   if (path === "/") {
-    graph.push({
-      "@type": "FAQPage",
-      "@id": `${url}#faq`,
-      mainEntity: HOME_FAQS.map((faq) => ({
-        "@type": "Question",
-        name: faq.question,
-        acceptedAnswer: { "@type": "Answer", text: faq.answer },
-      })),
-    });
+    graph.push(faqPage(url, HOME_FAQS));
   } else {
     graph.push({
       "@type": "BreadcrumbList",
@@ -130,6 +162,21 @@ const pageGraph = (path: string, url: string, seo: { title: string; description:
         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
         { "@type": "ListItem", position: 2, name: seo.title.split(" | ")[0], item: url },
       ],
+    });
+  }
+  if (path === CALCULATOR_PATH) {
+    graph.push(faqPage(url, CALCULATOR_FAQS), {
+      "@type": "WebApplication",
+      "@id": `${url}#app`,
+      name: "Financial Freedom Calculator",
+      url,
+      description: seo.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Any",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+      provider: { "@id": `${SITE_URL}/#organization` },
+      inLanguage: "en-IN",
     });
   }
   return graph;
@@ -177,6 +224,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
       .replace(/<meta\s+name="geo\.(region|placename)"[\s\S]*?\/?>/gi, "")
       .replace("<head>", `<head>\n${head}`);
     if (path === "/") html = html.replace('<div id="root"></div>', `<div id="root">${renderHome()}</div>`);
+    if (path === CALCULATOR_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderCalculator()}</div>`);
 
     return new Response(html, {
       status: response.status,
