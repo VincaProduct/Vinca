@@ -73,10 +73,12 @@ export const BlogContentWithAnchors = ({
               headingMap.get(text.toLowerCase().trim()) ||
               headingMap.get(generateAnchor(text)) ||
               generateAnchor(text); // Fallback to auto-generated anchor
+            // The page title is the only H1; headings written as H1 in the
+            // article are section headings, so they show as H2
             return (
-              <h1 id={anchor} {...props} className="scroll-mt-24">
+              <h2 id={anchor} {...props} className="scroll-mt-24">
                 {children}
-              </h1>
+              </h2>
             );
           },
           h2: ({ children, ...props }) => {
