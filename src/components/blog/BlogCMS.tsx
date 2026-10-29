@@ -1,12 +1,13 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, ShieldAlert } from 'lucide-react';
+import { PlusCircle, ShieldAlert, FileSpreadsheet } from 'lucide-react';
 import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { BlogPostForm } from './BlogPostForm';
 import { PostsList } from './PostsList';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { exportBlogPostsToExcel } from '@/lib/blogExport';
 import type { Tables } from '@/integrations/supabase/types';
 
 type BlogPost = Tables<'blog_posts'>;
@@ -58,6 +59,19 @@ const BlogCMS = () => {
     setShowForm(true);
   };
 
+  const [exporting, setExporting] = useState(false);
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const count = await exportBlogPostsToExcel();
+      toast({ title: 'Exported', description: `${count} articles downloaded. Open the file in Excel.` });
+    } catch {
+      toast({ title: 'Error', description: 'Failed to export articles', variant: 'destructive' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   // Show loading while checking role
   if (roleLoading) {
     return (
@@ -96,10 +110,16 @@ const BlogCMS = () => {
           <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Your Posts</h2>
           <p className="text-muted-foreground text-sm sm:text-base">Manage your blog content</p>
         </div>
-        <Button onClick={handleCreateNew} className="flex items-center gap-2 w-full sm:w-auto">
-          <PlusCircle className="w-4 h-4" />
-          <span className="sm:inline">New Post</span>
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button variant="outline" onClick={handleExport} disabled={exporting} className="flex items-center gap-2 w-full sm:w-auto">
+            <FileSpreadsheet className="w-4 h-4" />
+            {exporting ? 'Exporting...' : 'Export to Excel'}
+          </Button>
+          <Button onClick={handleCreateNew} className="flex items-center gap-2 w-full sm:w-auto">
+            <PlusCircle className="w-4 h-4" />
+            <span className="sm:inline">New Post</span>
+          </Button>
+        </div>
       </div>
 
       <PostsList
