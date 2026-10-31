@@ -62,14 +62,14 @@ export function IndexValuationTable({ rows, learnMoreHref }: IndexValuationTable
         <p className="text-sm text-slate-500">The latest index P/E data will appear here once it has been added.</p>
       ) : (
         <div className="overflow-x-auto -mx-1 px-1">
-          <table className="w-full min-w-[640px] text-sm">
+          <table className="w-full min-w-[680px] text-sm">
             <thead>
               <tr className="border-b border-slate-200 text-left text-slate-600">
                 <th className="py-3 pr-4 font-semibold">Market segment</th>
                 <th className="py-3 pr-4 font-semibold">Index</th>
                 <th className="py-3 pr-4 font-semibold text-right">P/E</th>
                 <th className="py-3 pr-4 font-semibold text-right">5-yr median P/E</th>
-                <th className="py-3 pr-4 font-semibold text-right">Gap vs median</th>
+                <th className="py-3 pr-4 font-semibold text-right">Discount / premium vs median</th>
                 <th className="py-3 font-semibold">Compared with its 5-yr median</th>
               </tr>
             </thead>
@@ -88,7 +88,7 @@ export function IndexValuationTable({ rows, learnMoreHref }: IndexValuationTable
                         {row.label}
                       </span>
                     ) : (
-                      <span className="text-xs text-slate-500">— {row.note}</span>
+                      <span className="text-xs text-slate-500">—</span>
                     )}
                   </td>
                 </tr>

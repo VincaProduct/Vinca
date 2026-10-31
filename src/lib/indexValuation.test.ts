@@ -2,15 +2,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  INDICES,
-  WINDOW_MONTHS,
   addMonths,
   computeValuation,
   formatGap,
+  gapFor,
   labelForGap,
   latestCompleteMonth,
-  median,
-  windowMonths,
   type IndexPeRow,
 } from './indexValuation';
 
@@ -29,53 +26,46 @@ test('label boundaries', () => {
   for (const [gap, label] of cases) assert.equal(labelForGap(gap), label, `gap ${gap}`);
 });
 
-test('labels use the gap as displayed, so 22 vs 20 (exactly +10.00%) is Near', () => {
-  assert.equal(labelForGap(22 / 20 - 1), 'Near');
-  assert.equal(labelForGap(18 / 20 - 1), 'Near');
+test('labels use the gap as displayed, so 22 vs 20 (exactly 10.00% premium) is Near', () => {
+  assert.equal(labelForGap(gapFor(22, 20)), 'Near');
+  assert.equal(labelForGap(gapFor(18, 20)), 'Near');
 });
 
-test('median of 60 values is the average of the 30th and 31st sorted values', () => {
-  const values = Array.from({ length: 60 }, (_, i) => 60 - i); // 60..1, unsorted order
-  assert.equal(median(values), (30 + 31) / 2);
+test('gap shows as a discount or premium', () => {
+  assert.equal(formatGap(gapFor(19.7, 22.0)), '10.45% discount');
+  assert.equal(formatGap(gapFor(33.7, 28.2)), '19.50% premium');
+  assert.equal(formatGap(gapFor(20, 20)), 'At the median');
+  assert.equal(formatGap(null), '—');
 });
 
-test('the window is the 60 months ending at (and including) the month', () => {
-  const months = windowMonths('2026-10-01');
-  assert.equal(months.length, WINDOW_MONTHS);
-  assert.equal(months[0], '2021-11-01');
-  assert.equal(months.at(-1), '2026-10-01');
-  assert.equal(addMonths('2026-01-01', -1), '2025-12-01');
-});
+const october: IndexPeRow[] = [
+  { index_code: 'NIFTY50', month: '2026-10-01', as_of_date: '2026-10-30', pe: 19.7, median_pe: 22.0 },
+  { index_code: 'NIFTYMIDCAP150', month: '2026-10-01', as_of_date: '2026-10-30', pe: 28.6, median_pe: 29.8 },
+  { index_code: 'NIFTYSMALLCAP250', month: '2026-10-01', as_of_date: '2026-10-30', pe: 33.7, median_pe: 28.2 },
+  { index_code: 'NIFTY500', month: '2026-10-01', as_of_date: '2026-10-30', pe: 22.0, median_pe: 23.7 },
+];
 
-const fullHistory = (pe: (code: string, i: number) => number, end = '2026-10-01'): IndexPeRow[] =>
-  INDICES.flatMap(({ code }) =>
-    windowMonths(end).map((month, i) => ({ index_code: code, month, as_of_date: month, pe: pe(code, i) })),
+test('acceptance: October 2026 table from the brief', () => {
+  const table = computeValuation(october, '2026-10-01');
+  assert.deepEqual(
+    table.map((r) => [r.name, r.pe, r.median, formatGap(r.gap), r.label]),
+    [
+      ['Nifty 50', 19.7, 22.0, '10.45% discount', 'Below'],
+      ['Nifty Midcap 150', 28.6, 29.8, '4.03% discount', 'Near'],
+      ['Nifty Smallcap 250', 33.7, 28.2, '19.50% premium', 'Above'],
+      ['Nifty 500', 22.0, 23.7, '7.17% discount', 'Near'],
+    ],
   );
-
-test('a window with one missing month gives "Not enough history"', () => {
-  const rows = fullHistory(() => 20).filter((r) => !(r.index_code === 'NIFTY50' && r.month === '2023-03-01'));
-  const nifty = computeValuation(rows, '2026-10-01')[0];
-  assert.equal(nifty.median, null);
-  assert.equal(nifty.gap, null);
-  assert.equal(nifty.label, null);
-  assert.equal(nifty.note, 'Not enough history');
-  // The other indices are unaffected
-  assert.equal(computeValuation(rows, '2026-10-01')[1].label, 'Near');
 });
 
-test('gap, label and display for a full window', () => {
-  // 59 months at 22 and the current month at 19.7: median 22, gap −10.45%
-  const rows = fullHistory((code, i) => (code === 'NIFTY50' && i === WINDOW_MONTHS - 1 ? 19.7 : 22));
-  const nifty = computeValuation(rows, '2026-10-01')[0];
-  assert.equal(nifty.median, 22);
-  assert.equal(formatGap(nifty.gap), '−10.45%');
-  assert.equal(nifty.label, 'Below');
-  assert.equal(formatGap(33.7 / 28.2 - 1), '+19.50%');
-  assert.equal(labelForGap(33.7 / 28.2 - 1), 'Above');
+test('a missing index shows dashes', () => {
+  const nifty500 = computeValuation(october.slice(0, 3), '2026-10-01')[3];
+  assert.equal(nifty500.pe, null);
+  assert.equal(nifty500.label, null);
 });
 
 test('latest month is the newest one with all four indices', () => {
-  const rows = fullHistory(() => 20);
-  rows.push({ index_code: 'NIFTY50', month: '2026-11-01', as_of_date: '2026-11-28', pe: 20 });
+  const rows = [...october, { ...october[0], month: '2026-11-01', as_of_date: '2026-11-27' }];
   assert.equal(latestCompleteMonth(rows), '2026-10-01');
+  assert.equal(addMonths('2026-01-01', -1), '2025-12-01');
 });

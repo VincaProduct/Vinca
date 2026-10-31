@@ -11,13 +11,15 @@ create table if not exists public.nifty_pe_monthly (
   updated_at timestamptz not null default now()
 );
 
--- 2. Month-end P/E of four indices for the "P/E vs 5-year median" table
+-- 2. Month-end P/E and 5-year median P/E of four indices, both entered by
+--    an admin each month, for the "P/E vs 5-year median" table
 create table if not exists public.index_pe_monthly (
   id uuid primary key default gen_random_uuid(),
   index_code text not null check (index_code in ('NIFTY50', 'NIFTYMIDCAP150', 'NIFTYSMALLCAP250', 'NIFTY500')),
   month date not null check (extract(day from month) = 1),
   as_of_date date not null,
   pe numeric(6,2) not null check (pe > 0 and pe < 200),
+  median_pe numeric(6,2) not null check (median_pe > 0 and median_pe < 200),
   source text not null default 'NSE Indices',
   created_by uuid default auth.uid(),
   created_at timestamptz not null default now(),
@@ -25,12 +27,14 @@ create table if not exists public.index_pe_monthly (
   unique (index_code, month)
 );
 
--- Every change to a saved index P/E is logged (written by the trigger below)
+-- Every change to a saved index P/E or median is logged (written by the trigger below)
 create table if not exists public.index_pe_edits (
   id uuid primary key default gen_random_uuid(),
   row_id uuid not null,
   old_pe numeric(6,2),
   new_pe numeric(6,2),
+  old_median_pe numeric(6,2),
+  new_median_pe numeric(6,2),
   changed_by uuid,
   changed_at timestamptz not null default now()
 );
@@ -43,9 +47,9 @@ set search_path = public
 as $$
 begin
   new.updated_at := now();
-  if new.pe is distinct from old.pe then
-    insert into public.index_pe_edits (row_id, old_pe, new_pe, changed_by)
-    values (old.id, old.pe, new.pe, auth.uid());
+  if new.pe is distinct from old.pe or new.median_pe is distinct from old.median_pe then
+    insert into public.index_pe_edits (row_id, old_pe, new_pe, old_median_pe, new_median_pe, changed_by)
+    values (old.id, old.pe, new.pe, old.median_pe, new.median_pe, auth.uid());
   end if;
   return new;
 end;

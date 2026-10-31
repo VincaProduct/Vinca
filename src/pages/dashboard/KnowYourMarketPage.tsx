@@ -412,15 +412,8 @@ export default function KnowYourMarketPage() {
               How today’s Nifty 50 P/E compares with its own history since 2000.
             </p>
           </div>
-          {marketLoading ? (
-            <div className="flex items-center gap-2 text-sm text-slate-500 py-8">
-              <Loader2 className="w-5 h-5 animate-spin text-emerald-600" /> Loading market data…
-            </div>
-          ) : niftyPe.length === 0 ? (
-            <p className="text-sm text-slate-500">Market data is not available right now.</p>
-          ) : (
-            <PeHeatmap data={toPeByYear(niftyPe)} />
-          )}
+          {/* Built-in history plus the months saved in Admin Tools → Market Data */}
+          <PeHeatmap data={toPeByYear(niftyPe)} />
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
             <p className="text-sm text-blue-900 leading-relaxed">
               This shows how today’s P/E compares with history. It is not a signal to buy, sell or time your investments.

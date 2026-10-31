@@ -206,6 +206,7 @@ export type Database = {
           created_by: string | null
           id: string
           index_code: string
+          median_pe: number
           month: string
           pe: number
           source: string
@@ -217,6 +218,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           index_code: string
+          median_pe: number
           month: string
           pe: number
           source?: string
@@ -228,6 +230,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           index_code?: string
+          median_pe?: number
           month?: string
           pe?: number
           source?: string
@@ -240,7 +243,9 @@ export type Database = {
           changed_at: string
           changed_by: string | null
           id: string
+          new_median_pe: number | null
           new_pe: number | null
+          old_median_pe: number | null
           old_pe: number | null
           row_id: string
         }
@@ -248,7 +253,9 @@ export type Database = {
           changed_at?: string
           changed_by?: string | null
           id?: string
+          new_median_pe?: number | null
           new_pe?: number | null
+          old_median_pe?: number | null
           old_pe?: number | null
           row_id: string
         }
@@ -256,7 +263,9 @@ export type Database = {
           changed_at?: string
           changed_by?: string | null
           id?: string
+          new_median_pe?: number | null
           new_pe?: number | null
+          old_median_pe?: number | null
           old_pe?: number | null
           row_id?: string
         }

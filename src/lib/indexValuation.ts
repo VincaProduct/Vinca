@@ -1,15 +1,14 @@
 /**
- * "Index P/E vs 5-year median" calculation for Market Pulse. Pure functions
+ * "Index P/E vs 5-year median" for Market Pulse. Each month an admin enters,
+ * for every index, the month-end P/E and the 5-year median P/E (calculated
+ * outside the site); the gap and label are calculated here. Pure functions
  * (no imports) so they can be unit-tested and reused on a public page later.
  * Tests: src/lib/indexValuation.test.ts (npm test).
  */
 
 // ── Settings ────────────────────────────────────────────────────────────────
-export const WINDOW_MONTHS = 60;
 export const NEAR_BAND = 0.10;
 export const FAR_BAND = 0.20;
-/** The window ends at (and includes) the month being shown */
-export const INCLUDE_CURRENT_MONTH = true;
 
 export const INDICES = [
   { code: 'NIFTY50', name: 'Nifty 50', segment: 'Large cap' },
@@ -28,6 +27,7 @@ export interface IndexPeRow {
   /** Trading date the P/E is for, YYYY-MM-DD */
   as_of_date: string;
   pe: number;
+  median_pe: number;
 }
 
 export interface ValuationRow {
@@ -36,43 +36,17 @@ export interface ValuationRow {
   segment: string;
   pe: number | null;
   median: number | null;
-  /** Unrounded: current P/E ÷ median − 1 */
+  /** P/E ÷ median − 1 (negative = discount, positive = premium) */
   gap: number | null;
   label: ValuationLabel | null;
-  /** Set when the 60-month window has a gap */
-  note: string | null;
 }
 
-// ── Months ──────────────────────────────────────────────────────────────────
-/** YYYY-MM-01 for a month index (months since year 0) */
-const monthKey = (index: number) => {
-  const year = Math.floor(index / 12);
-  const month = (index % 12) + 1;
-  return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-01`;
-};
-const monthIndex = (key: string) => {
-  const [year, month] = key.split('-').map(Number);
-  return year * 12 + (month - 1);
-};
-/** YYYY-MM-01 of the month `offset` months from `month` */
-export const addMonths = (month: string, offset: number) => monthKey(monthIndex(month) + offset);
-/** The WINDOW_MONTHS months ending at `month` (oldest first) */
-export const windowMonths = (month: string) => {
-  const end = monthIndex(month) - (INCLUDE_CURRENT_MONTH ? 0 : 1);
-  return Array.from({ length: WINDOW_MONTHS }, (_, i) => monthKey(end - WINDOW_MONTHS + 1 + i));
-};
-
 // ── Calculation ─────────────────────────────────────────────────────────────
-/** Median; for an even count, the average of the two middle values */
-export const median = (values: number[]) => {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
-};
-
 // Gaps are compared after rounding to 4 decimals (0.01%), so a gap shown as
 // exactly 10.00% is "Near" despite floating-point noise
 const roundGap = (gap: number) => Math.round(gap * 10000) / 10000;
+
+export const gapFor = (pe: number, median: number) => pe / median - 1;
 
 export const labelForGap = (gap: number): ValuationLabel => {
   const g = roundGap(gap);
@@ -84,54 +58,47 @@ export const labelForGap = (gap: number): ValuationLabel => {
 };
 
 /** The table for one month: each index's P/E, 5-year median, gap and label */
-export const computeValuation = (rows: IndexPeRow[], month: string): ValuationRow[] => {
-  const window = windowMonths(month);
-  return INDICES.map(({ code, name, segment }) => {
-    const byMonth = new Map(rows.filter((r) => r.index_code === code).map((r) => [r.month, Number(r.pe)]));
-    const pe = byMonth.get(month) ?? null;
-    const values = window.map((m) => byMonth.get(m));
-    if (pe === null || values.some((v) => v === undefined)) {
-      return { code, name, segment, pe, median: null, gap: null, label: null, note: 'Not enough history' };
-    }
-    const med = median(values as number[]);
-    const gap = pe / med - 1;
-    return { code, name, segment, pe, median: med, gap, label: labelForGap(gap), note: null };
+export const computeValuation = (rows: IndexPeRow[], month: string): ValuationRow[] =>
+  INDICES.map(({ code, name, segment }) => {
+    const row = rows.find((r) => r.index_code === code && r.month === month);
+    if (!row) return { code, name, segment, pe: null, median: null, gap: null, label: null };
+    const pe = Number(row.pe);
+    const median = Number(row.median_pe);
+    const gap = gapFor(pe, median);
+    return { code, name, segment, pe, median, gap, label: labelForGap(gap) };
   });
-};
 
-/** Newest month where all four indices have a P/E (the table opens on it) */
-export const latestCompleteMonth = (rows: IndexPeRow[]): string | null => {
-  const counts = new Map<string, Set<string>>();
-  rows.forEach((r) => counts.set(r.month, (counts.get(r.month) ?? new Set()).add(r.index_code)));
-  const complete = [...counts.entries()].filter(([, codes]) => INDICES.every((i) => codes.has(i.code))).map(([m]) => m);
-  return complete.sort().at(-1) ?? null;
-};
-
-/** Months with all four indices, newest first (for the past-months picker) */
+/** Months with all four indices, newest first (the table opens on the first) */
 export const completeMonths = (rows: IndexPeRow[]) => {
-  const counts = new Map<string, Set<string>>();
-  rows.forEach((r) => counts.set(r.month, (counts.get(r.month) ?? new Set()).add(r.index_code)));
-  return [...counts.entries()]
-    .filter(([, codes]) => INDICES.every((i) => codes.has(i.code)))
+  const codes = new Map<string, Set<string>>();
+  rows.forEach((r) => codes.set(r.month, (codes.get(r.month) ?? new Set()).add(r.index_code)));
+  return [...codes.entries()]
+    .filter(([, c]) => INDICES.every((i) => c.has(i.code)))
     .map(([m]) => m)
     .sort()
     .reverse();
 };
 
-/** Months missing for an index within the window ending at `month` */
-export const missingWindowMonths = (rows: IndexPeRow[], code: string, month: string) => {
-  const have = new Set(rows.filter((r) => r.index_code === code).map((r) => r.month));
-  return windowMonths(month).filter((m) => !have.has(m));
+export const latestCompleteMonth = (rows: IndexPeRow[]): string | null => completeMonths(rows)[0] ?? null;
+
+/** YYYY-MM-01 of the month `offset` months from `month` */
+export const addMonths = (month: string, offset: number) => {
+  const [year, m] = month.split('-').map(Number);
+  const index = year * 12 + (m - 1) + offset;
+  return `${String(Math.floor(index / 12)).padStart(4, '0')}-${String((index % 12) + 1).padStart(2, '0')}-01`;
 };
 
 // ── Display ─────────────────────────────────────────────────────────────────
 export const formatPe = (value: number | null) => (value === null ? '—' : value.toFixed(1));
+
+/** "10.45% discount" below the median, "19.50% premium" above, "At the median" when equal */
 export const formatGap = (gap: number | null) => {
   if (gap === null) return '—';
   const pct = roundGap(gap) * 100;
-  const sign = pct > 0 ? '+' : pct < 0 ? '−' : '';
-  return `${sign}${Math.abs(pct).toFixed(2)}%`;
+  if (pct === 0) return 'At the median';
+  return `${Math.abs(pct).toFixed(2)}% ${pct < 0 ? 'discount' : 'premium'}`;
 };
+
 export const formatAsOf = (date: string | null) =>
   date ? new Date(`${date}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 export const formatMonth = (month: string) =>
@@ -139,11 +106,11 @@ export const formatMonth = (month: string) =>
 
 /** Methodology text built from the settings, so it always matches the code */
 export const methodologyText = (asOf: string) =>
-  `How we calculate this: for each index we take the P/E published by NSE Indices on the last trading day of the month. ` +
-  `We compare it with the median of the last ${WINDOW_MONTHS} month-end P/E values. Gap = current P/E ÷ ${WINDOW_MONTHS / 12}-year median − 1. ` +
-  `Within ±${NEAR_BAND * 100}% of the median is shown as “Near”; between ${NEAR_BAND * 100}% and ${FAR_BAND * 100}% as “Above” or “Below”; ` +
-  `beyond ${FAR_BAND * 100}% as “Well above” or “Well below”. We use the same method and bands every month, and past months stay on record. ` +
-  `Data as of ${asOf}.`;
+  `How we calculate this: for each index we take the P/E published by NSE Indices on the last trading day of the month, ` +
+  `and the median of its month-end P/E over the last 5 years. Gap = current P/E ÷ 5-year median − 1, shown as a discount ` +
+  `(below the median) or a premium (above it). Within ±${NEAR_BAND * 100}% of the median is shown as “Near”; between ` +
+  `${NEAR_BAND * 100}% and ${FAR_BAND * 100}% as “Above” or “Below”; beyond ${FAR_BAND * 100}% as “Well above” or “Well below”. ` +
+  `We use the same method and bands every month, and past months stay on record. Data as of ${asOf}.`;
 
 export const DISCLOSURE =
   'Educational data only. This compares each index’s current P/E with its own 5-year median. It is not a recommendation to buy, sell or switch any fund, or to time your investments. ' +
