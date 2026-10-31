@@ -172,6 +172,105 @@ export type Database = {
         }
         Relationships: []
       }
+      nifty_pe_monthly: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          month: string
+          pe: number
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          month: string
+          pe: number
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          month?: string
+          pe?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      index_pe_monthly: {
+        Row: {
+          as_of_date: string
+          created_at: string
+          created_by: string | null
+          id: string
+          index_code: string
+          median_pe: number
+          month: string
+          pe: number
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          as_of_date: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          index_code: string
+          median_pe: number
+          month: string
+          pe: number
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          as_of_date?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          index_code?: string
+          median_pe?: number
+          month?: string
+          pe?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      index_pe_edits: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          id: string
+          new_median_pe: number | null
+          new_pe: number | null
+          old_median_pe: number | null
+          old_pe: number | null
+          row_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_median_pe?: number | null
+          new_pe?: number | null
+          old_median_pe?: number | null
+          old_pe?: number | null
+          row_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_median_pe?: number | null
+          new_pe?: number | null
+          old_median_pe?: number | null
+          old_pe?: number | null
+          row_id?: string
+        }
+        Relationships: []
+      }
       global_faqs: {
         Row: {
           answer: string
