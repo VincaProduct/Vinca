@@ -229,6 +229,13 @@ function DashboardLayoutInner() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Every dashboard page opens at its top, not at the previous page's scroll
+  // position (links to a #section still jump there)
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (!hash) window.scrollTo(0, 0);
+  }, [pathname, hash]);
+
   return (
     <div className="min-h-screen bg-background">
       <SidebarProvider open={open} onOpenChange={setOpen}>
