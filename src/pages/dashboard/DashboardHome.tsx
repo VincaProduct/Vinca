@@ -28,7 +28,7 @@ function scoreBadgeClass(score: number): string {
 
 function nextStepRoute(title: string, description: string): string {
   const text = (title + ' ' + description).toLowerCase();
-  if (/sip|saving|corpus|invest|habit/.test(text)) return '/dashboard/sprints';
+  if (/sip|saving|corpus|invest|habit/.test(text)) return '/dashboard/ffr';
   if (/insurance|foundation|emergency|kyc|nomination/.test(text)) return '/dashboard/insurance';
   return '/dashboard/compass';
 }

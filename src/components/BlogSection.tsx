@@ -32,8 +32,8 @@ const BlogSection = () => {
             Financial Insights & Market Updates
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-            Stay informed with expert insights, market analysis, and actionable financial advice 
-            from our team of certified financial professionals.
+            Stay informed with research-driven insights and market analysis
+            from the Vinca Wealth team.
           </p>
         </div>
 

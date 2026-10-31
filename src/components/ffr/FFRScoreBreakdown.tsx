@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import type { CalculatorInputs, CalculationResults } from '@/types/calculator';
 import type { FFRFoundationsChecklist } from '@/types/ffr';
-import { useSprints, type Sprint } from '@/hooks/useSprints';
 
 interface FFRScoreBreakdownProps {
   inputs: CalculatorInputs;
@@ -14,11 +13,19 @@ interface FFRScoreBreakdownProps {
 
 interface ComponentScore {
   name: string;
-  scoreComponent: Sprint['score_component'];
+  scoreComponent: 'corpus_progress' | 'time_buffer' | 'savings_rate' | 'essentials_coverage' | 'lifestyle_sustainability';
   points: number;
   max: number;
   feedback: string;
 }
+
+/** Where each incomplete part of the score can be worked on */
+const NEXT_STEP: Partial<Record<ComponentScore['scoreComponent'], { label: string; url: string }>> = {
+  corpus_progress: { label: 'Discuss my SIP in a consultation →', url: '/dashboard/compass' },
+  time_buffer: { label: 'Discuss my retirement date →', url: '/dashboard/compass' },
+  essentials_coverage: { label: 'Review my protection →', url: '/dashboard/insurance' },
+  lifestyle_sustainability: { label: 'Discuss my withdrawal plan →', url: '/dashboard/compass' },
+};
 
 function tileColor(points: number, max: number): { bar: string; border: string; label: string } {
   const pct = max > 0 ? points / max : 0;
@@ -29,13 +36,6 @@ function tileColor(points: number, max: number): { bar: string; border: string; 
 
 export function FFRScoreBreakdown({ inputs, results, projections, checklist }: FFRScoreBreakdownProps) {
   const navigate = useNavigate();
-  const { getActiveSprint } = useSprints();
-  const [activeSprint, setActiveSprint] = useState<Sprint | null>(null);
-
-  useEffect(() => {
-    getActiveSprint().then(({ data }) => setActiveSprint(data));
-  }, []);
-
   const components = useMemo((): ComponentScore[] => {
     // Component 1: Corpus Progress (30 pts)
     const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
@@ -120,7 +120,6 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
   }, [inputs, results, projections, checklist]);
 
   const total = components.reduce((sum, c) => sum + c.points, 0);
-  const hasActiveSprint = activeSprint !== null;
 
   return (
     <Card className="border-primary/20 shadow-md">
@@ -135,7 +134,7 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
             const barPct = Math.round((c.points / c.max) * 100);
             const isLast = i === components.length - 1;
             const isIncomplete = c.points < c.max;
-            const isActiveSprintTile = activeSprint?.score_component === c.scoreComponent;
+            const action = NEXT_STEP[c.scoreComponent];
 
             return (
               <div key={c.name} className={`rounded-xl border ${border} bg-card p-4 space-y-2${isLast ? ' sm:col-span-2' : ''}`}>
@@ -153,25 +152,14 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
                 </div>
                 <p className="text-xs text-muted-foreground leading-snug">{c.feedback}</p>
 
-                {isIncomplete && (
-                  isActiveSprintTile ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      Sprint in progress
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={hasActiveSprint}
-                      onClick={() => navigate(`/dashboard/sprints?component=${c.scoreComponent}`)}
-                      className="text-xs font-medium text-primary hover:underline disabled:text-muted-foreground disabled:no-underline disabled:cursor-not-allowed transition-colors"
-                    >
-                      {c.scoreComponent === 'corpus_progress' && 'Increase my SIP →'}
-                      {c.scoreComponent === 'time_buffer' && 'Retire earlier →'}
-                      {c.scoreComponent === 'essentials_coverage' && 'Get protected →'}
-                      {c.scoreComponent === 'lifestyle_sustainability' && 'Fix my withdrawal plan →'}
-                    </button>
-                  )
+                {isIncomplete && action && (
+                  <button
+                    type="button"
+                    onClick={() => navigate(action.url)}
+                    className="text-xs font-medium text-primary hover:underline transition-colors"
+                  >
+                    {action.label}
+                  </button>
                 )}
               </div>
             );

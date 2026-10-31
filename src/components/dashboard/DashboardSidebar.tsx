@@ -17,7 +17,6 @@ import {
   Shield,
   LineChart,
   BookOpen,
-  Zap,
   Layers,
   Footprints,
   ArrowUpCircle,
@@ -41,7 +40,6 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
-import { useMembership } from '@/hooks/useMembership';
 import { useUserRole } from '@/hooks/useUserRole';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useFinancialPlanning } from '@/components/financial-planning/context/FinancialPlanningContext';
@@ -97,7 +95,6 @@ const NAV: NavGroup[] = [
     title: 'Build',
     icon: TrendingUp,
     sub: [
-      { title: 'Sprint',           url: '/dashboard/sprints',           icon: Zap      },
       { title: 'Know Your Market', url: '/dashboard/know-your-market',  icon: LineChart },
     ],
     dot: (score) =>
@@ -544,19 +541,6 @@ export function DashboardSidebar() {
           </div>
           <ThemeToggle />
         </div>
-
-        {/* Join Membership */}
-        <Link to="/dashboard/pricing">
-          <button
-            type="button"
-            className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M12 17.75L7.5 21l1.25-5.25L4 10.75l5.38-.38L12 5.5l2.62 4.87 5.38.38-4.75 5.0L16.5 21z" />
-            </svg>
-            Join Membership
-          </button>
-        </Link>
 
       </SidebarFooter>
     </Sidebar>
