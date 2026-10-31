@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import type { CalculatorInputs, CalculationResults } from '@/types/calculator';
 import type { FFRFoundationsChecklist } from '@/types/ffr';
@@ -21,10 +22,10 @@ interface ComponentScore {
 
 /** Where each incomplete part of the score can be worked on */
 const NEXT_STEP: Partial<Record<ComponentScore['scoreComponent'], { label: string; url: string }>> = {
-  corpus_progress: { label: 'Discuss my SIP in a consultation →', url: '/dashboard/compass' },
-  time_buffer: { label: 'Discuss my retirement date →', url: '/dashboard/compass' },
-  essentials_coverage: { label: 'Review my protection →', url: '/dashboard/insurance' },
-  lifestyle_sustainability: { label: 'Discuss my withdrawal plan →', url: '/dashboard/compass' },
+  corpus_progress: { label: 'Discuss my SIP in a consultation', url: '/dashboard/compass' },
+  time_buffer: { label: 'Discuss my retirement date', url: '/dashboard/compass' },
+  essentials_coverage: { label: 'Review my protection', url: '/dashboard/insurance' },
+  lifestyle_sustainability: { label: 'Discuss my withdrawal plan', url: '/dashboard/compass' },
 };
 
 function tileColor(points: number, max: number): { bar: string; border: string; label: string } {
@@ -156,9 +157,10 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
                   <button
                     type="button"
                     onClick={() => navigate(action.url)}
-                    className="text-xs font-medium text-primary hover:underline transition-colors"
+                    className="group mt-1 inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
                   >
                     {action.label}
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </button>
                 )}
               </div>
