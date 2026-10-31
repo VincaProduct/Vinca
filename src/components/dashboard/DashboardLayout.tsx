@@ -140,13 +140,13 @@ function MobileScoreHeader() {
 
 // ── Mobile tab bar ────────────────────────────────────────────────────────────
 
-const BUILD_PATHS   = ['/dashboard/sprints', '/dashboard/know-your-market'];
+const BUILD_PATHS   = ['/dashboard/know-your-market'];
 const PROTECT_PATHS = ['/dashboard/insurance'];
 const GROW_PATHS    = ['/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
 
 const MOBILE_TABS = [
   { key: 'home',    label: 'Home',    icon: Home,       url: '/dashboard',           exact: true,  premium: false },
-  { key: 'build',   label: 'Build',   icon: TrendingUp, url: '/dashboard/sprints',   exact: false, premium: false },
+  { key: 'build',   label: 'Build',   icon: TrendingUp, url: '/dashboard/know-your-market', exact: false, premium: false },
   { key: 'protect', label: 'Protect', icon: Shield,     url: '/dashboard/insurance', exact: false, premium: false },
   { key: 'grow',    label: 'Grow',    icon: Sprout,     url: '/dashboard/learning',  exact: false, premium: false },
   { key: 'compass', label: 'Compass', icon: Star,       url: '/dashboard/compass',   exact: false, premium: true  },

@@ -2,11 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { lazy, Suspense } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { RazorpayProvider } from "@/contexts/RazorpayContext";
 import { ReferralProvider } from "@/contexts/ReferralContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PublicRoute from "@/components/PublicRoute";
@@ -17,10 +16,7 @@ const FinancialFreedomCalculator = lazy(() => import("./pages/FinancialFreedomCa
 const AuthPage = lazy(() => import("./components/auth/AuthPage"));
 const DashboardLayout = lazy(() => import("./components/dashboard/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
-const DashboardPricingPage = lazy(() => import("./pages/dashboard/PricingPage"));
-const BuyMembership = lazy(() => import("./pages/BuyMembership"));
 
-const InvestmentOpportunities = lazy(() => import("./pages/dashboard/InvestmentOpportunities"));
 const ReferFriend = lazy(() => import("./pages/dashboard/ReferFriend"));
 const SupportPage = lazy(() => import("./pages/dashboard/SupportPage"));
 const FinancialCalculatorPage = lazy(() => import("./pages/dashboard/FinancialCalculatorPage"));
@@ -38,12 +34,7 @@ const ReflectionsPage = lazy(() => import("./pages/dashboard/ReflectionsPage"));
 const KnowYourMarketPage = lazy(() => import("./pages/dashboard/KnowYourMarketPage"));
 const CurationsPage = lazy(() => import("./pages/dashboard/CurationsPage"));
 const InsurancePage = lazy(() => import("./pages/dashboard/InsurancePage"));
-// import PricingPage from "./pages/dashboard/PricingPage";
 // import ReadinessFitPage from "./pages/dashboard/ReadinessFitPage";
-// import NewReferralPage from "./pages/dashboard/NewReferralPage";
-// import SprintHomePage from "./pages/dashboard/SprintHomePage";
-// import SprintDetailPage from "./pages/dashboard/SprintDetailPage";
-// import SprintBPage from "./pages/sprintb/index";
 const LearningHome = lazy(() => import("./pages/learning/LearningHome"));
 const LearningSeriesDetail = lazy(() => import("./pages/learning/LearningSeriesDetail"));
 const LearningPlayer = lazy(() => import("./pages/learning/LearningPlayer"));
@@ -52,18 +43,12 @@ const LearningLibrary = lazy(() => import("./pages/learning/LearningLibrary"));
 const FFRChecklist = lazy(() => import("./pages/ffr/FFRChecklist"));
 const FFROpportunities = lazy(() => import("./pages/ffr/FFROpportunities"));
 const UnifiedFFRPage = lazy(() => import("./pages/ffr/UnifiedFFRPage"));
-const SprintPage = lazy(() => import("./pages/dashboard/SprintPage"));
-const AchieversClubLanding = lazy(() => import("./pages/AchieversClubLanding"));
-const AchieversClubDashboard = lazy(() => import("./pages/dashboard/AchieversClubDashboard"));
-const UpgradePage = lazy(() => import("./pages/dashboard/UpgradePage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
 const SubscribersPage = lazy(() => import("./pages/dashboard/SubscribersPage"));
 import NotFound from "./pages/NotFound";
 import RouteSeo from "./components/RouteSeo";
-const PublicPricing = lazy(() => import("./pages/PublicPricing"));
-const DashboardBuyMembershipPage = lazy(() => import("./pages/dashboard/BuyMembershipPage"));
 const EventsPage = lazy(() => import("./pages/EventsPage"));
 const EventDetailPage = lazy(() => import("./pages/EventDetailPage"));
 const EventConfirmationPage = lazy(() => import("./pages/EventConfirmationPage"));
@@ -84,7 +69,6 @@ const App = () => (
     <HelmetProvider>
       <AuthProvider>
         <ReferralProvider>
-          <RazorpayProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -101,10 +85,11 @@ const App = () => (
                   <Route path="/thank-you" element={<PublicRoute><ThankYou /></PublicRoute>} />
                   <Route path="/financial-freedom-calculator" element={<PublicRoute><FinancialFreedomCalculator /></PublicRoute>} />
                   <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
-                  <Route path="/achievers-club" element={<PublicRoute><AchieversClubLanding /></PublicRoute>} />
                   <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
-                  <Route path="/pricing" element={<PublicRoute><PublicPricing /></PublicRoute>} />
-                  <Route path="/buy-membership" element={<PublicRoute><BuyMembership /></PublicRoute>} />
+                  {/* Removed pages (paid membership, Achievers Club) */}
+                  <Route path="/achievers-club" element={<Navigate to="/" replace />} />
+                  <Route path="/pricing" element={<Navigate to="/" replace />} />
+                  <Route path="/buy-membership" element={<Navigate to="/" replace />} />
                   <Route path="/events" element={<EventsPage />} />
                   <Route path="/events/:id" element={<EventDetailPage />} />
                   <Route path="/events/:id/confirmation" element={<EventConfirmationPage />} />
@@ -113,13 +98,16 @@ const App = () => (
                   <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
 
                     <Route index element={<DashboardHome />} />
-                    <Route path="pricing" element={<DashboardPricingPage />} />
-                    <Route path="buy-membership" element={<DashboardBuyMembershipPage />} />
+                    {/* Removed pages (paid membership, Sprint, Achievers Club) go to the dashboard home */}
+                    <Route path="pricing" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="buy-membership" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="upgrade" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="achievers-club" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="sprints" element={<Navigate to="/dashboard/know-your-market" replace />} />
 
                     <Route path="ffr" element={<UnifiedFFRPage />} />
                     <Route path="ffr/checklist" element={<FFRChecklist />} />
                     <Route path="ffr/opportunities" element={<FFROpportunities />} />
-                    <Route path="sprints" element={<SprintPage />} />
                     <Route path="know-your-market" element={<KnowYourMarketPage />} />
                     <Route path="curations" element={<CurationsPage />} />
                     <Route path="footprints" element={<FootprintsPage />} />
@@ -135,11 +123,9 @@ const App = () => (
                     <Route path="events" element={<DashboardEventsPage />} />
                     <Route path="compass" element={<ElevatePage />} />
                     <Route path="calculator" element={<FinancialCalculatorPage />} />
-                    <Route path="investment-opportunities" element={<InvestmentOpportunities />} />
+                    <Route path="investment-opportunities" element={<Navigate to="/dashboard" replace />} />
                     <Route path="refer" element={<ReferFriend />} />
                     <Route path="support" element={<SupportPage />} />
-                    <Route path="upgrade" element={<UpgradePage />} />
-                    <Route path="achievers-club" element={<AchieversClubDashboard />} />
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
@@ -181,7 +167,6 @@ const App = () => (
                 </Suspense>
               </BrowserRouter>
             </TooltipProvider>
-          </RazorpayProvider>
         </ReferralProvider>
       </AuthProvider>
     </HelmetProvider>

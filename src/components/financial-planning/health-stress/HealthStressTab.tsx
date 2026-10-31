@@ -1,12 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Heart, AlertCircle, Lock, Wallet } from 'lucide-react';
+import { Heart, AlertCircle, Wallet } from 'lucide-react';
 import { useFinancialPlanning } from '../context/FinancialPlanningContext';
 import { HealthCategorySelector } from './HealthCategorySelector';
 import { HealthImpactKPIs } from './HealthImpactKPIs';
-import { PremiumBlurGate } from './PremiumBlurGate';
-import { useMembership } from '@/hooks/useMembership';
 
 export function HealthStressTab() {
   const {
@@ -17,8 +14,6 @@ export function HealthStressTab() {
     hasCalculated,
     setHealthCategory,
   } = useFinancialPlanning();
-
-  const { isPro, loading: membershipLoading } = useMembership();
 
   const formatCurrency = (value: number) => {
     if (value >= 10000000) {
@@ -66,12 +61,6 @@ export function HealthStressTab() {
                 </p>
               </div>
             </div>
-            {!isPro && !membershipLoading && (
-              <Badge variant="outline" className="gap-1">
-                <Lock className="w-3 h-3" />
-                Premium
-              </Badge>
-            )}
           </div>
         </CardHeader>
       </Card>
@@ -108,28 +97,20 @@ export function HealthStressTab() {
         </CardContent>
       </Card>
 
-      {/* Premium Gated Content */}
-      <PremiumBlurGate
-        isLocked={!isPro && !membershipLoading}
-        title="Unlock Health Stress Analysis"
-        subtitle="See how health scenarios impact your retirement plan"
-      >
-        <HealthCategorySelector
-          selectedCategory={healthCategory}
-          onSelectCategory={setHealthCategory}
+      <HealthCategorySelector
+        selectedCategory={healthCategory}
+        onSelectCategory={setHealthCategory}
+      />
+
+      {healthStressData && (
+        <HealthImpactKPIs
+          healthStressData={healthStressData}
+          inputs={inputs}
         />
+      )}
 
-        {healthStressData && (
-          <HealthImpactKPIs
-            healthStressData={healthStressData}
-            inputs={inputs}
-          />
-        )}
-      </PremiumBlurGate>
-
-      {/* Advisor CTA */}
-      {isPro && (
-        <Card>
+      {/* Consultation CTA */}
+      <Card>
           <CardContent className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
@@ -147,8 +128,7 @@ export function HealthStressTab() {
               </Button>
             </div>
           </CardContent>
-        </Card>
-      )}
+      </Card>
     </div>
   );
 }
