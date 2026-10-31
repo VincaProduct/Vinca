@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Settings2, X, ChevronDown } from 'lucide-react';
+import { Settings2, X, ChevronDown, ArrowRight } from 'lucide-react';
 import {
   FinancialPlanningProvider,
   useFinancialPlanning,
@@ -264,26 +265,22 @@ function FoundationChapter() {
     {
       icon: '🛡️', name: 'Life Insurance',
       label: `${fmt(annualIncome * 10)} cover`,
-      action: 'Learn what cover you need →',
-      actionHref: '#',
+      action: 'Learn what cover you need',
     },
     {
       icon: '❤️', name: 'Health Insurance',
       label: `${fmt(annualIncome * 0.5)} cover`,
-      action: 'Learn what cover you need →',
-      actionHref: '#',
+      action: 'Learn what cover you need',
     },
     {
       icon: '💰', name: 'Emergency Fund',
       label: `${fmt(inputs.currentMonthlyExpenses * 6)} saved`,
-      action: 'How to build an emergency fund →',
-      actionHref: '#',
+      action: 'How to build an emergency fund',
     },
     {
       icon: '📈', name: 'Required SIP',
       label: `${fmt(inputs.sipAmount)} / ${fmt(results.requiredMonthlySIP)} needed`,
-      action: 'Start closing this gap →',
-      actionHref: '#chapter-next-move',
+      action: 'Start closing this gap',
     },
   ];
 
@@ -364,20 +361,15 @@ function FoundationChapter() {
               )}
 
               {s === 'no' && (
-                <a
-                  href={item.actionHref}
-                  style={{
-                    display: 'block', marginTop: 12, fontSize: 13, fontWeight: 600,
-                    color: 'hsl(158 64% 42%)', textDecoration: 'none',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  }}
-                  onClick={item.actionHref === '#chapter-next-move' ? (e) => {
-                    e.preventDefault();
-                    document.getElementById('chapter-next-move')?.scrollIntoView({ behavior: 'smooth' });
-                  } : undefined}
+                // Every gap is worked on in Compass
+                <Link
+                  to="/dashboard/compass"
+                  className="group mt-3 inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary no-underline transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
                   {item.action}
-                </a>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
               )}
             </div>
           );
