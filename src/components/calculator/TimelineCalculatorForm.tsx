@@ -105,7 +105,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
   // Typed as free text so any age can be entered; the inputs are only updated
   // with it once it's a valid retirement age
   const [retirementText, setRetirementText] = useState(() =>
-    String(inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP));
+    inputs.age > 0 ? String(inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP) : '');
   const retirementAge = Number(retirementText) || 0;
 
   // How long SIPs run, as the calculator has always assumed (20 years by

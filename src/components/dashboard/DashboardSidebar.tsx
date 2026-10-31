@@ -17,6 +17,7 @@ import {
   Shield,
   LineChart,
   BookOpen,
+  Newspaper,
   Zap,
   Layers,
   Footprints,
@@ -119,6 +120,7 @@ const NAV: NavGroup[] = [
     title: 'Grow',
     icon: Sprout,
     sub: [
+      { title: 'Blog',        url: '/dashboard/blog',        icon: Newspaper     },
       { title: 'Learning',    url: '/dashboard/learning',    icon: BookOpen      },
       { title: 'Curations',   url: '/dashboard/curations',   icon: Layers        },
       { title: 'Footprints',  url: '/dashboard/footprints',  icon: Footprints    },

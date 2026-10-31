@@ -77,16 +77,18 @@ export function CEILING(number, significance) {
 
 const FinancialFreedomCalculator = () => {
   const { user } = useAuth();
+  // A new visitor starts with an empty form; the assumptions below are fixed
   const [inputs, setInputs] = useState<CalculatorInputs>({
-    age: 26,
+    age: 0,
     lifeExpectancy: 85,
-    initialPortfolioValue: 50000,
-    sipAmount: 30000,
+    initialPortfolioValue: 0,
+    sipAmount: 0,
     yearsForSIP: 20,
     returnDuringSIPAndWaiting: 12,
     growthInSIP: 10,
     waitingYearsBeforeSWP: 5,
-    currentMonthlyExpenses: 100000,
+    currentMonthlyExpenses: 0,
+    monthlyIncome: 0,
     inflation: 7,
     returnDuringSWP: 10,
     growthInSWP: 7,
@@ -114,12 +116,9 @@ const FinancialFreedomCalculator = () => {
             .limit(1)
             .single();
 
+          // The form always comes first, filled in with the last numbers used
           if (!error && data) {
             setInputs(data.inputs as unknown as CalculatorInputs);
-            if (data.results) {
-              setResults(data.results as unknown as CalculationResults);
-              setShowForm(false);
-            }
             setIsLoading(false);
             return;
           }
@@ -130,7 +129,6 @@ const FinancialFreedomCalculator = () => {
 
       // Fallback to localStorage
       const cachedInputs = localStorage.getItem('financial_calculator_inputs');
-      const cachedResults = localStorage.getItem('financial_calculator_results');
       
       if (cachedInputs) {
         try {
@@ -140,15 +138,7 @@ const FinancialFreedomCalculator = () => {
         }
       }
       
-      if (cachedResults) {
-        try {
-          setResults(JSON.parse(cachedResults));
-          setShowForm(false);
-        } catch (error) {
-          console.error('Error parsing cached results:', error);
-        }
-      }
-      
+
       setIsLoading(false);
     };
 

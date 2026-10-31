@@ -249,8 +249,9 @@ function FoundationChapter() {
   const { inputs, results } = useFinancialPlanning();
   const [statuses, setStatuses] = useState<FoundationStatus[]>([null, null, null, null]);
 
+  // Clicking the selected answer again clears it
   const setStatus = (i: number, val: FoundationStatus) =>
-    setStatuses(s => s.map((v, idx) => idx === i ? val : v));
+    setStatuses(s => s.map((v, idx) => idx === i ? (v === val ? null : val) : v));
 
   const confirmedCount = statuses.filter(s => s === 'yes').length;
   const anyNo = statuses.some(s => s === 'no');
@@ -286,21 +287,27 @@ function FoundationChapter() {
     },
   ];
 
-  const pillBtn = (i: number, val: 'yes' | 'no', label: string, activeColor: string, activeBg: string, activeBorder: string) => (
-    <button
-      onClick={() => setStatus(i, val)}
-      style={{
-        flex: 1, padding: '8px 0', borderRadius: 8, cursor: 'pointer',
-        fontSize: 13, fontWeight: 600, fontFamily: "'Plus Jakarta Sans', sans-serif",
-        border: `1.5px solid ${statuses[i] === val ? activeBorder : 'var(--ui-line)'}`,
-        background: statuses[i] === val ? activeBg : 'var(--ui-surface)',
-        color: statuses[i] === val ? activeColor : 'var(--ui-text-muted)',
-        transition: 'all 0.2s ease',
-      }}
-    >
-      {label}
-    </button>
-  );
+  // Answer buttons: clearly clickable, filled when chosen, click again to undo
+  const pillBtn = (i: number, val: 'yes' | 'no', label: string, activeBg: string) => {
+    const active = statuses[i] === val;
+    return (
+      <button
+        type="button"
+        aria-pressed={active}
+        onClick={() => setStatus(i, val)}
+        className="flex-1 rounded-xl py-3 text-sm font-bold transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#06A969]"
+        style={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          border: `2px solid ${active ? activeBg : 'var(--ui-line)'}`,
+          background: active ? activeBg : 'var(--ui-surface)',
+          color: active ? '#ffffff' : 'var(--ui-text)',
+          boxShadow: active ? `0 6px 16px ${activeBg}40` : '0 1px 2px rgba(0,0,0,0.06)',
+        }}
+      >
+        {label}
+      </button>
+    );
+  };
 
   return (
     <div>
@@ -316,7 +323,8 @@ function FoundationChapter() {
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 16 }}>
+      {/* 2 × 2 on wider screens, one column on phones */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ marginBottom: 16 }}>
         {items.map((item, i) => {
           const s = statuses[i];
           const cardBg = s === 'yes' ? 'var(--ui-green-bg)' : s === 'no' ? 'var(--ui-red-bg)' : 'var(--ui-surface)';
@@ -346,11 +354,14 @@ function FoundationChapter() {
               <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--ui-text)', marginBottom: 4 }}>{item.name}</p>
               <p style={{ fontSize: 14, color: 'var(--ui-text-muted)', marginBottom: 16 }}>You need {item.label}</p>
 
-              <p style={{ fontSize: 13, color: 'var(--ui-text-body)', marginBottom: 10 }}>Do you have this in place?</p>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {pillBtn(i, 'yes', '✓ Yes, I do', 'hsl(158 64% 32%)', 'var(--ui-green-bg)', 'var(--ui-green-line)')}
-                {pillBtn(i, 'no', '✗ Not yet', '#E85D4A', 'var(--ui-red-bg)', 'var(--ui-red-line)')}
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ui-text)', marginBottom: 10 }}>Do you have this in place?</p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {pillBtn(i, 'yes', '✓ Yes, I do', '#06A969')}
+                {pillBtn(i, 'no', '✗ Not yet', '#E05A47')}
               </div>
+              {s !== null && (
+                <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', marginTop: 8 }}>Tap your answer again to undo it.</p>
+              )}
 
               {s === 'no' && (
                 <a
@@ -648,127 +659,13 @@ function StressTestChapter() {
   );
 }
 
-// ── Sprint Waitlist Modal ─────────────────────────────────────────────────
-function SprintModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { user } = useAuth();
-  const [email, setEmail] = useState(user?.email ?? '');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  if (!open) return null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setLoading(true);
-    try {
-      await supabase.from('sprint_waitlist').insert({
-        email: email.trim(),
-        user_id: user?.id ?? null,
-      });
-      setSuccess(true);
-    } catch {
-      // silently ignore — show success anyway
-      setSuccess(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 200,
-        background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
-      }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: 'var(--ui-surface)', borderRadius: 20, padding: 36, maxWidth: 420, width: '100%',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-        }}
-      >
-        <button
-          onClick={onClose}
-          style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ui-text-faint)' }}
-        >
-          <X style={{ width: 18, height: 18 }} />
-        </button>
-
-        {success ? (
-          <div style={{ textAlign: 'center', padding: '16px 0' }}>
-            <div style={{ fontSize: 40, marginBottom: 16 }}>🎉</div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>You're on the list!</h3>
-            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)', lineHeight: 1.6 }}>
-              We'll reach out when your 1-month sprint is ready to start.
-            </p>
-            <button
-              onClick={onClose}
-              style={{
-                marginTop: 24, background: 'hsl(158 64% 42%)', color: 'white',
-                border: 'none', borderRadius: 10, padding: '12px 28px', fontWeight: 600, fontSize: 14,
-                cursor: 'pointer', fontFamily: "'Plus Jakarta Sans', sans-serif",
-              }}
-            >
-              Done
-            </button>
-          </div>
-        ) : (
-          <>
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>Start My 1-Month Sprint</h3>
-            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
-              Try investing the extra SIP amount for one month. No long-term commitment. We'll send you a reminder when it's time to start.
-            </p>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                required
-                style={{
-                  border: '2px solid var(--ui-line)', borderRadius: 10, padding: '12px 16px',
-                  fontSize: 15, outline: 'none', fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  transition: 'border-color 0.2s ease', color: 'var(--ui-text)',
-                }}
-                onFocus={e => (e.target.style.borderColor = 'hsl(158 64% 52%)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--ui-line)')}
-              />
-              <button
-                type="submit"
-                disabled={loading || !email.trim()}
-                style={{
-                  background: 'hsl(158 64% 42%)', color: 'white', border: 'none', borderRadius: 10,
-                  padding: '14px 20px', fontWeight: 600, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif", opacity: loading ? 0.7 : 1,
-                  transition: 'opacity 0.2s ease',
-                }}
-              >
-                {loading ? 'Saving...' : 'Join the Sprint →'}
-              </button>
-            </form>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ── Chapter 5: Next Move ──────────────────────────────────────────────────
 function NextMoveChapter() {
   const { inputs, results } = useFinancialPlanning();
-  const [sprintOpen, setSprintOpen] = useState(false);
-  const [sprintHovered, setSprintHovered] = useState(false);
   if (!inputs || !results) return null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-      <SprintModal open={sprintOpen} onClose={() => setSprintOpen(false)} />
-
       {/* Primary CTA card */}
       <div style={{
         background: 'hsl(158 64% 42%)',
@@ -780,15 +677,17 @@ function NextMoveChapter() {
         boxShadow: '0 8px 32px hsl(158 64% 42% / 0.25)',
       }}>
         <p style={{ fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 12, lineHeight: 1.3 }}>
-          Talk to an advisor about your plan
+          Book a consultation about your plan
         </p>
         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginBottom: 28, lineHeight: 1.65 }}>
-          You've seen your gap. Book 30 minutes with a wealth manager who will look at your specific numbers and tell you exactly what to do.
+          You've seen your gap. Book 30 minutes with a wealth manager who will go through your numbers with you and explain your options.
         </p>
         <button
           onClick={() => window.location.href = '/dashboard/compass'}
           style={{
-            background: 'var(--ui-surface)', color: 'hsl(158 64% 32%)', border: 'none', borderRadius: 12,
+            // White on the green card in both themes, so the button always stands out
+            background: '#ffffff', color: '#0D2818', border: 'none', borderRadius: 12,
+            boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
             padding: '15px 24px', fontWeight: 700, fontSize: 16, cursor: 'pointer',
             fontFamily: "'Plus Jakarta Sans', sans-serif", width: '100%',
             transition: 'all 0.2s ease', marginBottom: 16,
@@ -800,22 +699,6 @@ function NextMoveChapter() {
           ⭐ Free session. No obligation. No spam.
         </p>
       </div>
-
-      {/* Secondary sprint link */}
-      <button
-        onClick={() => setSprintOpen(true)}
-        onMouseEnter={() => setSprintHovered(true)}
-        onMouseLeave={() => setSprintHovered(false)}
-        style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 14, color: 'var(--ui-text-muted)', fontFamily: "'Plus Jakarta Sans', sans-serif",
-          textDecoration: sprintHovered ? 'underline' : 'none',
-          transition: 'color 0.2s ease',
-          padding: 0,
-        }}
-      >
-        Prefer to track this yourself? Join the Sprint waitlist →
-      </button>
 
       <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', margin: 0 }}>
         Educational platform. No investment advice provided. All transactions via authorised partners.
