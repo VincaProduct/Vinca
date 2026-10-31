@@ -72,6 +72,28 @@ function useRevealLeft(stagger = 180) {
   return ref;
 }
 
+// ─── What's included (hero card roadmap) ──────────────────────
+const COMPASS_INCLUDES = [
+  { title: 'Your retirement roadmap',  desc: 'Built with you and reviewed every year' },
+  { title: 'Portfolio reviews',        desc: 'Mutual fund rebalancing suggestions when your plan needs them' },
+  { title: 'A complete coverage check', desc: 'Emergency fund, insurance cover and tax, with any gaps flagged' },
+  { title: 'Regular check-in calls',   desc: 'With the same point of contact, every time' },
+];
+
+// One 8-second loop: the line fills top to bottom and each step lights up as
+// the fill reaches it, all stay lit for a moment, then everything resets
+const ROAD_LOOP = 8;
+const roadKeyframes = COMPASS_INCLUDES.map((_, i) => {
+  const at = 5 + (60 * i) / (COMPASS_INCLUDES.length - 1);
+  return `@keyframes cp-road-step${i} {
+    0%, ${at - 0.1}% { opacity: var(--off); transform: scale(var(--off-scale)); }
+    ${at + 3}% { opacity: 1; transform: scale(var(--pop)); }
+    ${at + 6}%, 88% { opacity: 1; transform: scale(1); }
+    96%, 100% { opacity: var(--off); transform: scale(var(--off-scale)); }
+  }
+  .cp-road-step${i} { animation: cp-road-step${i} ${ROAD_LOOP}s linear infinite; }`;
+}).join('\n');
+
 // ─── Checkmark SVG ────────────────────────────────────────────
 const Check = () => (
   <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -273,6 +295,18 @@ export default function ElevatePage() {
         .cp-rise  { animation: cp-rise  0.7s cubic-bezier(.22,1,.36,1) both; }
         .cp-float { animation: cp-float 4.5s ease-in-out infinite; }
         .cp-fade  { animation: cp-fade  0.5s ease both; }
+        @keyframes cp-road-fill {
+          0%, 5%  { transform: scaleY(0); opacity: 1; }
+          65%, 88% { transform: scaleY(1); opacity: 1; }
+          96%, 100% { transform: scaleY(1); opacity: 0; }
+        }
+        .cp-road-fill { transform-origin: top; animation: cp-road-fill ${ROAD_LOOP}s linear infinite; }
+        .cp-road-dot  { --off: 0; --off-scale: 0.4; --pop: 1.25; }
+        .cp-road-text { --off: 0.4; --off-scale: 1; --pop: 1; transform-origin: left center; }
+        ${roadKeyframes}
+        @media (prefers-reduced-motion: reduce) {
+          .cp-road-fill, .cp-road-dot, .cp-road-text { animation: none; }
+        }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════
@@ -317,40 +351,47 @@ export default function ElevatePage() {
             </div>
           </div>
 
-          {/* Right — Programme deliverables card */}
+          {/* Right — What's included: a roadmap that fills top to bottom, on a loop */}
           <div className="flex-1 flex justify-center max-md:w-full cp-fade" style={{ animationDelay: '300ms' }}>
             <div className="cp-float w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: DARK_BG, boxShadow: '0 24px 64px rgba(0,0,0,0.22)' }}>
               <div className="px-8 pt-8 pb-6">
                 <div className="flex items-center gap-2 mb-6">
                   <CompassIcon size={13} color={GREEN} />
-                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Compass · Active</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Compass · What's included</span>
                 </div>
-                <p className="text-white font-black text-xl mb-1" style={{ letterSpacing: '-0.02em' }}>Your programme, this month</p>
-                <p className="text-xs mb-7" style={{ color: 'rgba(255,255,255,0.35)' }}>What Compass is working on for you right now</p>
+                <p className="text-white font-black text-xl mb-1" style={{ letterSpacing: '-0.02em' }}>What you get with Compass</p>
+                <p className="text-xs mb-7" style={{ color: 'rgba(255,255,255,0.45)' }}>No programme fee, open to all</p>
 
-                {[
-                  { done: true,  text: 'Retirement roadmap — built and reviewed' },
-                  { done: true,  text: 'Portfolio rebalanced — June' },
-                  { done: true,  text: 'Insurance gap — identified and actioned' },
-                  { done: false, text: 'Monthly update call — June 15' },
-                ].map(item => (
-                  <div key={item.text} className="flex items-center gap-3 mb-3.5">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: item.done ? GREEN : 'rgba(255,255,255,0.08)' }}>
-                      {item.done && <Check />}
-                    </div>
-                    <span className="text-sm" style={{ color: item.done ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.3)' }}>
-                      {item.text}
-                    </span>
+                <div className="relative">
+                  {/* Track and its moving fill, from the first dot to the last */}
+                  <div className="absolute left-[11px] top-3 bottom-8 w-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                    <div className="cp-road-fill absolute inset-0 rounded-full" style={{ background: GREEN }} />
                   </div>
-                ))}
+
+                  {COMPASS_INCLUDES.map((item, i) => (
+                    <div key={item.title} className="relative flex gap-4 pb-6 last:pb-0">
+                      <div className="relative w-6 h-6 flex-shrink-0">
+                        <div className="absolute inset-0 rounded-full" style={{ background: '#16351F', border: '1.5px solid rgba(255,255,255,0.12)' }} />
+                        <div className={`cp-road-dot cp-road-step${i} absolute inset-0 rounded-full flex items-center justify-center`}
+                          style={{ background: GREEN, boxShadow: '0 0 0 4px rgba(6,169,105,0.18), 0 0 18px rgba(6,169,105,0.55)' }}>
+                          <Check />
+                        </div>
+                      </div>
+                      <div className={`cp-road-text cp-road-step${i} min-w-0`}>
+                        <p className="text-sm font-semibold text-white leading-6">{item.title}</p>
+                        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="px-8 py-5" style={{ background: 'rgba(255,255,255,0.04)', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-                <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Retirement target</p>
-                <div className="flex items-center justify-between">
-                  <p className="text-white font-bold">January 2038</p>
-                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.18)', color: GREEN }}>On track</span>
+                <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Programme fee</p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-white font-bold">None</p>
+                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.18)', color: GREEN }}>Open to all</span>
                 </div>
+                <p className="text-[11px] mt-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Vinca earns commission from fund houses</p>
               </div>
             </div>
           </div>
