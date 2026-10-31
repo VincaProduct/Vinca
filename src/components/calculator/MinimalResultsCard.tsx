@@ -136,12 +136,20 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
         )}
 
         {onEditInputs ? (
-          <button
-            onClick={onEditInputs}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ui-text-muted)', textDecoration: 'underline', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-          >
-            Not your numbers? Edit inputs
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 13, color: 'var(--ui-text-muted)' }}>Not your numbers?</span>
+            <button
+              type="button"
+              onClick={onEditInputs}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-md border-2 border-[#06A969] text-[#06A969] bg-[var(--ui-surface)] hover:bg-[var(--ui-green-bg)]"
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+              Edit my inputs
+            </button>
+          </div>
         ) : null}
       </div>
 

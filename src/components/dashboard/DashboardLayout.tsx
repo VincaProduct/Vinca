@@ -142,7 +142,7 @@ function MobileScoreHeader() {
 
 const BUILD_PATHS   = ['/dashboard/sprints', '/dashboard/know-your-market'];
 const PROTECT_PATHS = ['/dashboard/insurance'];
-const GROW_PATHS    = ['/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
+const GROW_PATHS    = ['/dashboard/blog', '/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
 
 const MOBILE_TABS = [
   { key: 'home',    label: 'Home',    icon: Home,       url: '/dashboard',           exact: true,  premium: false },

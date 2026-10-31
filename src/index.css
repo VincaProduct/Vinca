@@ -456,6 +456,10 @@
 /* Named UI colours for components styled with inline colours (calculator,
    Financial Freedom, dashboard pages). Light values are the original ones. */
 :root {
+  /* Compass page ink: brand dark green on light, soft mint on dark */
+  --cp-ink: #0d2818;
+  --cp-ink-soft: rgba(13, 40, 24, 0.55);
+  --cp-ink-faint: rgba(13, 40, 24, 0.18);
   --ui-surface: #ffffff;
   --ui-subtle: #fafaf8;
   --ui-muted: #f3f4f6;
@@ -477,6 +481,9 @@
   --ui-blue-text: #1d4ed8;
 }
 .dark {
+  --cp-ink: #e6f4ec;
+  --cp-ink-soft: rgba(230, 244, 236, 0.68);
+  --cp-ink-faint: rgba(230, 244, 236, 0.22);
   --ui-surface: hsl(var(--card));
   --ui-subtle: hsl(var(--background));
   --ui-muted: hsl(var(--muted));
