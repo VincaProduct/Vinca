@@ -1,48 +1,16 @@
 import { useState, useEffect } from 'react';
 import CanonicalPageHeader from '@/components/ui/CanonicalPageHeader';
-import { TrendingUp, Loader2, Building2, Shield, ArrowUpRight, Landmark, Home as HomeIcon } from 'lucide-react';
+import { TrendingUp, Loader2, Building2, Shield, ArrowUpRight, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-// ── Nifty 50 P/E historical monthly averages (approximate) ───────────────────
-// Source: NSE India historical data. Update current month manually each month.
-// Last updated: May 2026
-
-const PE_DATA: Record<number, Record<number, number>> = {
-  2000: { 1:22.5, 2:23.2, 3:25.0, 4:22.0, 5:20.5, 6:19.8, 7:19.2, 8:19.0, 9:18.5, 10:18.2, 11:17.8, 12:17.5 },
-  2001: { 1:17.0, 2:16.5, 3:15.8, 4:15.2, 5:15.5, 6:15.0, 7:14.8, 8:14.5, 9:13.5, 10:14.0, 11:14.2, 12:14.0 },
-  2002: { 1:14.2, 2:14.0, 3:14.5, 4:14.2, 5:14.0, 6:13.8, 7:13.5, 8:13.2, 9:13.0, 10:12.8, 11:13.2, 12:13.5 },
-  2003: { 1:13.2, 2:12.8, 3:12.5, 4:13.0, 5:13.5, 6:14.2, 7:15.0, 8:15.8, 9:16.5, 10:17.2, 11:18.0, 12:18.8 },
-  2004: { 1:19.5, 2:20.2, 3:20.8, 4:21.5, 5:18.5, 6:19.5, 7:20.2, 8:20.8, 9:21.5, 10:22.0, 11:22.5, 12:23.0 },
-  2005: { 1:22.8, 2:23.2, 3:23.5, 4:23.8, 5:24.2, 6:24.5, 7:25.0, 8:25.2, 9:25.5, 10:25.0, 11:25.5, 12:26.0 },
-  2006: { 1:26.2, 2:26.8, 3:27.2, 4:27.5, 5:22.5, 6:21.8, 7:22.5, 8:23.2, 9:24.0, 10:24.8, 11:25.2, 12:26.0 },
-  2007: { 1:26.5, 2:27.0, 3:27.5, 4:27.8, 5:27.2, 6:26.8, 7:27.5, 8:27.0, 9:27.5, 10:28.0, 11:27.5, 12:27.8 },
-  2008: { 1:26.5, 2:24.5, 3:22.0, 4:22.5, 5:20.5, 6:17.5, 7:16.5, 8:15.5, 9:13.5, 10:11.5, 11:12.0, 12:12.5 },
-  2009: { 1:12.8, 2:12.2, 3:12.5, 4:14.5, 5:17.0, 6:17.5, 7:18.5, 8:19.5, 9:20.5, 10:21.0, 11:22.0, 12:22.5 },
-  2010: { 1:23.0, 2:22.5, 3:23.0, 4:23.5, 5:22.8, 6:22.5, 7:23.0, 8:24.0, 9:25.0, 10:25.5, 11:24.0, 12:23.5 },
-  2011: { 1:23.0, 2:22.5, 3:22.0, 4:22.5, 5:21.5, 6:21.0, 7:20.5, 8:19.0, 9:17.5, 10:18.0, 11:17.5, 12:17.8 },
-  2012: { 1:18.5, 2:19.5, 3:20.0, 4:19.5, 5:18.8, 6:18.5, 7:19.5, 8:20.5, 9:21.0, 10:21.5, 11:21.8, 12:21.5 },
-  2013: { 1:21.8, 2:21.5, 3:21.0, 4:21.5, 5:22.0, 6:20.5, 7:19.8, 8:18.5, 9:19.0, 10:20.0, 11:20.5, 12:21.0 },
-  2014: { 1:20.8, 2:20.5, 3:21.0, 4:21.5, 5:23.5, 6:24.0, 7:24.5, 8:24.8, 9:25.0, 10:24.5, 11:24.8, 12:23.5 },
-  2015: { 1:24.0, 2:24.5, 3:24.2, 4:23.8, 5:23.5, 6:23.0, 7:23.5, 8:22.0, 9:21.5, 10:22.0, 11:22.5, 12:22.0 },
-  2016: { 1:21.5, 2:20.5, 3:21.0, 4:21.5, 5:22.0, 6:22.5, 7:23.0, 8:23.5, 9:23.8, 10:23.5, 11:21.0, 12:21.5 },
-  2017: { 1:22.0, 2:22.5, 3:23.0, 4:23.5, 5:24.0, 6:24.5, 7:25.0, 8:25.5, 9:26.0, 10:26.5, 11:26.2, 12:26.5 },
-  2018: { 1:26.5, 2:25.8, 3:24.2, 4:23.8, 5:24.1, 6:24.3, 7:27.2, 8:28.0, 9:26.4, 10:23.6, 11:23.8, 12:25.1 },
-  2019: { 1:26.8, 2:27.5, 3:28.2, 4:29.1, 5:28.5, 6:27.6, 7:28.3, 8:27.0, 9:27.8, 10:28.5, 11:28.9, 12:29.4 },
-  2020: { 1:28.8, 2:26.5, 3:20.5, 4:22.8, 5:24.5, 6:28.0, 7:30.5, 8:32.8, 9:33.5, 10:35.2, 11:36.8, 12:38.2 },
-  2021: { 1:40.1, 2:38.5, 3:38.0, 4:35.8, 5:32.5, 6:30.8, 7:30.2, 8:28.5, 9:27.8, 10:27.2, 11:25.5, 12:24.8 },
-  2022: { 1:23.5, 2:22.8, 3:22.5, 4:22.9, 5:20.2, 6:18.8, 7:20.5, 8:22.1, 9:21.2, 10:22.0, 11:23.1, 12:22.8 },
-  2023: { 1:21.9, 2:21.5, 3:21.2, 4:22.0, 5:22.8, 6:23.2, 7:23.5, 8:23.1, 9:22.5, 10:22.0, 11:22.8, 12:23.5 },
-  2024: { 1:23.2, 2:23.5, 3:24.1, 4:23.8, 5:23.5, 6:22.8, 7:23.5, 8:23.8, 9:24.2, 10:23.2, 11:21.8, 12:22.1 },
-  2025: { 1:22.0, 2:21.2, 3:20.5, 4:21.4, 5:22.2, 6:22.5, 7:22.5, 8:21.8, 9:21.9, 10:22.5, 11:22.6, 12:22.6 },
-  2026: { 1:22.3, 2:22.4, 3:20.6, 4:20.9, 5:20.7 },
-};
+import { useMarketData, toPeByYear, type NiftyPeByYear } from '@/hooks/useMarketData';
+import { IndexValuationTable } from '@/components/market/IndexValuationTable';
 
 const PE_ZONES = [
-  { label: 'Very Cheap',    max: 18,       color: 'bg-emerald-600', cellText: 'text-white'     },
-  { label: 'Reasonable',    max: 22,       color: 'bg-emerald-300', cellText: 'text-slate-800' },
-  { label: 'Elevated',      max: 26,       color: 'bg-amber-400',   cellText: 'text-slate-800' },
-  { label: 'Expensive',     max: 32,       color: 'bg-orange-500',  cellText: 'text-white'     },
-  { label: 'Very Expensive',max: Infinity, color: 'bg-red-500',     cellText: 'text-white'     },
+  { label: 'P/E under 18',  max: 18,       color: 'bg-emerald-600', cellText: 'text-white'     },
+  { label: '18–22',         max: 22,       color: 'bg-emerald-300', cellText: 'text-slate-800' },
+  { label: '22–26',         max: 26,       color: 'bg-amber-400',   cellText: 'text-slate-800' },
+  { label: '26–32',         max: 32,       color: 'bg-orange-500',  cellText: 'text-white'     },
+  { label: '32 and above',  max: Infinity, color: 'bg-red-500',     cellText: 'text-white'     },
 ] as const;
 
 function getPeZone(pe: number) {
@@ -186,12 +154,6 @@ const REITS = [
   { name: 'Nexus Select Trust', ticker: 'NEXUS', type: 'Retail – Shopping Malls', yield: '~5.5%', distribution: 'Quarterly', minInvest: '1 unit (~₹130)', description: 'India\'s first retail REIT. 17 Grade A shopping malls across 14 cities. Consumer spending resilience makes this a stable income asset.' },
 ];
 
-const FRACTIONAL_RE = [
-  { name: 'Strata', type: 'Commercial Real Estate', yield: '8–10% p.a.', minInvest: '₹25 Lakh', payout: 'Monthly', description: 'SEBI-regulated fractional ownership platform (SM REIT framework). Curated Grade A commercial properties. Monthly rent + capital appreciation upside.' },
-  { name: 'hBits', type: 'Commercial Real Estate', yield: '8–9% p.a.', minInvest: '₹25 Lakh', payout: 'Monthly', description: 'Mumbai-based fractional platform. Focuses on high-yield commercial assets in Tier 1 cities. SEBI-registered Alternative Investment Fund structure.' },
-  { name: 'PropertyShare', type: 'Commercial Real Estate', yield: '8–10% p.a.', minInvest: '₹10 Lakh', payout: 'Monthly', description: 'One of India\'s earliest fractional platforms. Office, warehousing, and retail assets. Lower ticket size makes it accessible for early retirees.' },
-];
-
 const DEBT_FUNDS = [
   { name: 'Short Duration Funds', horizon: '1–3 years', risk: 'Low-Medium', yieldRange: '6–7%', description: 'Invest in debt instruments with 1–3 year maturities. Low interest rate risk. Suitable as a stable income base post-retirement.' },
   { name: 'Banking & PSU Debt Funds', horizon: '2–3 years', risk: 'Low', yieldRange: '6–7%', description: 'Invest only in bonds from banks and public sector units. Near-sovereign credit quality. Ideal for conservative retirees.' },
@@ -202,11 +164,11 @@ const DEBT_FUNDS = [
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-// Descending: newest first
-const PE_YEARS_DESC = Object.keys(PE_DATA).map(Number).sort((a, b) => b - a);
 const VISIBLE_YEARS = 5;
 
-function PeHeatmap() {
+function PeHeatmap({ data: PE_DATA }: { data: NiftyPeByYear }) {
+  // Descending: newest first
+  const PE_YEARS_DESC = Object.keys(PE_DATA).map(Number).sort((a, b) => b - a);
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -262,7 +224,7 @@ function PeHeatmap() {
           {visibleYears.map(year => <HeatRow key={year} year={year} />)}
 
           {/* Expand / collapse — w-full of w-max container = exactly table width */}
-          <button
+          {hiddenCount > 0 && <button
             onClick={() => setExpanded(e => !e)}
             className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-dashed border-emerald-300 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-400 transition-colors"
           >
@@ -270,7 +232,7 @@ function PeHeatmap() {
             <span className="text-xs font-semibold text-emerald-700">
               {expanded ? 'Show less' : `Show ${hiddenCount} more years (2000–${PE_YEARS_DESC[VISIBLE_YEARS - 1] - 1})`}
             </span>
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -291,7 +253,10 @@ function PeHeatmap() {
       </div>
 
       <p className="text-xs text-slate-400">
-        Monthly average P/E ratio, Nifty 50 (2000–present). Highlighted cell = current month. Data is approximate — sourced from NSE India historical records. Updated manually each month.
+        Monthly average P/E ratio, Nifty 50 (2000–present). Highlighted cell = current month. Data is approximate — sourced from NSE India historical records. Updated each month.
+      </p>
+      <p className="text-xs text-slate-400">
+        The heatmap uses monthly average P/E; the table below uses month-end P/E.
       </p>
     </div>
   );
@@ -384,7 +349,7 @@ function CompassCta({ label }: { label: string }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 type CorpusTab = 'equity' | 'retirement' | 'pms' | 'aif';
-type IncomeTab = 'nps' | 'reits' | 'fractional' | 'debt';
+type IncomeTab = 'nps' | 'reits' | 'debt';
 
 const CORPUS_TABS: { value: CorpusTab; label: string }[] = [
   { value: 'equity',     label: 'Equity MFs' },
@@ -396,11 +361,11 @@ const CORPUS_TABS: { value: CorpusTab; label: string }[] = [
 const INCOME_TABS: { value: IncomeTab; label: string }[] = [
   { value: 'nps',        label: 'NPS' },
   { value: 'reits',      label: 'REITs' },
-  { value: 'fractional', label: 'Fractional Real Estate' },
   { value: 'debt',       label: 'Debt MFs' },
 ];
 
 export default function KnowYourMarketPage() {
+  const { niftyPe, indexPe, loading: marketLoading } = useMarketData();
   const [corpusTab, setCorpusTab] = useState<CorpusTab>('equity');
   const [incomeTab, setIncomeTab] = useState<IncomeTab>('nps');
 
@@ -444,16 +409,24 @@ export default function KnowYourMarketPage() {
             <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1">Market Context</p>
             <h2 className="text-2xl font-bold text-slate-900">Market Pulse</h2>
             <p className="text-sm text-slate-500 mt-1">
-              Is the Indian equity market cheap or expensive right now? Historical P/E tells you.
-              Use this before making lump sum decisions.
+              How today’s Nifty 50 P/E compares with its own history since 2000.
             </p>
           </div>
-          <PeHeatmap />
+          {marketLoading ? (
+            <div className="flex items-center gap-2 text-sm text-slate-500 py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-emerald-600" /> Loading market data…
+            </div>
+          ) : niftyPe.length === 0 ? (
+            <p className="text-sm text-slate-500">Market data is not available right now.</p>
+          ) : (
+            <PeHeatmap data={toPeByYear(niftyPe)} />
+          )}
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
             <p className="text-sm text-blue-900 leading-relaxed">
-              <strong>How to use this:</strong> During green months (low P/E), lump sum investments have historically offered better entry points. During red months (high P/E), SIPs remain the right approach — averaging out over time. This is not a buy/sell signal.
+              This shows how today’s P/E compares with history. It is not a signal to buy, sell or time your investments.
             </p>
           </div>
+          {!marketLoading && <IndexValuationTable rows={indexPe} learnMoreHref="/dashboard/learning" />}
         </section>
 
         {/* ── Section 2: Build Your Corpus ─────────────────────────────────── */}
@@ -621,37 +594,6 @@ export default function KnowYourMarketPage() {
                 ))}
               </div>
               <p className="text-xs text-slate-400">Yields are approximate and vary with unit price. Data is indicative — verify current distribution yield before investing.</p>
-            </>
-          )}
-
-          {incomeTab === 'fractional' && (
-            <>
-              <div className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                <HomeIcon className="w-5 h-5 text-slate-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">Fractional Commercial Real Estate</p>
-                  <p className="text-xs text-slate-600 mt-0.5">SEBI-regulated SM REIT framework. Own a fraction of Grade A commercial property. Monthly rental income credited directly. Higher yield than listed REITs, lower liquidity.</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {FRACTIONAL_RE.map((re, i) => (
-                  <div key={i} className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-slate-900">{re.name}</p>
-                        <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">{re.type}</span>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-base font-bold text-emerald-600">{re.yield}</p>
-                        <p className="text-xs text-slate-400">{re.payout} payout</p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-slate-600 leading-relaxed">{re.description}</p>
-                    <p className="text-xs text-slate-400">Min: {re.minInvest}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-slate-400">Yields are indicative based on platform disclosures. Fractional real estate is illiquid — suitable for 5+ year holding periods. SEBI-regulated under SM REIT framework.</p>
             </>
           )}
 
