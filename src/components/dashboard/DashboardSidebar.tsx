@@ -17,7 +17,6 @@ import {
   Shield,
   LineChart,
   BookOpen,
-  Newspaper,
   Zap,
   Layers,
   Footprints,
@@ -28,6 +27,7 @@ import {
   Sprout,
   Compass,
 } from 'lucide-react';
+import { Newspaper } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
