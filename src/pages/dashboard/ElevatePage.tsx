@@ -234,7 +234,7 @@ export default function ElevatePage() {
     { q: 'What if my dedicated wealth expert changes?',
       a: 'Your entire retirement plan, portfolio history, and context lives in Vinca\'s system — not with any individual. If your primary contact changes, another expert picks up exactly where they left off. Your programme never restarts.' },
     { q: 'What does it cost?',
-      a: 'There is no fee for Compass. As an AMFI-registered mutual fund distributor, Vinca earns commission from fund houses on investments made through us, and we disclose this upfront. We work with a limited number of clients each month to protect quality.' },
+      a: 'There is no fee for Compass. As an AMFI-registered mutual fund distributor, Vinca earns commission from fund houses on investments made through us, and we disclose this upfront.' },
     { q: 'How do I get started?',
       a: 'Answer 3 questions. Takes 2 minutes. If eligible, your Compass programme is activated within 48 hours.' },
     { q: 'Is my financial data safe?',
@@ -314,7 +314,6 @@ export default function ElevatePage() {
                 style={{ background: GREEN }}>
                 Check My Eligibility →
               </button>
-              <span className="text-sm text-gray-400">Limited to 20 clients per month</span>
             </div>
           </div>
 
@@ -531,7 +530,7 @@ export default function ElevatePage() {
             Your retirement deserves<br />active management.
           </h2>
           <p className="text-gray-400 mb-10 text-base max-w-md">
-            Compass. Vinca's private retirement management programme.<br />Limited to 20 clients per month.
+            Compass. Vinca's private retirement management programme.
           </p>
           <button onClick={openModal}
             className="font-bold px-10 py-4 rounded-full text-base text-white transition-all duration-200 hover:scale-[1.03] hover:opacity-95"
