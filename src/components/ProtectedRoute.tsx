@@ -20,6 +20,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
+    // After signing in, come back to the page the visitor asked for (for
+    // example a blog's "Book now" link to Compass), not the default page
+    localStorage.setItem('redirect_after_login', location.pathname + location.search + location.hash);
+    if (location.pathname.startsWith('/dashboard/compass')) {
+      sessionStorage.setItem('auth_context_consultation', 'true');
+    }
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
