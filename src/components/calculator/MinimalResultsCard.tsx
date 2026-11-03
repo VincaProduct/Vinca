@@ -240,7 +240,7 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
             transition: 'all 0.2s ease',
           }}
         >
-          Show Me How To Fix This — Free →
+          {onTrack ? 'See My Full Breakdown — Free →' : 'Show Me How To Fix This — Free →'}
         </Button>
         <p style={{ fontSize: 13, color: 'var(--ui-text-faint)' }}>Takes 10 seconds. No spam.</p>
       </div>

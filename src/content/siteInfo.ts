@@ -160,7 +160,7 @@ export const HOME_FAQS: HomeFaq[] = [
 export const CALCULATOR_INFO = {
   heading: 'How the Financial Freedom Calculator works',
   intro:
-    'Enter your age, the age you want to retire, your monthly expenses, your current monthly SIP and your existing investments. The calculator estimates the retirement corpus you will need, whether your current investments are on track to reach it, the monthly SIP you would need instead, and whether your money is likely to last through retirement.',
+    'Enter your age, the age you want to retire, your monthly expenses, your monthly income, your current monthly SIP and your existing investments. The calculator estimates the retirement corpus you will need, whether your current investments are on track to reach it, the monthly SIP you would need instead, and whether your money is likely to last through retirement.',
   steps: [
     'Your monthly expenses are increased for inflation up to your retirement age, to estimate what you will spend each month once you retire.',
     'The required corpus is the amount needed at retirement to fund those withdrawals, rising each year, until age 85.',
