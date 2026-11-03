@@ -55,7 +55,7 @@ export const DEFAULT_REAL_WORTH_ASSETS: RealWorthAsset[] = [
     key: 'gold',
     label: 'Gold',
     typicalRate: 10,
-    weakRate: 5,
+    weakRate: 8,
     factLine: 'Value can fall, and has stayed flat for years at times · Taxed when you sell',
     sourceNote:
       'Typical: middle of all 10-year periods since 1990 (gold price in rupees). Weak years: worst 15-year period since 1990 (5.3%)',
@@ -64,7 +64,7 @@ export const DEFAULT_REAL_WORTH_ASSETS: RealWorthAsset[] = [
     key: 'equity',
     label: 'Equity funds',
     typicalRate: 12,
-    weakRate: 9,
+    weakRate: 10,
     factLine: 'Value can fall a lot in some years · Money reaches you in a few working days · Taxed when you take money out',
     sourceNote:
       'Typical: Nifty 50 TRI, 12.3% over 10 years and 12.1% over 20 years. Weak years: worst 15-year period since 1999 (9%)',

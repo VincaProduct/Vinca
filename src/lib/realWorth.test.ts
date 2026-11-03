@@ -6,16 +6,16 @@ import { axisMax, calculateRealWorth, clampRates, formatInr, isValid, parseTypin
 
 const lakh = (v: number) => (v / 1_00_000).toFixed(2);
 
-test('defaults match the test values in the brief (today’s money, 7% inflation)', () => {
+test('defaults match the test values (today’s money, 7% inflation; weak years gold 8%, equity 10%)', () => {
   const r = calculateRealWorth(REAL_WORTH_DEFAULT_INPUTS, DEFAULT_REAL_WORTH_ASSETS, 7);
   const byKey = Object.fromEntries(r.rows.map((row) => [row.key, row]));
   assert.equal(lakh(byKey.savings.today), '9.35');
   assert.equal(lakh(byKey.fd.today), '17.12');
   assert.equal(lakh(byKey.debt.today), '19.43');
   assert.equal(lakh(byKey.gold.today), '32.71');
-  assert.equal(lakh(byKey.gold.todayWeak!), '13.91');
+  assert.equal(lakh(byKey.gold.todayWeak!), '23.06');
   assert.equal(lakh(byKey.equity.today), '46.73');
-  assert.equal(lakh(byKey.equity.todayWeak!), '27.43');
+  assert.equal(lakh(byKey.equity.todayWeak!), '32.71');
   assert.equal(lakh(r.keptUpToday), '19.43');
   assert.equal(lakh(r.cashToday), '6.45');
   assert.equal(lakh(r.totalPutIn), '35.00');

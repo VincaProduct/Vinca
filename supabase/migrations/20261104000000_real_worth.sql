@@ -79,10 +79,10 @@ insert into public.real_worth_rates (asset_key, label, typical_rate, weak_rate, 
   ('debt', 'Debt funds', 7, null,
    'Value can dip a little · Money reaches you in a few working days · Taxed when you take money out',
    'Long-term returns of low duration and corporate bond funds: 6.8% over 10 years, 7.6% over 20 years', 3),
-  ('gold', 'Gold', 10, 5,
+  ('gold', 'Gold', 10, 8,
    'Value can fall, and has stayed flat for years at times · Taxed when you sell',
    'Typical: middle of all 10-year periods since 1990 (gold price in rupees). Weak years: worst 15-year period since 1990 (5.3%)', 4),
-  ('equity', 'Equity funds', 12, 9,
+  ('equity', 'Equity funds', 12, 10,
    'Value can fall a lot in some years · Money reaches you in a few working days · Taxed when you take money out',
    'Typical: Nifty 50 TRI, 12.3% over 10 years and 12.1% over 20 years. Weak years: worst 15-year period since 1999 (9%)', 5)
 on conflict (asset_key) do nothing;

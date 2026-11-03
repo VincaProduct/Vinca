@@ -13,7 +13,6 @@ import {
   REAL_WORTH_COPY as COPY,
   REAL_WORTH_DEFAULT_INPUTS as DEFAULTS,
   REAL_WORTH_FAQS,
-  type RealWorthAsset,
 } from '@/content/realWorth';
 import {
   AGE_MAX,
@@ -22,7 +21,6 @@ import {
   RETIRE_MAX,
   axisMax,
   calculateRealWorth,
-  clampRates,
   formatInr,
   formatTyping,
   isValid,
@@ -52,6 +50,53 @@ const readJson = <T,>(storage: Storage, key: string): T | null => {
     return null;
   }
 };
+
+// ── Motion ──────────────────────────────────────────────────────────────────
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+/** A number that glides to each new value (instant with reduced motion) */
+function useTween(target: number, duration = 600) {
+  const [value, setValue] = useState(target);
+  const from = useRef(target);
+  useEffect(() => {
+    if (prefersReducedMotion()) {
+      setValue(target);
+      from.current = target;
+      return;
+    }
+    const start = performance.now();
+    const begin = from.current;
+    let frame = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const v = begin + (target - begin) * eased;
+      setValue(v);
+      from.current = v;
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [target, duration]);
+  return value;
+}
+
+const Money = ({ value, className }: { value: number; className?: string }) => {
+  const v = useTween(value);
+  return <span className={`tabular-nums ${className ?? ''}`}>{formatInr(v)}</span>;
+};
+
+const MOTION_CSS = `
+@keyframes rw-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes rw-pop { 0% { transform: translate(-50%, -50%) scale(0); } 70% { transform: translate(-50%, -50%) scale(1.25); } 100% { transform: translate(-50%, -50%) scale(1); } }
+@keyframes rw-sheen { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+.rw-rise { animation: rw-rise .5s cubic-bezier(.22,1,.36,1) both; }
+.rw-pop { animation: rw-pop .45s cubic-bezier(.22,1,.36,1) both; }
+.rw-sheen::after { content: ''; position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, hsl(0 0% 100% / .35), transparent); animation: rw-sheen 1.1s ease-out .2s both; }
+@media (prefers-reduced-motion: reduce) { .rw-rise, .rw-pop { animation: none; } .rw-sheen::after { display: none; } }
+`;
 
 // ── Inputs ──────────────────────────────────────────────────────────────────
 
@@ -155,16 +200,17 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
   const [hasPlan, setHasPlan] = useState(false);
   const [view, setView] = useState<View>('today');
   const [inflation, setInflation] = useState<number | null>(null);
-  const [assets, setAssets] = useState<RealWorthAsset[] | null>(null);
   const [panel, setPanel] = useState<'inflation' | 'rates' | null>(null);
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [stripVisible, setStripVisible] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const inputsRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [chartShown, setChartShown] = useState(false);
+  const [settled, setSettled] = useState(false);
 
   const effectiveInflation = inflation ?? rates.settings.inflationDefault;
-  const effectiveAssets = assets ?? rates.assets;
-  const ratesEdited = assets !== null;
+  const effectiveAssets = rates.assets;
 
   // ── Tracking: view, first use, engagement ──
   const changedFields = useRef(new Set<string>());
@@ -281,6 +327,27 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
   }, []);
 
   useEffect(() => {
+    const el = chartRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined' || prefersReducedMotion()) {
+      setChartShown(true);
+      setSettled(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setChartShown(true);
+      observer.disconnect();
+      // After the first grow-in, later changes slide quickly with no delay
+      window.setTimeout(() => setSettled(true), 1400);
+    }, { threshold: 0.2 });
+    observer.observe(el);
+    // Never leave the bars empty if the chart isn't reported as visible
+    const fallback = window.setTimeout(() => { setChartShown(true); setSettled(true); }, 2500);
+    return () => { observer.disconnect(); window.clearTimeout(fallback); };
+  }, []);
+
+  useEffect(() => {
     if (!sheetOpen) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setSheetOpen(false);
     window.addEventListener('keydown', onKey);
@@ -295,7 +362,10 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
   const pick = (today: number, future: number) => (view === 'today' ? today : future);
   const lineValue = pick(result.keptUpToday, result.keptUpFuture);
   const max = axisMax(result.rows.map((r) => pick(r.today, r.future)), lineValue);
-  const pct = (v: number) => `${Math.max(0, Math.min(100, (v / max) * 100))}%`;
+  const pct = (v: number) => `${chartShown ? Math.max(0, Math.min(100, (v / max) * 100)) : 0}%`;
+  const barMotion = (i: number) => settled
+    ? { transitionDuration: '300ms', transitionDelay: '0ms' }
+    : { transitionDuration: '900ms', transitionDelay: `${i * 110}ms` };
   const showExample = sameAsDefaults(inputs) && (mode === 'public' || !hasPlan);
 
   // ── Actions ──
@@ -330,14 +400,6 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
     navigate('/auth');
   };
 
-  const updateRate = (key: string, field: 'typicalRate' | 'weakRate', value: number) => {
-    setAssets((prev) => (prev ?? rates.assets).map((a) => {
-      if (a.key !== key) return a;
-      const next = clampRates(field === 'typicalRate' ? value : a.typicalRate, field === 'weakRate' ? value : a.weakRate);
-      return { ...a, typicalRate: next.typical, weakRate: next.weak };
-    }));
-  };
-
   const togglePanel = (p: 'inflation' | 'rates') => {
     setPanel((cur) => (cur === p ? null : p));
     if (p === 'rates' && panel !== 'rates') track('real_worth_rates_opened');
@@ -347,6 +409,7 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      <style>{MOTION_CSS}</style>
       {/* Phone: summary strip once the inputs are off screen */}
       {stripVisible && !sheetOpen && (
         <button
@@ -397,8 +460,9 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
 
         {/* Results */}
         <div className="min-w-0 space-y-5">
-          <p className="text-base font-semibold leading-snug text-foreground sm:text-lg">
-            Kept as cash, the {formatInr(result.totalPutIn)} you put in would buy only what {formatInr(result.cashToday)} buys today.
+          <p className="rw-rise rounded-xl border border-border bg-card p-4 text-base font-semibold leading-snug text-foreground sm:p-5 sm:text-lg" style={{ textWrap: 'balance' } as React.CSSProperties}>
+            Kept as cash, the <Money value={result.totalPutIn} className="text-primary" /> you put in would buy only what{' '}
+            <Money value={result.cashToday} className="text-primary" /> buys today.
           </p>
 
           {result.years < 10 && (
@@ -424,33 +488,33 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
           </div>
 
           {/* Chart */}
-          <div className="rounded-xl border border-border bg-card p-3 sm:p-5">
+          <div ref={chartRef} className="rw-rise rounded-xl border border-border bg-card p-3 sm:p-5" style={{ animationDelay: '80ms' }}>
             <p className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
               <span aria-hidden="true" className="inline-block h-3.5 border-l-2 border-dashed border-muted-foreground" />
-              Just kept up with prices {formatInr(lineValue)}
+              Just kept up with prices <Money value={lineValue} className="font-semibold text-foreground" />
             </p>
             <ul aria-hidden="true" className="divide-y divide-border">
-              {result.rows.map((row) => {
+              {result.rows.map((row, i) => {
                 const value = pick(row.today, row.future);
                 const weak = row.todayWeak === null || row.futureWeak === null ? null : pick(row.todayWeak, row.futureWeak);
                 const belowLine = row.today < result.keptUpToday * 0.99;
                 return (
-                  <li key={row.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 py-3 md:grid-cols-[130px_minmax(0,1fr)_120px]">
+                  <li key={row.key} className="-mx-2 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 rounded-lg px-2 py-3 transition-colors hover:bg-muted/40 md:grid-cols-[130px_minmax(0,1fr)_120px]">
                     <span className="order-1 text-sm font-medium text-foreground">{row.label}</span>
                     <div className="relative order-3 col-span-2 h-3 md:order-2 md:col-span-1">
                       <div className="absolute inset-0 rounded-full bg-muted" />
-                      <div className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
-                        style={{ width: pct(value) }} />
-                      {weak !== null && (
-                        <span className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-card transition-[left] duration-300 ease-out motion-reduce:transition-none"
-                          style={{ left: pct(weak) }} />
+                      <div className={`absolute inset-y-0 left-0 overflow-hidden rounded-full bg-primary transition-[width] ease-out motion-reduce:transition-none ${chartShown && !settled ? 'rw-sheen' : ''}`}
+                        style={{ width: pct(value), ...barMotion(i) }} />
+                      {weak !== null && chartShown && (
+                        <span className="rw-pop absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary bg-card transition-[left] ease-out motion-reduce:transition-none"
+                          style={{ left: pct(weak), ...barMotion(i), animationDelay: settled ? '0ms' : `${i * 110 + 700}ms` }} />
                       )}
-                      <span className="absolute -bottom-1.5 -top-1.5 border-l-2 border-dashed border-muted-foreground transition-[left] duration-300 ease-out motion-reduce:transition-none"
-                        style={{ left: pct(lineValue) }} />
+                      <span className="absolute -bottom-1.5 -top-1.5 border-l-2 border-dashed border-muted-foreground transition-[left] ease-out motion-reduce:transition-none"
+                        style={{ left: pct(lineValue), ...barMotion(0) }} />
                     </div>
                     <div className="order-2 text-right md:order-3">
-                      <p className="text-sm font-bold text-foreground">{formatInr(value)}</p>
-                      {weak !== null && <p className="text-xs text-muted-foreground">Weak years {formatInr(weak)}</p>}
+                      <p className="text-sm font-bold text-foreground"><Money value={value} /></p>
+                      {weak !== null && <p className="text-xs text-muted-foreground">Weak years <Money value={weak} /></p>}
                     </div>
                     <div className="order-4 col-span-2 md:col-span-3">
                       {belowLine && <p className="text-xs font-medium text-muted-foreground">{COPY.belowLine}</p>}
@@ -517,34 +581,36 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
             )}
 
             {panel === 'rates' && (
-              <div className="mt-2 rounded-lg border border-border bg-card p-4">
-                <div className="space-y-4">
-                  {effectiveAssets.map((a) => (
-                    <div key={a.key} className="space-y-1.5">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="w-32 text-sm font-medium text-foreground">{a.label}</span>
-                        <RateInput label="Typical" value={a.typicalRate} onChange={(v) => updateRate(a.key, 'typicalRate', v)} />
-                        {a.weakRate !== null && (
-                          <RateInput label="Weak years" value={a.weakRate} onChange={(v) => updateRate(a.key, 'weakRate', v)} />
-                        )}
-                      </div>
-                      <p>{a.sourceNote}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex flex-wrap items-center gap-3">
-                  <Button type="button" variant="outline" size="sm" className="min-h-[44px]" disabled={!ratesEdited} onClick={() => setAssets(null)}>
-                    Reset to our rates
-                  </Button>
-                </div>
-                <p className="mt-3">Rates as of {rates.settings.asOfDate}. Past performance may or may not be sustained in future.</p>
+              <div className="rw-rise mt-2 overflow-hidden rounded-lg border border-border bg-card">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/50 text-muted-foreground">
+                    <tr>
+                      <th scope="col" className="px-4 py-2 font-medium">Where the money is</th>
+                      <th scope="col" className="px-2 py-2 text-right font-medium">Typical</th>
+                      <th scope="col" className="px-4 py-2 text-right font-medium">Weak years</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {effectiveAssets.map((a) => (
+                      <tr key={a.key} className="align-top">
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-medium text-foreground">{a.label}</p>
+                          <p className="mt-0.5 leading-relaxed">{a.sourceNote}</p>
+                        </td>
+                        <td className="px-2 py-3 text-right text-sm font-semibold text-foreground">{a.typicalRate}%</td>
+                        <td className="px-4 py-3 text-right text-sm font-semibold text-foreground">{a.weakRate === null ? '—' : `${a.weakRate}%`}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <p className="border-t border-border px-4 py-3">Rates as of {rates.settings.asOfDate}. Past performance may or may not be sustained in future.</p>
               </div>
             )}
           </div>
 
           {/* Next steps */}
-          <div className="space-y-3 rounded-xl border border-border bg-card p-4 sm:p-5">
-            <Button type="button" size="lg" onClick={goToFfr} className="h-auto min-h-[52px] w-full flex-col gap-0 py-3 sm:w-auto sm:px-8">
+          <div className="rw-rise space-y-3 rounded-xl border border-border bg-card p-4 sm:p-5" style={{ animationDelay: '160ms' }}>
+            <Button type="button" size="lg" onClick={goToFfr} className="h-auto min-h-[52px] w-full flex-col gap-0 py-3 shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5 sm:w-auto sm:px-8">
               <span className="text-base font-semibold">Will this last through my retirement?</span>
               <span className="text-xs font-normal opacity-90">Check in 2 minutes</span>
             </Button>
@@ -599,27 +665,5 @@ function ChipsRow({ label, chips, value, onPick }: { label: string; chips: numbe
         </button>
       ))}
     </div>
-  );
-}
-
-function RateInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
-  const [text, setText] = useState(String(value));
-  useEffect(() => setText(String(value)), [value]);
-  return (
-    <label className="flex items-center gap-1.5">
-      <span>{label}</span>
-      <input
-        inputMode="decimal"
-        value={text}
-        onChange={(e) => {
-          const t = e.target.value.replace(/[^\d.]/g, '').slice(0, 5);
-          setText(t);
-          if (t !== '' && !t.endsWith('.') && !isNaN(Number(t))) onChange(Number(t));
-        }}
-        onBlur={() => setText(String(value))}
-        className="h-11 w-16 rounded-md border border-input bg-background px-2 text-center text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-      />
-      <span>%</span>
-    </label>
   );
 }
