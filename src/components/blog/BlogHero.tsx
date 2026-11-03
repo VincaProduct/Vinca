@@ -27,8 +27,8 @@ const BlogHero = () => {
           </h1>
           
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 text-green-100 leading-relaxed max-w-3xl mx-auto px-4">
-            Stay ahead of market trends with expert insights, actionable strategies, 
-            and proven advice from certified financial professionals.
+            Stay ahead of market trends with research-driven insights on mutual funds,
+            markets and retirement planning from the Vinca Wealth team.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">

@@ -367,7 +367,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
 export default async (request: Request, context: Context) => withSecurityHeaders(await handler(request, context));
 
 export const config = {
-  path: ["/", "/financial-freedom-calculator", "/events", "/events/*", "/achievers-club", "/pricing", "/privacy-policy"],
+  path: ["/", "/financial-freedom-calculator", "/events", "/events/*", "/privacy-policy"],
   // Responses opt in to CDN caching with Netlify-CDN-Cache-Control
   cache: "manual",
 };

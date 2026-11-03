@@ -182,8 +182,8 @@ const FootprintsPage = () => {
       <Alert>
         <AlertDescription>
           Footprints are personal financial stories shared by community members. They are
-          educational perspectives and not investment advice. Always consult a SEBI-registered
-          financial advisor for personalized guidance on your investments.
+          educational perspectives and not investment advice. Please do your own research or
+          book a consultation before making investment decisions.
         </AlertDescription>
       </Alert>
     </div>

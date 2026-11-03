@@ -52,10 +52,10 @@ export const ReferralCard = ({
           <div className="space-y-1">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Users className="h-5 w-5 text-primary" />
-              Your Referral Program
+              Refer a Friend
             </CardTitle>
             <CardDescription className="text-sm">
-              Share your referral code and earn rewards
+              Share your link with friends and family who want to plan their retirement
             </CardDescription>
           </div>
           <Badge variant="secondary" className="text-base sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 self-start sm:self-auto">
@@ -76,7 +76,7 @@ export const ReferralCard = ({
           </div>
           <div className="text-center p-2 sm:p-4 rounded-lg bg-muted/50">
             <div className="text-xl sm:text-2xl font-bold text-green-500">{convertedReferrals}</div>
-            <div className="text-xs sm:text-sm text-muted-foreground">Converted</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">Joined</div>
           </div>
         </div>
 

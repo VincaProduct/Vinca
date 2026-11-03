@@ -15,17 +15,24 @@ const KNOWN_ROUTES: RegExp[] = [
   /^\/thank-you$/,
   /^\/financial-freedom-calculator$/,
   /^\/auth(\/.*)?$/,
-  /^\/achievers-club$/,
   /^\/privacy-policy$/,
-  /^\/pricing$/,
-  /^\/buy-membership$/,
   /^\/events(\/[^/]+(\/confirmation)?)?$/,
   /^\/dashboard(\/.*)?$/,
 ];
 
+/** Pages that were removed, sent on to the closest page that still exists */
+const MOVED: Record<string, string> = {
+  "/pricing": "/",
+  "/buy-membership": "/",
+  "/achievers-club": "/",
+};
+
 const handler = async (request: Request, context: Context): Promise<Response | undefined> => {
   if (request.method !== "GET" && request.method !== "HEAD") return;
   const path = new URL(request.url).pathname.replace(/\/+$/, "") || "/";
+  if (MOVED[path]) {
+    return new Response(null, { status: 301, headers: { Location: MOVED[path], "Cache-Control": "public, max-age=3600" } });
+  }
 
   // Files (scripts, images, fonts, sitemap...) and known pages are served as usual
   if (/\.[a-z0-9]+$/i.test(path) || KNOWN_ROUTES.some((route) => route.test(path))) return;

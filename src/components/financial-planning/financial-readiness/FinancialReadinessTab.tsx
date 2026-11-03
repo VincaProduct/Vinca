@@ -96,8 +96,8 @@ export function FinancialReadinessTab() {
               <h2 className="text-3xl font-bold">Take the Next Step with Professional Guidance</h2>
 
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Your financial journey deserves expert support. Login to your Portfolio and connect with our advisors
-                who will personally guide you through:
+                Your financial journey deserves expert support. Book a consultation with our team,
+                who will walk you through:
               </p>
 
               <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 my-6 sm:my-8">

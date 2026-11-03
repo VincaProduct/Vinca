@@ -115,19 +115,7 @@ ${(events || []).map((event) => `  <url>
     <priority>0.6</priority>
   </url>`).join('\n')}
 
-  <!-- Pricing -->
-  <url>
-    <loc>${baseUrl}/pricing</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
 
-  <!-- Achievers Club -->
-  <url>
-    <loc>${baseUrl}/achievers-club</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
 
   <!-- Privacy Policy -->
   <url>
