@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { CalculatorInputs, CalculationResults } from '@/types/calculator';
 import type { FFRFoundationsChecklist } from '@/types/ffr';
 import { useSprints, type Sprint } from '@/hooks/useSprints';
+import { scoreBreakdown } from '@/utils/ffrScore';
 
 interface FFRScoreBreakdownProps {
   inputs: CalculatorInputs;
@@ -36,88 +37,11 @@ export function FFRScoreBreakdown({ inputs, results, projections, checklist }: F
     getActiveSprint().then(({ data }) => setActiveSprint(data));
   }, []);
 
-  const components = useMemo((): ComponentScore[] => {
-    // Component 1: Corpus Progress (30 pts)
-    const retirementAge = inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP;
-    const retirementProjection = projections.find(p => p.age === retirementAge);
-    const expectedCorpus = retirementProjection?.expectedCorpus ?? 0;
-    const corpusProgress = results.requiredCorpus > 0
-      ? Math.min((expectedCorpus / results.requiredCorpus) * 30, 30)
-      : 0;
-    const corpusPct = results.requiredCorpus > 0
-      ? Math.round((expectedCorpus / results.requiredCorpus) * 100)
-      : 0;
-    const corpusFeedback = results.requiredCorpus <= 0
-      ? 'No required corpus to target — goal already covered.'
-      : corpusPct >= 100
-        ? 'Your projected corpus meets or exceeds the required amount.'
-        : `Your projected corpus is ${corpusPct}% of the ₹${(results.requiredCorpus / 10000000).toFixed(1)}Cr target. Increase SIP to close the gap.`;
-
-    // Component 2: Time Buffer (20 pts)
-    const freedomAge = results.freedomAge;
-    const yearsEarly = retirementAge - freedomAge;
-    let timeBuffer = 0;
-    if (yearsEarly >= 10) timeBuffer = 20;
-    else if (yearsEarly >= 5) timeBuffer = 15;
-    else if (yearsEarly >= 1) timeBuffer = 10;
-    else if (yearsEarly === 0) timeBuffer = 5;
-    else timeBuffer = 0;
-    const timeBufferFeedback = yearsEarly >= 10
-      ? `You reach financial freedom ${yearsEarly} years before your target — full points.`
-      : yearsEarly >= 5
-        ? `You reach financial freedom ${yearsEarly} years early. Reach 10 years early for full points.`
-        : yearsEarly >= 1
-          ? `You reach financial freedom ${yearsEarly} year${yearsEarly !== 1 ? 's' : ''} early. Aim for 5+ years early for more points.`
-          : yearsEarly === 0
-            ? 'You reach financial freedom exactly at your retirement target age.'
-            : `Freedom age (${freedomAge}) is ${-yearsEarly} year${-yearsEarly !== 1 ? 's' : ''} after your retirement target (${retirementAge}). Boost SIP to retire earlier.`;
-
-    // Component 3: Savings Rate (20 pts)
-    const sipRate = inputs.monthlyIncome > 0 ? inputs.sipAmount / inputs.monthlyIncome : 0;
-    let savingsRateScore = 5;
-    if (sipRate >= 0.20) savingsRateScore = 20;
-    else if (sipRate >= 0.10) savingsRateScore = 10;
-    const sipPct = Math.round(sipRate * 100);
-    const savingsRateFeedback = sipRate >= 0.20
-      ? `Your SIP is ${sipPct}% of income — excellent savings rate.`
-      : sipRate >= 0.10
-        ? `Your SIP covers ${sipPct}% of income. Reach 20% for full points.`
-        : `Your SIP covers ${sipPct}% of income. Aim for at least 10% for partial credit, 20% for full points.`;
-
-    // Component 4: Essentials Coverage (20 pts)
-    const lifeInsurance = checklist?.insurance_evidence ? 5 : 0;
-    const healthInsurance = checklist?.insurance_evidence ? 5 : 0;
-    const emergencyFund = checklist?.emergency_fund_baseline ? 5 : 0;
-    const sipAdequacy = checklist?.sip_mandate_active ? 5 : 0;
-    const essentialsCoverage = lifeInsurance + healthInsurance + emergencyFund + sipAdequacy;
-    const missingItems: string[] = [];
-    if (!checklist?.insurance_evidence) missingItems.push('insurance');
-    if (!checklist?.emergency_fund_baseline) missingItems.push('emergency fund');
-    if (!checklist?.sip_mandate_active) missingItems.push('SIP mandate');
-    const essentialsFeedback = missingItems.length === 0
-      ? 'All essentials covered — insurance, emergency fund, and SIP mandate active.'
-      : `Missing: ${missingItems.join(', ')}. Complete these in your checklist to earn points.`;
-
-    // Component 5: Lifestyle Sustainability (10 pts)
-    let sustainabilityScore = 10;
-    if (results.corpusDepletesBeforeLifeExpectancy && results.corpusDepletionAge) {
-      const yearsEarlyDepletion = inputs.lifeExpectancy - results.corpusDepletionAge;
-      sustainabilityScore = yearsEarlyDepletion <= 10 ? 5 : 0;
-    }
-    const sustainabilityFeedback = sustainabilityScore === 10
-      ? 'Your corpus sustains withdrawals through your full life expectancy.'
-      : results.corpusDepletionAge
-        ? `Corpus depletes at age ${results.corpusDepletionAge}, ${inputs.lifeExpectancy - results.corpusDepletionAge} years before life expectancy. Reduce withdrawals or increase SIP.`
-        : 'Corpus may not last through life expectancy. Review your withdrawal plan.';
-
-    return [
-      { name: 'Corpus Progress', scoreComponent: 'corpus_progress', points: Math.round(corpusProgress), max: 30, feedback: corpusFeedback },
-      { name: 'Time Buffer', scoreComponent: 'time_buffer', points: Math.round(timeBuffer), max: 20, feedback: timeBufferFeedback },
-      { name: 'Savings Rate', scoreComponent: 'savings_rate', points: savingsRateScore, max: 20, feedback: savingsRateFeedback },
-      { name: 'Essentials Coverage', scoreComponent: 'essentials_coverage', points: essentialsCoverage, max: 20, feedback: essentialsFeedback },
-      { name: 'Lifestyle Sustainability', scoreComponent: 'lifestyle_sustainability', points: sustainabilityScore, max: 10, feedback: sustainabilityFeedback },
-    ];
-  }, [inputs, results, projections, checklist]);
+  // Same formula and wording as the score card (src/utils/ffrScore.ts)
+  const components = useMemo(
+    () => scoreBreakdown(inputs, results, projections, checklist),
+    [inputs, results, projections, checklist],
+  );
 
   const total = components.reduce((sum, c) => sum + c.points, 0);
   const hasActiveSprint = activeSprint !== null;

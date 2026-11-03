@@ -12,10 +12,10 @@ interface MinimalResultsCardProps {
   onEditInputs?: () => void;
 }
 
-const fmt = (v: number) => {
-  if (v >= 10000000) return `₹${(v / 10000000).toFixed(1)}Cr`;
-  if (v >= 100000) return `₹${(v / 100000).toFixed(1)}L`;
-  if (v >= 1000) return `₹${(v / 1000).toFixed(0)}K`;
+/** Exact amount for comparing SIPs: ₹9,600 rather than ₹10K, so close amounts don't look equal */
+const fmtExact = (v: number) => {
+  if (v >= 10000000) return `₹${(v / 10000000).toFixed(2)}Cr`;
+  if (v >= 100000) return `₹${(v / 100000).toFixed(2)}L`;
   return `₹${Math.round(v).toLocaleString("en-IN")}`;
 };
 
@@ -61,6 +61,8 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
   const currentSIP = inputs.sipAmount;
   const requiredSIP = results.requiredMonthlySIP;
   const gap = Math.max(0, requiredSIP - currentSIP);
+  const surplus = Math.max(0, currentSIP - requiredSIP);
+  const onTrack = !depletes && gap === 0;
 
   // Logged-in view — compact score card used inside dashboard
   if (user) {
@@ -104,12 +106,15 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
         marginBottom: 24,
       }}>
         <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--ui-text-faint)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 16 }}>
-          Your Financial Freedom Score
+          Your Estimated Financial Freedom Score
         </p>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 4, marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 4, marginBottom: 8 }}>
           <span style={{ fontSize: 80, fontWeight: 700, color: 'hsl(158 64% 42%)', lineHeight: 1 }}>{displayScore}</span>
           <span style={{ fontSize: 32, color: 'var(--ui-text-faint)', marginBottom: 12 }}>/100</span>
         </div>
+        <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.5 }}>
+          Up to 20 more points come from your insurance and emergency fund, added when you complete your checklist after signing in.
+        </p>
         <div style={{ width: '100%', maxWidth: 320, margin: '0 auto 16px', height: 8, background: 'var(--ui-line)', borderRadius: 4, overflow: 'hidden' }}>
           <div style={{
             height: '100%',
@@ -159,35 +164,51 @@ const MinimalResultsCard: React.FC<MinimalResultsCardProps> = ({
           <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px 16px', textAlign: 'center' }}>
             <p style={{ fontSize: 12, color: 'var(--ui-text-muted)', marginBottom: 8 }}>You currently invest</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>
-              {fmt(currentSIP)}<span style={{ fontSize: 12, fontWeight: 400, color: 'var(--ui-text-faint)' }}>/mo</span>
+              {fmtExact(currentSIP)}<span style={{ fontSize: 12, fontWeight: 400, color: 'var(--ui-text-faint)' }}>/mo</span>
             </p>
-            <span style={{ background: 'var(--ui-red-bg)', color: '#E85D4A', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 100 }}>Insufficient</span>
+            {onTrack ? (
+              <span style={{ background: 'var(--ui-green-bg)', color: 'var(--ui-green-text)', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 100 }}>On track</span>
+            ) : (
+              <span style={{ background: 'var(--ui-red-bg)', color: 'var(--ui-red-text)', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 100 }}>Short by {fmtExact(gap)}</span>
+            )}
           </div>
           <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px 16px', textAlign: 'center' }}>
             <p style={{ fontSize: 12, color: 'var(--ui-text-muted)', marginBottom: 8 }}>You need to invest</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--ui-text)', marginBottom: 8 }}>
-              {fmt(requiredSIP)}<span style={{ fontSize: 12, fontWeight: 400, color: 'var(--ui-text-faint)' }}>/mo</span>
+              {fmtExact(requiredSIP)}<span style={{ fontSize: 12, fontWeight: 400, color: 'var(--ui-text-faint)' }}>/mo</span>
             </p>
-            <span style={{ background: 'var(--ui-green-bg)', color: 'hsl(158 64% 32%)', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 100 }}>Secure</span>
+            <span style={{ background: 'var(--ui-muted)', color: 'var(--ui-text-muted)', fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 100 }}>Minimum required</span>
           </div>
         </div>
 
-        {gap > 0 && (
-          <div style={{ background: 'var(--ui-green-bg)', border: '1px solid var(--ui-green-line)', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-            <p style={{ fontSize: 13, color: 'var(--ui-text-muted)', marginBottom: 4 }}>Monthly Gap</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: 'hsl(158 64% 32%)', marginBottom: 4 }}>+{fmt(gap)}/month</p>
-            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)' }}>Most people start by closing 20% of this gap first.</p>
+        {gap > 0 ? (
+          <div style={{ background: 'var(--ui-red-bg)', border: '1px solid var(--ui-red-line)', borderRadius: 12, padding: 20, textAlign: 'center' }}>
+            <p style={{ fontSize: 13, color: 'var(--ui-text-muted)', marginBottom: 4 }}>Monthly gap</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ui-red-text)', marginBottom: 4 }}>+{fmtExact(gap)}/month</p>
+            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)' }}>Investing this much more each month would make your money last until {inputs.lifeExpectancy}.</p>
           </div>
-        )}
+        ) : surplus > 0 ? (
+          <div style={{ background: 'var(--ui-green-bg)', border: '1px solid var(--ui-green-line)', borderRadius: 12, padding: 20, textAlign: 'center' }}>
+            <p style={{ fontSize: 13, color: 'var(--ui-text-muted)', marginBottom: 4 }}>You're ahead by</p>
+            <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--ui-green-text)', marginBottom: 4 }}>{fmtExact(surplus)}/month</p>
+            <p style={{ fontSize: 14, color: 'var(--ui-text-muted)' }}>You invest more than the minimum your plan needs.</p>
+          </div>
+        ) : null}
+
+        <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', lineHeight: 1.6, textAlign: 'center', marginTop: 12 }}>
+          Both SIP amounts are starting amounts that increase {inputs.growthInSIP}% every year and run for {inputs.yearsForSIP} years.
+          Assumes {inputs.returnDuringSIPAndWaiting}% returns while investing, {inputs.returnDuringSWP}% after retirement and {inputs.inflation}% inflation, with life expectancy {inputs.lifeExpectancy}.
+          Illustrative only; returns are not guaranteed.
+        </p>
       </div>
 
       {/* Locked items */}
       <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', marginBottom: 24, overflow: 'hidden' }}>
         {[
-          `You're losing ${100 - score} points in one specific area — here's which one`,
-          `Two changes move your score from ${score} to ${Math.min(score + 25, 100)}+`,
-          'Your personalised month-by-month action plan',
-          `How you compare to ${inputs.age}-year-olds with a similar income`,
+          'Your full score breakdown — where each of your points comes from, across 5 areas',
+          'The earliest age your money would be enough to retire',
+          'Your foundations checklist: life and health insurance, emergency fund and SIP',
+          'A free consultation to go through your numbers with us',
         ].map((item, i, arr) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px',
