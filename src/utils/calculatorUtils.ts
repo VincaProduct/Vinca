@@ -63,6 +63,26 @@ function simulateDepletionAge(inputs: CalculatorInputs, trialSIP: number): numbe
   return null; // Sustained through life expectancy
 }
 
+// How long SIPs run when the retirement age allows it (the calculator's
+// standing assumption: up to 20 years, or until retirement if that's sooner)
+const DEFAULT_SIP_YEARS = 20;
+
+/**
+ * The earliest retirement age at which the current SIP and corpus last until
+ * life expectancy, or null if no age before life expectancy works. SIPs run
+ * for their usual length, or stop at that retirement age if it comes first.
+ */
+function calculateFreedomAge(inputs: CalculatorInputs): number | null {
+  const sipLength = inputs.waitingYearsBeforeSWP > 0 ? inputs.yearsForSIP : Math.max(inputs.yearsForSIP, DEFAULT_SIP_YEARS);
+  for (let retireAt = inputs.age + 1; retireAt < inputs.lifeExpectancy; retireAt++) {
+    const years = retireAt - inputs.age;
+    const yearsForSIP = Math.min(sipLength, years);
+    const trial = { ...inputs, yearsForSIP, waitingYearsBeforeSWP: years - yearsForSIP };
+    if (simulateDepletionAge(trial, inputs.sipAmount) === null) return retireAt;
+  }
+  return null;
+}
+
 // Binary search: find the minimum starting SIP that sustains corpus until life expectancy.
 function calculateRequiredSIP(inputs: CalculatorInputs): number {
   // If zero SIP already sustains (large initial portfolio), required is 0
@@ -152,8 +172,10 @@ export const calculateFinancialFreedom = (inputs: CalculatorInputs): Calculation
   // Present value of required corpus (discounted back to today)
   const requiredCorpusToday = requiredCorpus / Math.pow(1 + inflation / 100, yearsToRetirement);
 
-  // Freedom age (when SWP can start)
-  const freedomAge = currentAge + yearsToRetirement;
+  // Target retirement age (when withdrawals start), and the earliest age the
+  // money would actually be enough to retire
+  const retirementAge = currentAge + yearsToRetirement;
+  const freedomAge = calculateFreedomAge(inputs);
   const actualYearsToFreedom = yearsToRetirement;
 
   // Future annual expenses at retirement (for reporting)
@@ -209,7 +231,7 @@ export const calculateFinancialFreedom = (inputs: CalculatorInputs): Calculation
   }
   
   // Calculate SWP start age
-  const swpStartAge = freedomAge;
+  const swpStartAge = retirementAge;
   
   // Depletion check — uses the same Excel-accurate FV simulation as calculateRequiredSIP,
   // replacing the old approximation loop (annualReturn/12 monthly rate + annual lump SWP).

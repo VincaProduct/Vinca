@@ -264,12 +264,12 @@ function FoundationChapter() {
   const items = [
     {
       icon: '🛡️', name: 'Life Insurance',
-      label: `${fmt(annualIncome * 10)} cover`,
+      label: annualIncome > 0 ? `${fmt(annualIncome * 10)} cover` : 'cover based on your income (add it in Edit my inputs)',
       action: 'Learn what cover you need',
     },
     {
       icon: '❤️', name: 'Health Insurance',
-      label: `${fmt(annualIncome * 0.5)} cover`,
+      label: annualIncome > 0 ? `${fmt(annualIncome * 0.5)} cover` : 'cover based on your income (add it in Edit my inputs)',
       action: 'Learn what cover you need',
     },
     {
