@@ -22,8 +22,7 @@ export default function RaisePage() {
       return '';
     }
 
-    // Each click moves the count one step: with no vote, up or down votes;
-    // with a vote, either arrow takes it back to neutral (18 → 19 → 18 → 17)
+    // Handles upvote/downvote logic
     function handleVote(id: string | number, direction: 'up' | 'down') {
       setState((prev) => {
         const updatedItems = prev.raiseItems.map((item) => {
@@ -31,15 +30,13 @@ export default function RaisePage() {
           let upvotes = item.upvotes || 0;
           let downvotes = item.downvotes || 0;
           let userVote = item.userVote;
-          if (userVote) {
-            if (userVote === 'up') upvotes--;
-            if (userVote === 'down') downvotes--;
-            userVote = null;
-          } else {
-            if (direction === 'up') upvotes++;
-            if (direction === 'down') downvotes++;
-            userVote = direction;
-          }
+          // Remove previous vote
+          if (userVote === 'up') upvotes--;
+          if (userVote === 'down') downvotes--;
+          // Add new vote
+          if (direction === 'up') upvotes++;
+          if (direction === 'down') downvotes++;
+          userVote = direction;
           return { ...item, upvotes, downvotes, userVote };
         });
         return { ...prev, raiseItems: updatedItems };
