@@ -27,6 +27,7 @@ import {
   Compass,
 } from 'lucide-react';
 import { Newspaper } from 'lucide-react';
+import { Scale } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -96,6 +97,7 @@ const NAV: NavGroup[] = [
     title: 'Build',
     icon: TrendingUp,
     sub: [
+      { title: 'Real Worth Calculator', url: '/dashboard/real-worth', icon: Scale },
       { title: 'Know Your Market', url: '/dashboard/know-your-market',  icon: LineChart },
     ],
     dot: (score) =>
@@ -146,6 +148,7 @@ const adminMenuItems = [
   { title: 'Authors',             url: '/dashboard/authors',           icon: Users          },
   { title: 'Global FAQs',         url: '/dashboard/global-faqs',       icon: HelpCircle     },
   { title: 'Subscribers',         url: '/dashboard/subscribers',       icon: Mail           },
+  { title: 'Real Worth rates',    url: '/dashboard/real-worth-rates',  icon: Scale          },
   { title: 'CTA Dashboard',       url: '/dashboard/cta-dashboard',     icon: LayoutDashboard },
   { title: 'CTA Placements',      url: '/dashboard/cta-placements',    icon: MapPin         },
   { title: 'CTA Analytics',       url: '/dashboard/cta-analytics',     icon: BarChart3      },

@@ -58,6 +58,11 @@ export const PAGE_SEO: Record<string, { title: string; description: string }> = 
     description:
       'Free financial freedom and retirement calculator. Find your retirement corpus, your gap and your projected retirement date in 2 minutes.',
   },
+  '/real-worth-calculator': {
+    title: 'Real Worth Calculator | Savings, FD, Gold and Mutual Funds vs Inflation | Vinca Wealth',
+    description:
+      "See what your savings, FD, debt funds, gold and equity funds could be worth when you retire, in today's money after inflation. Free, no login. Illustration only.",
+  },
   '/events': {
     title: 'Events & Webinars on Investing and Retirement | Vinca Wealth',
     description:

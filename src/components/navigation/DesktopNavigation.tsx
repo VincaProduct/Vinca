@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Calculator, BookOpen, CalendarDays } from "lucide-react";
+import { ChevronDown, Calculator, BookOpen, CalendarDays, Scale } from "lucide-react";
 
 interface DesktopNavigationProps {
   scrollToSection: (sectionId: string) => void;
@@ -63,6 +63,12 @@ const DesktopNavigation = ({ scrollToSection }: DesktopNavigationProps) => {
               <Link to="/financial-freedom-calculator" className="flex items-center px-3 py-2 text-sm hover:bg-accent/50 cursor-pointer">
                 <Calculator className="mr-2 h-4 w-4" />
                 Financial Freedom Calculator
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/real-worth-calculator" className="flex items-center px-3 py-2 text-sm hover:bg-accent/50 cursor-pointer">
+                <Scale className="mr-2 h-4 w-4" />
+                Real Worth Calculator
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>

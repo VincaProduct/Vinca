@@ -140,7 +140,7 @@ function MobileScoreHeader() {
 
 // ── Mobile tab bar ────────────────────────────────────────────────────────────
 
-const BUILD_PATHS   = ['/dashboard/know-your-market'];
+const BUILD_PATHS   = ['/dashboard/real-worth', '/dashboard/know-your-market'];
 const PROTECT_PATHS = ['/dashboard/insurance'];
 const GROW_PATHS    = ['/dashboard/blog', '/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
 
