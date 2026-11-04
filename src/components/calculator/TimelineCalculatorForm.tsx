@@ -105,7 +105,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
   // Typed as free text so any age can be entered; the inputs are only updated
   // with it once it's a valid retirement age
   const [retirementText, setRetirementText] = useState(() =>
-    String(inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP));
+    inputs.age > 0 ? String(inputs.age + inputs.yearsForSIP + inputs.waitingYearsBeforeSWP) : '');
   const retirementAge = Number(retirementText) || 0;
 
   // How long SIPs run, as the calculator has always assumed (20 years by
@@ -155,7 +155,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
     : undefined;
 
   const step1Valid = ageValid && retirementValid && inputs.currentMonthlyExpenses > 0;
-  const step2Valid = inputs.sipAmount > 0;
+  const step2Valid = inputs.monthlyIncome > 0 && inputs.sipAmount > 0;
 
   const handleCalculate = async () => {
     setCalculating(true);
@@ -239,6 +239,14 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
       {/* Step 2 */}
       {step === 1 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <FocusableInput
+            label="What is your monthly take-home income?"
+            value={inputs.monthlyIncome}
+            onChange={v => handleChange('monthlyIncome', v)}
+            placeholder="100000"
+            prefix="₹"
+            helper="Used for your savings rate and the insurance cover you need"
+          />
           <FocusableInput
             label="What is your current monthly SIP?"
             value={inputs.sipAmount}

@@ -142,7 +142,7 @@ function MobileScoreHeader() {
 
 const BUILD_PATHS   = ['/dashboard/sprints', '/dashboard/know-your-market'];
 const PROTECT_PATHS = ['/dashboard/insurance'];
-const GROW_PATHS    = ['/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
+const GROW_PATHS    = ['/dashboard/blog', '/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
 
 const MOBILE_TABS = [
   { key: 'home',    label: 'Home',    icon: Home,       url: '/dashboard',           exact: true,  premium: false },
@@ -228,6 +228,13 @@ function DashboardLayoutInner() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Every dashboard page opens at its top, not at the previous page's scroll
+  // position (links to a #section still jump there)
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (!hash) window.scrollTo(0, 0);
+  }, [pathname, hash]);
 
   return (
     <div className="min-h-screen bg-background">

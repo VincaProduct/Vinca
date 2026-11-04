@@ -29,7 +29,8 @@ export interface CalculationResults {
   requiredMonthlySIP: number;
   currentMonthlySurplus: number;
   yearsToFreedom: number;
-  freedomAge: number;
+  /** Earliest retirement age the current plan can afford; null if none before life expectancy */
+  freedomAge: number | null;
   canAchieveGoal: boolean;
   currentProgress: number;
   emergencyFundRequired: number;
