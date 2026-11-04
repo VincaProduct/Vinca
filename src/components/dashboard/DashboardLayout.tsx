@@ -1,8 +1,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, TrendingUp, Shield, Sprout, Star, User, LogOut, LineChart, UserPlus, ExternalLink } from 'lucide-react';
+import { Home, TrendingUp, Shield, Sprout, Star, User, LogOut, LineChart, UserPlus, ExternalLink, Video, ChevronRight } from 'lucide-react';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { DashboardSidebar } from './DashboardSidebar';
+import { DashboardSidebar, NAV, type SubItem } from './DashboardSidebar';
 import { DashboardHeader } from './DashboardHeader';
 import {
   FinancialPlanningProvider,
@@ -107,6 +107,14 @@ function MobileScoreHeader() {
             </button>
 
             <button
+              onClick={() => handleNavItem('/dashboard/events')}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
+            >
+              <Video className="h-4 w-4 text-muted-foreground" />
+              Events
+            </button>
+
+            <button
               onClick={() => handleNavItem('/dashboard/refer')}
               className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
             >
@@ -140,22 +148,27 @@ function MobileScoreHeader() {
 
 // ── Mobile tab bar ────────────────────────────────────────────────────────────
 
-const BUILD_PATHS   = ['/dashboard/sprints', '/dashboard/know-your-market'];
-const PROTECT_PATHS = ['/dashboard/insurance'];
-const GROW_PATHS    = ['/dashboard/blog', '/dashboard/learning', '/dashboard/curations', '/dashboard/footprints', '/dashboard/reflections', '/dashboard/raise'];
+/** Pages in a sidebar section (Build, Protect, Grow), from the sidebar's own list */
+const sectionPages = (key: string): SubItem[] => NAV.find((g) => g.key === key)?.sub ?? [];
+
+const inSection = (key: string, pathname: string) =>
+  sectionPages(key).some((p) => pathname === p.url || pathname.startsWith(p.url + '/'));
 
 const MOBILE_TABS = [
-  { key: 'home',    label: 'Home',    icon: Home,       url: '/dashboard',           exact: true,  premium: false },
-  { key: 'build',   label: 'Build',   icon: TrendingUp, url: '/dashboard/sprints',   exact: false, premium: false },
-  { key: 'protect', label: 'Protect', icon: Shield,     url: '/dashboard/insurance', exact: false, premium: false },
-  { key: 'grow',    label: 'Grow',    icon: Sprout,     url: '/dashboard/learning',  exact: false, premium: false },
-  { key: 'compass', label: 'Compass', icon: Star,       url: '/dashboard/compass',   exact: false, premium: true  },
+  { key: 'home',    label: 'Home',    icon: Home,       url: '/dashboard',         premium: false },
+  { key: 'build',   label: 'Build',   icon: TrendingUp, url: null,                 premium: false },
+  { key: 'protect', label: 'Protect', icon: Shield,     url: null,                 premium: false },
+  { key: 'grow',    label: 'Grow',    icon: Sprout,     url: null,                 premium: false },
+  { key: 'compass', label: 'Compass', icon: Star,       url: '/dashboard/compass', premium: true  },
 ] as const;
 
 function MobileTabBar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { inputs, results, projections, hasCalculated } = useFinancialPlanning();
   const { checklist, ffrProgress } = useFFR(inputs && results ? { inputs, results } : undefined);
+  // The section whose pages are listed in the bottom sheet
+  const [openSection, setOpenSection] = useState<string | null>(null);
 
   const score =
     hasCalculated && inputs && results && projections.length > 0
@@ -163,12 +176,10 @@ function MobileTabBar() {
       : null;
   const foundationScore = ffrProgress?.foundation_score ?? 0;
 
-  function isTabActive(key: string, url: string, exact: boolean) {
-    if (exact)            return location.pathname === url;
-    if (key === 'build')  return BUILD_PATHS.some(p  => location.pathname === p || location.pathname.startsWith(p + '/'));
-    if (key === 'protect') return PROTECT_PATHS.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
-    if (key === 'grow')   return GROW_PATHS.some(p   => location.pathname === p || location.pathname.startsWith(p + '/'));
-    return location.pathname === url || location.pathname.startsWith(url + '/');
+  function isTabActive(key: string, url: string | null) {
+    if (url === '/dashboard') return location.pathname === url;
+    if (url) return location.pathname === url || location.pathname.startsWith(url + '/');
+    return inSection(key, location.pathname);
   }
 
   function dotColor(key: string): string | null {
@@ -177,44 +188,117 @@ function MobileTabBar() {
     return null;
   }
 
-  return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden flex items-stretch"
-      style={{ background: 'var(--ui-surface)', borderTop: '0.5px solid var(--ui-line)' }}
-    >
-      {MOBILE_TABS.map(({ key, label, icon: Icon, url, exact, premium }) => {
-        const active = isTabActive(key, url, exact);
-        const dot    = dotColor(key);
+  // A section with one page opens it; with several, a sheet lists them all
+  const openTab = (key: string, url: string | null) => {
+    if (url) return navigate(url);
+    const pages = sectionPages(key);
+    if (pages.length === 1) return navigate(pages[0].url);
+    setOpenSection(key);
+  };
 
-        return (
-          <Link
-            key={key}
-            to={url}
-            className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors"
-            style={
-              premium
-                ? { border: '0.5px solid var(--ui-green-text)', color: 'var(--ui-green-text)' }
-                : active
-                  ? { background: 'var(--ui-green-bg)', color: 'var(--ui-green-text)' }
-                  : { color: 'var(--ui-text-faint)' }
-            }
-          >
-            <div className="relative">
-              <Icon style={{ width: 20, height: 20 }} />
-              {dot && (
-                <span
-                  className="absolute -top-0.5 -right-1 w-1.5 h-1.5 rounded-full"
-                  style={{ background: dot }}
-                />
-              )}
-            </div>
-            <span style={{ fontSize: 10, fontWeight: active || premium ? 600 : 400 }}>
-              {label}
-            </span>
-          </Link>
-        );
-      })}
-    </nav>
+  const sheetPages = openSection ? sectionPages(openSection) : [];
+  const sheetTitle = MOBILE_TABS.find((t) => t.key === openSection)?.label;
+
+  return (
+    <>
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 md:hidden flex items-stretch"
+        style={{ background: 'var(--ui-surface)', borderTop: '0.5px solid var(--ui-line)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      >
+        {MOBILE_TABS.map(({ key, label, icon: Icon, url, premium }) => {
+          const active = isTabActive(key, url) || openSection === key;
+          const dot    = dotColor(key);
+
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => openTab(key, url)}
+              aria-haspopup={url ? undefined : 'dialog'}
+              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors min-h-[52px]"
+              style={
+                premium
+                  ? { border: '0.5px solid var(--ui-green-text)', color: 'var(--ui-green-text)' }
+                  : active
+                    ? { background: 'var(--ui-green-bg)', color: 'var(--ui-green-text)' }
+                    : { color: 'var(--ui-text-faint)' }
+              }
+            >
+              <div className="relative">
+                <Icon style={{ width: 20, height: 20 }} />
+                {dot && (
+                  <span
+                    className="absolute -top-0.5 -right-1 w-1.5 h-1.5 rounded-full"
+                    style={{ background: dot }}
+                  />
+                )}
+              </div>
+              <span style={{ fontSize: 10, fontWeight: active || premium ? 600 : 400 }}>
+                {label}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Every page in the section, so none is hidden behind the first one */}
+      <Drawer open={openSection !== null} onOpenChange={(o) => !o && setOpenSection(null)}>
+        <DrawerContent>
+          <DrawerHeader className="pb-0">
+            <DrawerTitle className="text-left text-base">{sheetTitle}</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-8 pt-3 space-y-1">
+            {sheetPages.map(({ title, url, icon: Icon }) => {
+              const current = location.pathname === url || location.pathname.startsWith(url + '/');
+              return (
+                <button
+                  key={url}
+                  type="button"
+                  onClick={() => { setOpenSection(null); navigate(url); }}
+                  className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left transition-colors ${
+                    current ? 'bg-primary/10 text-primary' : 'hover:bg-accent'
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${current ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1">{title}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </button>
+              );
+            })}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+}
+
+/** Phone: the other pages of the section you're in, as a scrollable row of tabs */
+function MobileSectionTabs() {
+  const location = useLocation();
+  const section = ['build', 'protect', 'grow'].find((k) => inSection(k, location.pathname));
+  const pages = section ? sectionPages(section) : [];
+  if (pages.length < 2) return null;
+
+  return (
+    <div className="md:hidden border-b border-border bg-background">
+      <div className="flex gap-2 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {pages.map(({ title, url }) => {
+          const current = location.pathname === url || location.pathname.startsWith(url + '/');
+          return (
+            <Link
+              key={url}
+              to={url}
+              aria-current={current ? 'page' : undefined}
+              className={`flex-shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                current ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground'
+              }`}
+            >
+              {title}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -255,8 +339,11 @@ function DashboardLayoutInner() {
               <DashboardHeader />
             </div>
 
-            {/* Page content — bottom padding on mobile for tab bar clearance */}
-            <main className="flex-1 bg-background pb-16 md:pb-0">
+            <MobileSectionTabs />
+
+            {/* Page content — bottom padding on mobile for tab bar clearance.
+                Nothing may push the page wider than the phone screen. */}
+            <main className="flex-1 min-w-0 overflow-x-clip bg-background pb-20 md:pb-0">
               <Suspense
                 fallback={
                   <div className="flex justify-center py-16">

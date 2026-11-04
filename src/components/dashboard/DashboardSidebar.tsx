@@ -59,7 +59,7 @@ const ELEVATE_GREEN = '#0F6E56';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface SubItem {
+export interface SubItem {
   title: string;
   url: string;
   icon: React.ElementType;
@@ -80,7 +80,8 @@ interface NavGroup {
 
 // ── Nav structure ─────────────────────────────────────────────────────────────
 
-const NAV: NavGroup[] = [
+/** Dashboard sections; the phone tab bar uses the same lists */
+export const NAV: NavGroup[] = [
   {
     key: 'dashboard',
     title: 'My Dashboard',
