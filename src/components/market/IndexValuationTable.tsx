@@ -8,8 +8,9 @@ import {
   formatGap,
   formatMonth,
   formatPe,
-  methodologyText,
+  SOURCE_NOTE,
   type IndexPeRow,
+  type ValuationLabel,
 } from '@/lib/indexValuation';
 
 interface IndexValuationTableProps {
@@ -19,9 +20,22 @@ interface IndexValuationTableProps {
 }
 
 /**
+ * Badge colours: cool shades below the median, grey near it, warm shades above.
+ * No red or green, so the labels describe the valuation without reading as
+ * buy or sell signals.
+ */
+const LABEL_STYLE: Record<ValuationLabel, string> = {
+  'Well below': 'bg-sky-500/20 text-sky-700 dark:text-sky-300 ring-sky-500/40',
+  Below: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 ring-sky-500/25',
+  Near: 'bg-muted text-muted-foreground ring-border',
+  Above: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 ring-amber-500/25',
+  'Well above': 'bg-amber-500/20 text-amber-700 dark:text-amber-300 ring-amber-500/40',
+};
+
+/**
  * "How today's P/E compares with the last 5 years": each index's month-end
- * P/E against its own 5-year median. Educational only — neutral styling, no
- * verdicts or calls to action. Standalone so it can go on a public page too.
+ * P/E against its own 5-year median. Educational only, with no verdicts or
+ * calls to action. Standalone so it can go on a public page too.
  */
 export function IndexValuationTable({ rows, learnMoreHref }: IndexValuationTableProps) {
   const months = useMemo(() => completeMonths(rows), [rows]);
@@ -34,7 +48,7 @@ export function IndexValuationTable({ rows, learnMoreHref }: IndexValuationTable
   );
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 space-y-5">
+    <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <h3 className="text-lg font-bold text-slate-900">How today’s P/E compares with the last 5 years</h3>
@@ -62,29 +76,28 @@ export function IndexValuationTable({ rows, learnMoreHref }: IndexValuationTable
         <p className="text-sm text-slate-500">The latest index P/E data will appear here once it has been added.</p>
       ) : (
         <div className="overflow-x-auto -mx-1 px-1">
-          <table className="w-full min-w-[680px] text-sm">
+          <table className="w-full min-w-[680px] overflow-hidden rounded-xl text-sm">
             <thead>
-              <tr className="border-b border-slate-200 text-left text-slate-600">
-                <th className="py-3 pr-4 font-semibold">Market segment</th>
-                <th className="py-3 pr-4 font-semibold">Index</th>
-                <th className="py-3 pr-4 font-semibold text-right">P/E</th>
-                <th className="py-3 pr-4 font-semibold text-right">5-yr median P/E</th>
-                <th className="py-3 pr-4 font-semibold text-right">Discount / premium vs median</th>
-                <th className="py-3 font-semibold">Compared with its 5-yr median</th>
+              <tr className="bg-primary/10 text-left text-xs uppercase tracking-wide text-primary">
+                <th className="rounded-l-lg px-4 py-3 font-semibold">Market segment</th>
+                <th className="px-4 py-3 font-semibold">Index</th>
+                <th className="px-4 py-3 text-right font-semibold">P/E</th>
+                <th className="px-4 py-3 text-right font-semibold">5-yr median P/E</th>
+                <th className="px-4 py-3 text-right font-semibold">Discount / premium</th>
+                <th className="rounded-r-lg px-4 py-3 font-semibold">Vs 5-yr median</th>
               </tr>
             </thead>
             <tbody>
               {table.map((row) => (
-                <tr key={row.code} className="border-b border-slate-100 last:border-0">
-                  <td className="py-3 pr-4 text-slate-500">{row.segment}</td>
-                  <td className="py-3 pr-4 font-medium text-slate-900">{row.name}</td>
-                  <td className="py-3 pr-4 text-right tabular-nums text-slate-900">{formatPe(row.pe)}</td>
-                  <td className="py-3 pr-4 text-right tabular-nums text-slate-900">{formatPe(row.median)}</td>
-                  <td className="py-3 pr-4 text-right tabular-nums text-slate-900">{formatGap(row.gap)}</td>
-                  <td className="py-3">
+                <tr key={row.code} className="border-b border-border transition-colors last:border-0 hover:bg-muted/40">
+                  <td className="px-4 py-3.5 text-muted-foreground">{row.segment}</td>
+                  <td className="px-4 py-3.5 font-semibold text-foreground">{row.name}</td>
+                  <td className="px-4 py-3.5 text-right tabular-nums text-foreground">{formatPe(row.pe)}</td>
+                  <td className="px-4 py-3.5 text-right tabular-nums text-muted-foreground">{formatPe(row.median)}</td>
+                  <td className="px-4 py-3.5 text-right font-medium tabular-nums text-foreground">{formatGap(row.gap)}</td>
+                  <td className="px-4 py-3.5">
                     {row.label ? (
-                      // Same neutral badge for every label: colours would read as buy/avoid signals
-                      <span className="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
+                      <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${LABEL_STYLE[row.label]}`}>
                         {row.label}
                       </span>
                     ) : (
@@ -98,9 +111,9 @@ export function IndexValuationTable({ rows, learnMoreHref }: IndexValuationTable
         </div>
       )}
 
-      <div className="space-y-3 border-t border-slate-100 pt-4">
-        {selected && <p className="text-xs text-slate-500 leading-relaxed">{methodologyText(asOf)}</p>}
-        <p className="text-xs text-slate-500 leading-relaxed">{DISCLOSURE}</p>
+      <div className="space-y-1.5 border-t border-border pt-4">
+        <p className="text-xs leading-relaxed text-muted-foreground">{SOURCE_NOTE}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">{DISCLOSURE}</p>
         {learnMoreHref && (
           <Link to={learnMoreHref} className="inline-block text-xs font-medium text-emerald-700 hover:underline">
             Learn how P/E works →
