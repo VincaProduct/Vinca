@@ -104,16 +104,9 @@ export const formatAsOf = (date: string | null) =>
 export const formatMonth = (month: string) =>
   new Date(`${month}T00:00:00`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 
-/** Methodology text built from the settings, so it always matches the code */
-export const methodologyText = (asOf: string) =>
-  `How we calculate this: for each index we take the P/E published by NSE Indices on the last trading day of the month, ` +
-  `and the median of its month-end P/E over the last 5 years. Gap = current P/E ÷ 5-year median − 1, shown as a discount ` +
-  `(below the median) or a premium (above it). Within ±${NEAR_BAND * 100}% of the median is shown as “Near”; between ` +
-  `${NEAR_BAND * 100}% and ${FAR_BAND * 100}% as “Above” or “Below”; beyond ${FAR_BAND * 100}% as “Well above” or “Well below”. ` +
-  `We use the same method and bands every month, and past months stay on record. Data as of ${asOf}.`;
+/** Where the numbers come from, shown under the table */
+export const SOURCE_NOTE =
+  'Source: NSE Indices (niftyindices.com › Reports › Historical Data › P/E, P/B & Div. Yield). Updated monthly.';
 
 export const DISCLOSURE =
-  'Educational data only. This compares each index’s current P/E with its own 5-year median. It is not a recommendation to buy, sell or switch any fund, or to time your investments. ' +
-  'P/E is one measure. Markets can stay above or below their median for long periods, and past patterns may not repeat. ' +
-  'Mutual Fund investments are subject to market risks, read all scheme related documents carefully. ' +
-  'Source: NSE Indices. Vinca Investment Pvt Ltd · AMFI-registered Mutual Fund Distributor · ARN-293401.';
+  'For educational purposes only. Not a recommendation to buy, sell or switch any fund. Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
