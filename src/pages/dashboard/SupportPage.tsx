@@ -28,7 +28,7 @@ const SupportPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-8">
+    <div className="max-w-3xl mx-auto space-y-6 px-4 sm:px-6 py-6 pb-8">
       <div>
         <h1 className="text-4xl font-bold text-foreground mb-2">Support</h1>
         <p className="text-lg text-muted-foreground">

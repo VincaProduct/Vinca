@@ -141,7 +141,7 @@ export default function DashboardEventsPage() {
   const { events, loading } = useEvents();
 
   return (
-    <div className="px-0 pb-16">
+    <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-16">
       <div className="mb-6">
         <p className="text-xs font-bold tracking-widest uppercase text-emerald-700 mb-1">Live Sessions</p>
         <h1 className="text-2xl font-black text-gray-900 mb-1">Upcoming Webinars</h1>
