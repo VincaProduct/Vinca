@@ -26,6 +26,7 @@ import {
   Sprout,
   Compass,
 } from 'lucide-react';
+import { Newspaper } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -56,7 +57,7 @@ const ELEVATE_GREEN = '#0F6E56';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface SubItem {
+export interface SubItem {
   title: string;
   url: string;
   icon: React.ElementType;
@@ -77,7 +78,8 @@ interface NavGroup {
 
 // ── Nav structure ─────────────────────────────────────────────────────────────
 
-const NAV: NavGroup[] = [
+/** Dashboard sections; the phone tab bar uses the same lists */
+export const NAV: NavGroup[] = [
   {
     key: 'dashboard',
     title: 'My Dashboard',
@@ -116,6 +118,7 @@ const NAV: NavGroup[] = [
     title: 'Grow',
     icon: Sprout,
     sub: [
+      { title: 'Blog',        url: '/dashboard/blog',        icon: Newspaper     },
       { title: 'Learning',    url: '/dashboard/learning',    icon: BookOpen      },
       { title: 'Curations',   url: '/dashboard/curations',   icon: Layers        },
       { title: 'Footprints',  url: '/dashboard/footprints',  icon: Footprints    },
@@ -143,6 +146,7 @@ const adminMenuItems = [
   { title: 'Blog CMS',            url: '/dashboard/blog-cms',         icon: FileText       },
   { title: 'Authors',             url: '/dashboard/authors',           icon: Users          },
   { title: 'Global FAQs',         url: '/dashboard/global-faqs',       icon: HelpCircle     },
+  { title: 'Market Data',         url: '/dashboard/market-valuations', icon: LineChart      },
   { title: 'Subscribers',         url: '/dashboard/subscribers',       icon: Mail           },
   { title: 'CTA Dashboard',       url: '/dashboard/cta-dashboard',     icon: LayoutDashboard },
   { title: 'CTA Placements',      url: '/dashboard/cta-placements',    icon: MapPin         },

@@ -32,6 +32,7 @@ const FootprintsPage = lazy(() => import("./pages/dashboard/FootprintsPage"));
 const RaisePage = lazy(() => import("./pages/dashboard/RaisePage"));
 const ReflectionsPage = lazy(() => import("./pages/dashboard/ReflectionsPage"));
 const KnowYourMarketPage = lazy(() => import("./pages/dashboard/KnowYourMarketPage"));
+const DashboardBlogPage = lazy(() => import("./pages/dashboard/DashboardBlogPage"));
 const CurationsPage = lazy(() => import("./pages/dashboard/CurationsPage"));
 const InsurancePage = lazy(() => import("./pages/dashboard/InsurancePage"));
 // import ReadinessFitPage from "./pages/dashboard/ReadinessFitPage";
@@ -46,6 +47,7 @@ const UnifiedFFRPage = lazy(() => import("./pages/ffr/UnifiedFFRPage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
+const MarketDataPage = lazy(() => import("./pages/dashboard/MarketDataPage"));
 const SubscribersPage = lazy(() => import("./pages/dashboard/SubscribersPage"));
 import NotFound from "./pages/NotFound";
 import RouteSeo from "./components/RouteSeo";
@@ -114,6 +116,8 @@ const App = () => (
                     <Route path="raise" element={<RaisePage />} />
                     <Route path="reflections" element={<ReflectionsPage />} />
                     <Route path="insurance" element={<InsurancePage />} />
+                    <Route path="blog" element={<DashboardBlogPage />} />
+                    <Route path="blog/:slug" element={<DashboardBlogPage />} />
                     <Route path="learning" element={<LearningHome />} />
                     <Route path="learning/library" element={<LearningLibrary />} />
                     <Route path="learning/series/:seriesId/video/:videoId" element={<LearningPlayer />} />
@@ -129,6 +133,14 @@ const App = () => (
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
+                    <Route
+                      path="market-valuations"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <MarketDataPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
                     <Route
                       path="global-faqs"
                       element={

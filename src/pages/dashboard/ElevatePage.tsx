@@ -9,6 +9,14 @@ import { User, TrendingUp, Shield, Zap, Compass as CompassIcon } from 'lucide-re
 
 const GREEN   = '#06A969';
 const DARK_BG = '#0D2818';
+// Ink colours that switch with the light/dark theme (index.css)
+const INK       = 'var(--cp-ink)';
+const INK_SOFT  = 'var(--cp-ink-soft)';
+const INK_FAINT = 'var(--cp-ink-faint)';
+
+/** Inputs readable in both themes */
+const FIELD = 'w-full rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#06A969]/30 focus:border-[#06A969]';
+const FIELD_STYLE = { background: 'var(--ui-surface)', color: 'var(--ui-text)', border: '1.5px solid var(--ui-line)' } as const;
 
 type ModalStep = 'q1' | 'q2' | 'q3' | 'phone' | 'booking' | 'booked' | 'ineligible';
 type Answers   = { investable_amount: string; concern: string; focus: string };
@@ -64,6 +72,28 @@ function useRevealLeft(stagger = 180) {
   return ref;
 }
 
+// ─── What's included (hero card roadmap) ──────────────────────
+const COMPASS_INCLUDES = [
+  { title: 'Your retirement roadmap',  desc: 'Built with you and reviewed every year' },
+  { title: 'Portfolio reviews',        desc: 'Mutual fund rebalancing suggestions when your plan needs them' },
+  { title: 'A complete coverage check', desc: 'Emergency fund, insurance cover and tax, with any gaps flagged' },
+  { title: 'Regular check-in calls',   desc: 'With the same point of contact, every time' },
+];
+
+// One 8-second loop: the line fills top to bottom and each step lights up as
+// the fill reaches it, all stay lit for a moment, then everything resets
+const ROAD_LOOP = 8;
+const roadKeyframes = COMPASS_INCLUDES.map((_, i) => {
+  const at = 5 + (60 * i) / (COMPASS_INCLUDES.length - 1);
+  return `@keyframes cp-road-step${i} {
+    0%, ${at - 0.1}% { opacity: var(--off); transform: scale(var(--off-scale)); }
+    ${at + 3}% { opacity: 1; transform: scale(var(--pop)); }
+    ${at + 6}%, 88% { opacity: 1; transform: scale(1); }
+    96%, 100% { opacity: var(--off); transform: scale(var(--off-scale)); }
+  }
+  .cp-road-step${i} { animation: cp-road-step${i} ${ROAD_LOOP}s linear infinite; }`;
+}).join('\n');
+
 // ─── Checkmark SVG ────────────────────────────────────────────
 const Check = () => (
   <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -89,12 +119,13 @@ function QuestionScreen({ stepIndex, question, options, onSelect }: {
   return (
     <div>
       <ProgressDots current={stepIndex} />
-      <h2 className="text-2xl font-bold text-gray-900 mb-8 leading-snug">{question}</h2>
+      <h2 className="text-2xl font-bold mb-8 leading-snug" style={{ color: 'var(--ui-text)' }}>{question}</h2>
       <div className="flex flex-col gap-3">
         {options.map((opt) => (
           <button key={opt} onClick={() => onSelect(opt)}
-            className="text-left px-5 py-4 rounded-xl border-2 border-gray-200 text-gray-800 text-sm font-medium hover:border-green-500 hover:bg-green-50 transition-all duration-150 cursor-pointer">
-            {opt}
+            className="group flex items-center justify-between gap-3 text-left px-5 py-4 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer border-2 border-[color:var(--ui-line)] bg-[var(--ui-surface)] text-[color:var(--ui-text)] hover:border-[#06A969] hover:bg-[var(--ui-green-bg)] focus-visible:outline-none focus-visible:border-[#06A969]">
+            <span>{opt}</span>
+            <span className="text-base opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" style={{ color: GREEN }}>→</span>
           </button>
         ))}
       </div>
@@ -219,13 +250,13 @@ export default function ElevatePage() {
 
   const faqs = [
     { q: 'Is Compass right for me?',
-      a: 'Compass is for people with a clear retirement goal who want a dedicated programme — not a product, not a generic advisor — actively working on it. If you want your retirement plan built, managed, and kept on track, Compass is for you.' },
+      a: 'Compass is for people with a clear retirement goal who want a dedicated programme — not a one-off product or review — actively working on it. If you want your retirement plan built, managed, and kept on track, Compass is for you.' },
     { q: 'What does Compass actually do?',
       a: 'Your retirement plan is reviewed, your portfolio rebalanced where needed, your insurance and tax position checked, and any life changes factored in. You receive a clear update and next steps — without having to ask.' },
     { q: 'What if my dedicated wealth expert changes?',
       a: 'Your entire retirement plan, portfolio history, and context lives in Vinca\'s system — not with any individual. If your primary contact changes, another expert picks up exactly where they left off. Your programme never restarts.' },
     { q: 'What does it cost?',
-      a: 'Pricing is discussed after the eligibility check. We work with a limited number of clients specifically to protect quality.' },
+      a: 'There is no fee for Compass. As an AMFI-registered mutual fund distributor, Vinca earns commission from fund houses on investments made through us, and we disclose this upfront.' },
     { q: 'How do I get started?',
       a: 'Answer 3 questions. Takes 2 minutes. If eligible, your Compass programme is activated within 48 hours.' },
     { q: 'Is my financial data safe?',
@@ -264,6 +295,18 @@ export default function ElevatePage() {
         .cp-rise  { animation: cp-rise  0.7s cubic-bezier(.22,1,.36,1) both; }
         .cp-float { animation: cp-float 4.5s ease-in-out infinite; }
         .cp-fade  { animation: cp-fade  0.5s ease both; }
+        @keyframes cp-road-fill {
+          0%, 5%  { transform: scaleY(0); opacity: 1; }
+          65%, 88% { transform: scaleY(1); opacity: 1; }
+          96%, 100% { transform: scaleY(1); opacity: 0; }
+        }
+        .cp-road-fill { transform-origin: top; animation: cp-road-fill ${ROAD_LOOP}s linear infinite; }
+        .cp-road-dot  { --off: 0; --off-scale: 0.4; --pop: 1.25; }
+        .cp-road-text { --off: 0.4; --off-scale: 1; --pop: 1; transform-origin: left center; }
+        ${roadKeyframes}
+        @media (prefers-reduced-motion: reduce) {
+          .cp-road-fill, .cp-road-dot, .cp-road-text { animation: none; }
+        }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════
@@ -276,7 +319,7 @@ export default function ElevatePage() {
           <div className="flex-1 flex flex-col gap-7 max-w-lg">
 
             <div className="cp-rise" style={{ animationDelay: '0ms' }}>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: DARK_BG }}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: DARK_BG, border: '1px solid rgba(6,169,105,0.35)' }}>
                 <CompassIcon size={13} color={GREEN} />
                 <span className="text-[11px] font-bold tracking-widest text-white uppercase">Private Programme · Vinca Wealth</span>
               </div>
@@ -284,13 +327,13 @@ export default function ElevatePage() {
 
             {/* Brand name as hero */}
             <div className="cp-rise" style={{ animationDelay: '80ms' }}>
-              <p className="text-8xl font-black leading-none tracking-tight max-md:text-6xl" style={{ color: DARK_BG }}>
+              <p className="text-8xl font-black leading-none tracking-tight max-md:text-6xl" style={{ color: INK }}>
                 Compass.
               </p>
             </div>
 
             <div className="cp-rise" style={{ animationDelay: '180ms' }}>
-              <p className="text-xl font-medium leading-snug" style={{ color: 'rgba(13,40,24,0.5)' }}>
+              <p className="text-xl font-medium leading-snug" style={{ color: INK_SOFT }}>
                 Vinca's private retirement management programme.
               </p>
             </div>
@@ -305,44 +348,50 @@ export default function ElevatePage() {
                 style={{ background: GREEN }}>
                 Check My Eligibility →
               </button>
-              <span className="text-sm text-gray-400">Limited to 20 clients per month</span>
             </div>
           </div>
 
-          {/* Right — Programme deliverables card */}
+          {/* Right — What's included: a roadmap that fills top to bottom, on a loop */}
           <div className="flex-1 flex justify-center max-md:w-full cp-fade" style={{ animationDelay: '300ms' }}>
             <div className="cp-float w-full max-w-sm rounded-3xl overflow-hidden" style={{ background: DARK_BG, boxShadow: '0 24px 64px rgba(0,0,0,0.22)' }}>
               <div className="px-8 pt-8 pb-6">
                 <div className="flex items-center gap-2 mb-6">
                   <CompassIcon size={13} color={GREEN} />
-                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Compass · Active</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: GREEN }}>Compass · What's included</span>
                 </div>
-                <p className="text-white font-black text-xl mb-1" style={{ letterSpacing: '-0.02em' }}>Your programme, this month</p>
-                <p className="text-xs mb-7" style={{ color: 'rgba(255,255,255,0.35)' }}>What Compass is working on for you right now</p>
+                <p className="text-white font-black text-xl mb-1" style={{ letterSpacing: '-0.02em' }}>What you get with Compass</p>
+                <p className="text-xs mb-7" style={{ color: 'rgba(255,255,255,0.45)' }}>No programme fee, open to all</p>
 
-                {[
-                  { done: true,  text: 'Retirement roadmap — built and reviewed' },
-                  { done: true,  text: 'Portfolio rebalanced — June' },
-                  { done: true,  text: 'Insurance gap — identified and actioned' },
-                  { done: false, text: 'Monthly update call — June 15' },
-                ].map(item => (
-                  <div key={item.text} className="flex items-center gap-3 mb-3.5">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: item.done ? GREEN : 'rgba(255,255,255,0.08)' }}>
-                      {item.done && <Check />}
-                    </div>
-                    <span className="text-sm" style={{ color: item.done ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.3)' }}>
-                      {item.text}
-                    </span>
+                <div className="relative">
+                  {/* Track and its moving fill, from the first dot to the last */}
+                  <div className="absolute left-[11px] top-3 bottom-8 w-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                    <div className="cp-road-fill absolute inset-0 rounded-full" style={{ background: GREEN }} />
                   </div>
-                ))}
+
+                  {COMPASS_INCLUDES.map((item, i) => (
+                    <div key={item.title} className="relative flex gap-4 pb-6 last:pb-0">
+                      <div className="relative w-6 h-6 flex-shrink-0">
+                        <div className="absolute inset-0 rounded-full" style={{ background: '#16351F', border: '1.5px solid rgba(255,255,255,0.12)' }} />
+                        <div className={`cp-road-dot cp-road-step${i} absolute inset-0 rounded-full flex items-center justify-center`}
+                          style={{ background: GREEN, boxShadow: '0 0 0 4px rgba(6,169,105,0.18), 0 0 18px rgba(6,169,105,0.55)' }}>
+                          <Check />
+                        </div>
+                      </div>
+                      <div className={`cp-road-text cp-road-step${i} min-w-0`}>
+                        <p className="text-sm font-semibold text-white leading-6">{item.title}</p>
+                        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="px-8 py-5" style={{ background: 'rgba(255,255,255,0.04)', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-                <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Retirement target</p>
-                <div className="flex items-center justify-between">
-                  <p className="text-white font-bold">January 2038</p>
-                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.18)', color: GREEN }}>On track</span>
+                <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Programme fee</p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-white font-bold">None</p>
+                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.18)', color: GREEN }}>Open to all</span>
                 </div>
+                <p className="text-[11px] mt-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Vinca earns commission from fund houses</p>
               </div>
             </div>
           </div>
@@ -368,7 +417,7 @@ export default function ElevatePage() {
             ].map(s => (
               <div key={s.step} className="px-10 py-10 max-md:px-6 max-md:py-8" style={{ borderRight: '1px solid var(--ui-line)' }}>
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="text-4xl font-black" style={{ color: 'rgba(13,40,24,0.18)' }}>{s.step}</span>
+                  <span className="text-4xl font-black" style={{ color: INK_FAINT }}>{s.step}</span>
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: 'rgba(6,169,105,0.1)', color: GREEN }}>{s.time}</span>
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-3">{s.title}</h3>
@@ -522,11 +571,11 @@ export default function ElevatePage() {
             Your retirement deserves<br />active management.
           </h2>
           <p className="text-gray-400 mb-10 text-base max-w-md">
-            Compass. Vinca's private retirement management programme.<br />Limited to 20 clients per month.
+            Compass. Vinca's private retirement management programme.
           </p>
           <button onClick={openModal}
-            className="bg-white font-bold px-10 py-4 rounded-full text-base transition-all duration-200 hover:scale-[1.03]"
-            style={{ color: DARK_BG }}>
+            className="font-bold px-10 py-4 rounded-full text-base text-white transition-all duration-200 hover:scale-[1.03] hover:opacity-95"
+            style={{ background: GREEN, boxShadow: '0 10px 30px rgba(6,169,105,0.35)' }}>
             Check My Eligibility →
           </button>
           <p className="text-sm mt-5" style={{ color: 'rgba(255,255,255,0.3)' }}>No obligation. No spam.</p>
@@ -558,13 +607,21 @@ export default function ElevatePage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">You're eligible for Compass</h2>
                 <p className="text-gray-500 text-sm mb-8">What number should your navigator call you on?</p>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210"
-                  className="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-sm font-medium focus:outline-none focus:border-green-500 transition-colors mb-4" />
+                  className={`${FIELD} px-5 py-4 font-medium mb-4`} style={FIELD_STYLE} />
                 <button onClick={handlePhone} disabled={!phone.trim() || phoneLoading}
                   className="w-full py-4 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 disabled:opacity-40"
                   style={{ background: GREEN }}>
                   {phoneLoading ? 'Saving...' : 'Continue to Booking →'}
                 </button>
-                <button onClick={() => goTo('booking')} className="w-full mt-3 text-sm text-gray-400 hover:text-gray-600 transition-colors">Skip for now</button>
+                <div className="mt-6 pt-5" style={{ borderTop: '1px solid var(--ui-line)' }}>
+                  <p className="text-sm mb-3" style={{ color: 'var(--ui-text-muted)' }}>
+                    Prefer not to share your number right now? You can still choose a date and time for your consultation.
+                  </p>
+                  <button onClick={() => goTo('booking')}
+                    className="w-full py-3.5 rounded-xl font-semibold text-sm transition-colors border-2 border-[#06A969] text-[#06A969] hover:bg-[var(--ui-green-bg)]">
+                    Skip and schedule my consultation →
+                  </button>
+                </div>
               </div>
             )}
 
@@ -586,20 +643,20 @@ export default function ElevatePage() {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Your details</p>
                     <div className="space-y-3">
                       <input type="text" value={bookingName} onChange={e => setBookingName(e.target.value)} placeholder="Full name"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors" />
+                        className={FIELD} style={FIELD_STYLE} />
                       <input type="text" value={profileEmail} disabled
-                        className="w-full border border-gray-100 rounded-xl px-4 py-3 text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
-                      <input type="tel" value={bookingPhone} onChange={e => setBookingPhone(e.target.value)} placeholder="Phone number"
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors" />
+                        className={`${FIELD} cursor-not-allowed`} style={{ ...FIELD_STYLE, background: 'var(--ui-muted)', color: 'var(--ui-text-muted)' }} />
+                      <input type="tel" value={bookingPhone} onChange={e => setBookingPhone(e.target.value)} placeholder="Phone number (optional)"
+                        className={FIELD} style={FIELD_STYLE} />
                     </div>
                   </div>
                   <div className="mb-6">
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Select a date</p>
                     <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                       <PopoverTrigger asChild>
-                        <button className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-left focus:outline-none focus:border-green-500 transition-colors flex items-center justify-between"
-                          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          <span className={selectedDate ? 'text-gray-900 font-medium' : 'text-gray-400'}>
+                        <button className={`${FIELD} text-left flex items-center justify-between`}
+                          style={{ ...FIELD_STYLE, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                          <span className={selectedDate ? 'font-medium' : ''} style={{ color: selectedDate ? 'var(--ui-text)' : 'var(--ui-text-faint)' }}>
                             {selectedDate ? format(selectedDate, 'dd MMMM yyyy') : 'Pick a date'}
                           </span>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2">
@@ -620,9 +677,9 @@ export default function ElevatePage() {
                             table: 'w-full px-3 pb-3', head_row: 'flex justify-between mt-3',
                             head_cell: 'text-gray-400 font-medium text-xs w-9 text-center',
                             row: 'flex justify-between mt-1', cell: 'w-9 h-9 text-center p-0',
-                            day: 'w-9 h-9 rounded-xl text-sm font-medium hover:bg-green-50 hover:text-green-700 transition-colors',
+                            day: 'w-9 h-9 rounded-xl text-sm font-medium text-[color:var(--ui-text)] hover:bg-[var(--ui-green-bg)] hover:text-[color:var(--ui-green-text)] transition-colors',
                             day_selected: '!bg-green-600 !text-white hover:!bg-green-600 hover:!text-white rounded-xl font-semibold',
-                            day_today: 'text-green-600 font-bold', day_disabled: 'text-gray-200 cursor-not-allowed hover:bg-transparent hover:text-gray-200', day_outside: 'text-gray-200',
+                            day_today: '!text-[#06A969] font-bold', day_disabled: '!text-[color:var(--ui-text-faint)] opacity-40 cursor-not-allowed hover:bg-transparent', day_outside: '!text-[color:var(--ui-text-faint)] opacity-40',
                           }} />
                       </PopoverContent>
                     </Popover>
@@ -643,7 +700,7 @@ export default function ElevatePage() {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Anything specific? <span className="normal-case font-normal">(optional)</span></p>
                     <textarea value={additionalInfo} onChange={e => setAdditionalInfo(e.target.value)}
                       placeholder="E.g. I want to discuss early retirement planning..." rows={3}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors resize-none" />
+                      className={`${FIELD} resize-none`} style={FIELD_STYLE} />
                   </div>
                   <button onClick={handleBookingSubmit} disabled={!canSubmit}
                     className="w-full py-4 rounded-xl font-semibold text-white text-sm transition-all duration-150 disabled:opacity-40"

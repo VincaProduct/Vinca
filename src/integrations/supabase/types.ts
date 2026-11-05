@@ -172,6 +172,105 @@ export type Database = {
         }
         Relationships: []
       }
+      nifty_pe_monthly: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          month: string
+          pe: number
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          month: string
+          pe: number
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          month?: string
+          pe?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      index_pe_monthly: {
+        Row: {
+          as_of_date: string
+          created_at: string
+          created_by: string | null
+          id: string
+          index_code: string
+          median_pe: number
+          month: string
+          pe: number
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          as_of_date: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          index_code: string
+          median_pe: number
+          month: string
+          pe: number
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          as_of_date?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          index_code?: string
+          median_pe?: number
+          month?: string
+          pe?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      index_pe_edits: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          id: string
+          new_median_pe: number | null
+          new_pe: number | null
+          old_median_pe: number | null
+          old_pe: number | null
+          row_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_median_pe?: number | null
+          new_pe?: number | null
+          old_median_pe?: number | null
+          old_pe?: number | null
+          row_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_median_pe?: number | null
+          new_pe?: number | null
+          old_median_pe?: number | null
+          old_pe?: number | null
+          row_id?: string
+        }
+        Relationships: []
+      }
       global_faqs: {
         Row: {
           answer: string
@@ -814,6 +913,68 @@ export type Database = {
         }
         Relationships: []
       }
+      raise_posts: {
+        Row: {
+          base_votes: number
+          created_at: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          base_votes?: number
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          base_votes?: number
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      raise_votes: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "raise_votes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "raise_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       razorpay_orders: {
         Row: {
           amount: number
@@ -1177,6 +1338,18 @@ export type Database = {
       get_current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      get_raise_board: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          created_at: string
+          id: string
+          is_mine: boolean
+          my_vote: number | null
+          score: number
+          status: string
+          title: string
+        }[]
       }
       has_role: {
         Args: {

@@ -201,7 +201,7 @@ export default function ReflectionsPage() {
           </Button>
         }
       />
-      <div className="min-h-screen pb-24 md:pb-8">
+      <div className="min-h-screen pb-40 md:pb-8">
 
       {/* Google rating summary */}
       <div className="max-w-7xl mx-auto px-4 pt-6">
@@ -257,7 +257,7 @@ export default function ReflectionsPage() {
       </div>
 
       {/* Sticky Mobile Share Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-emerald-100 shadow-lg md:hidden z-20">
+      <div className="fixed left-0 right-0 bottom-[calc(52px+env(safe-area-inset-bottom,0px))] p-4 bg-white border-t border-emerald-100 shadow-lg md:hidden z-40">
         <Button 
           size="lg" 
           className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg"
