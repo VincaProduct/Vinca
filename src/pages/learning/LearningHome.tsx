@@ -86,7 +86,7 @@ const LearningHome = () => {
   );
 
   return (
-    <div className="space-y-6 pb-24 md:pb-0">
+    <div className="space-y-6 pb-36 md:pb-0 [&>*:not(:first-child)]:mx-4 sm:[&>*:not(:first-child)]:mx-6 lg:[&>*:not(:first-child)]:mx-8">
       <CanonicalPageHeader
         title="Concepts that leads to financial readiness"
       />
@@ -125,7 +125,7 @@ const LearningHome = () => {
       </div>
 
       {/* Sticky CTA for mobile only */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-sm border-t shadow-lg pb-safe z-20">
+      <div className="md:hidden fixed left-0 right-0 !mx-0 bottom-[calc(52px+env(safe-area-inset-bottom,0px))] bg-background/95 backdrop-blur-sm border-t shadow-lg z-40">
         <Button className="w-full rounded-none h-12 text-base font-semibold" onClick={handleContinue}>
           Continue Learning
         </Button>

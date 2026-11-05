@@ -58,7 +58,7 @@ const ELEVATE_GREEN = '#0F6E56';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface SubItem {
+export interface SubItem {
   title: string;
   url: string;
   icon: React.ElementType;
@@ -79,7 +79,8 @@ interface NavGroup {
 
 // ── Nav structure ─────────────────────────────────────────────────────────────
 
-const NAV: NavGroup[] = [
+/** Dashboard sections; the phone tab bar uses the same lists */
+export const NAV: NavGroup[] = [
   {
     key: 'dashboard',
     title: 'My Dashboard',
@@ -147,6 +148,7 @@ const adminMenuItems = [
   { title: 'Blog CMS',            url: '/dashboard/blog-cms',         icon: FileText       },
   { title: 'Authors',             url: '/dashboard/authors',           icon: Users          },
   { title: 'Global FAQs',         url: '/dashboard/global-faqs',       icon: HelpCircle     },
+  { title: 'Market Data',         url: '/dashboard/market-valuations', icon: LineChart      },
   { title: 'Subscribers',         url: '/dashboard/subscribers',       icon: Mail           },
   { title: 'Real Worth rates',    url: '/dashboard/real-worth-rates',  icon: Scale          },
   { title: 'CTA Dashboard',       url: '/dashboard/cta-dashboard',     icon: LayoutDashboard },

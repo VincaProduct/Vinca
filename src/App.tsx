@@ -50,6 +50,7 @@ const UnifiedFFRPage = lazy(() => import("./pages/ffr/UnifiedFFRPage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
+const MarketDataPage = lazy(() => import("./pages/dashboard/MarketDataPage"));
 const SubscribersPage = lazy(() => import("./pages/dashboard/SubscribersPage"));
 import NotFound from "./pages/NotFound";
 import RouteSeo from "./components/RouteSeo";
@@ -137,6 +138,14 @@ const App = () => (
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
+                    <Route
+                      path="market-valuations"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <MarketDataPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
                     <Route
                       path="global-faqs"
                       element={

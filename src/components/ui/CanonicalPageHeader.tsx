@@ -21,7 +21,7 @@ const CanonicalPageHeader: React.FC<CanonicalPageHeaderProps> = ({
   children,
   mobileActionButton,
 }) => (
-  <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-b -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 mb-6 sm:mb-8">
+  <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-b px-4 sm:px-6 lg:px-8 mb-6 sm:mb-8">
     <div className="max-w-6xl mx-auto py-4 sm:py-6">
       {/* Desktop: flex row, actions right; Mobile: flex row, icon button right */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
