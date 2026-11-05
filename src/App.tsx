@@ -13,6 +13,9 @@ import Index from "./pages/Index";
 import BlogsPage from "./pages/BlogsPage";
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const FinancialFreedomCalculator = lazy(() => import("./pages/FinancialFreedomCalculator"));
+const RealWorthCalculatorPage = lazy(() => import("./pages/RealWorthCalculatorPage"));
+const DashboardRealWorthPage = lazy(() => import("./pages/dashboard/DashboardRealWorthPage"));
+const RealWorthRatesPage = lazy(() => import("./pages/dashboard/RealWorthRatesPage"));
 const AuthPage = lazy(() => import("./components/auth/AuthPage"));
 const DashboardLayout = lazy(() => import("./components/dashboard/DashboardLayout"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
@@ -86,6 +89,7 @@ const App = () => (
                   <Route path="/blog-preview" element={<BlogPreviewPage />} />
                   <Route path="/thank-you" element={<PublicRoute><ThankYou /></PublicRoute>} />
                   <Route path="/financial-freedom-calculator" element={<PublicRoute><FinancialFreedomCalculator /></PublicRoute>} />
+                  <Route path="/real-worth-calculator" element={<PublicRoute signedInTo="/dashboard/real-worth"><RealWorthCalculatorPage /></PublicRoute>} />
                   <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
                   <Route path="/privacy-policy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
                   {/* Removed pages (paid membership, Achievers Club) */}
@@ -110,6 +114,7 @@ const App = () => (
                     <Route path="ffr" element={<UnifiedFFRPage />} />
                     <Route path="ffr/checklist" element={<FFRChecklist />} />
                     <Route path="ffr/opportunities" element={<FFROpportunities />} />
+                    <Route path="real-worth" element={<DashboardRealWorthPage />} />
                     <Route path="know-your-market" element={<KnowYourMarketPage />} />
                     <Route path="curations" element={<CurationsPage />} />
                     <Route path="footprints" element={<FootprintsPage />} />
@@ -146,6 +151,14 @@ const App = () => (
                       element={
                         <RoleProtectedRoute requiredRole="super_admin">
                           <GlobalFaqsPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="real-worth-rates"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <RealWorthRatesPage />
                         </RoleProtectedRoute>
                       }
                     />

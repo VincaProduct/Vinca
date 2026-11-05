@@ -4,9 +4,11 @@ import { Loader2 } from 'lucide-react';
 
 interface PublicRouteProps {
   children: React.ReactNode;
+  /** Where a signed-in visitor is sent instead (default: their Financial Freedom page) */
+  signedInTo?: string;
 }
 
-const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
+const PublicRoute: React.FC<PublicRouteProps> = ({ children, signedInTo = '/dashboard/ffr' }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -19,7 +21,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
 
   // If user is logged in, redirect to dashboard
   if (user) {
-    return <Navigate to="/dashboard/ffr" replace />;
+    return <Navigate to={signedInTo} replace />;
   }
 
   return <>{children}</>;

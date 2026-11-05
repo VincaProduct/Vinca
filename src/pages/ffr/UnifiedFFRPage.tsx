@@ -915,6 +915,18 @@ function FFRContent() {
             <div style={{ background: 'var(--ui-surface)', borderRadius: 16, boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: 24 }}>
               <GapChart />
             </div>
+            <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold text-foreground">Where you keep your money changes this</p>
+                <p className="mt-1 text-sm text-muted-foreground">See what your savings, FD, gold and funds could really be worth when you retire.</p>
+              </div>
+              <Link
+                to="/dashboard/real-worth"
+                className="inline-flex min-h-[44px] flex-shrink-0 items-center justify-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-4 text-sm font-semibold text-primary no-underline transition-colors hover:bg-primary hover:text-primary-foreground"
+              >
+                Check your real worth <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </section>
         )}
 

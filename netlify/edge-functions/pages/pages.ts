@@ -9,6 +9,11 @@ import {
   SITE_URL,
   organizationSchema,
 } from "../../../src/content/siteInfo.ts";
+import {
+  DEFAULT_REAL_WORTH_ASSETS,
+  REAL_WORTH_COPY,
+  REAL_WORTH_FAQS,
+} from "../../../src/content/realWorth.ts";
 
 /**
  * Per-page SEO for the public (non-blog) pages: each gets its own title,
@@ -219,6 +224,23 @@ const renderCalculator = () => `
       </section>
     </main>`;
 
+const REAL_WORTH_PATH = "/real-worth-calculator";
+
+/** Readable version of the Real Worth Calculator: heading, what it compares, disclaimer and FAQs */
+const renderRealWorth = () => `
+    <main style="padding-top: 96px; max-width: 960px; margin: 0 auto; padding-left: 16px; padding-right: 16px">
+      <h1 style="font-size: 28px; font-weight: 700">${escapeHtml(REAL_WORTH_COPY.h1)}</h1>
+      <p>${escapeHtml(REAL_WORTH_COPY.intro)}</p>
+      <h2>What we compare</h2>
+      <ul>${DEFAULT_REAL_WORTH_ASSETS.map((a) => `<li><strong>${escapeHtml(a.label)}</strong>: ${escapeHtml(a.factLine)}</li>`).join("")}</ul>
+      <p>Before tax · Inflation 7% a year</p>
+      <p><a href="/financial-freedom-calculator">Will this last through my retirement? Check in 2 minutes</a></p>
+      <p><small>${escapeHtml(REAL_WORTH_COPY.disclaimer)}</small></p>
+      <p><small>${escapeHtml(REAL_WORTH_COPY.entity)}</small></p>
+      <h2>Frequently Asked Questions</h2>
+      ${REAL_WORTH_FAQS.map((faq) => `<details><summary>${escapeHtml(faq.question)}</summary><p>${escapeHtml(faq.answer)}</p></details>`).join("")}
+    </main>`;
+
 const faqPage = (url: string, faqs: { question: string; answer: string }[]) => ({
   "@type": "FAQPage",
   "@id": `${url}#faq`,
@@ -263,6 +285,21 @@ const pageGraph = (path: string, url: string, seo: { title: string; description:
       "@type": "WebApplication",
       "@id": `${url}#app`,
       name: "Financial Freedom Calculator",
+      url,
+      description: seo.description,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Any",
+      isAccessibleForFree: true,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+      provider: { "@id": `${SITE_URL}/#organization` },
+      inLanguage: "en-IN",
+    });
+  }
+  if (path === REAL_WORTH_PATH) {
+    graph.push(faqPage(url, REAL_WORTH_FAQS), {
+      "@type": "WebApplication",
+      "@id": `${url}#app`,
+      name: "Real Worth Calculator",
       url,
       description: seo.description,
       applicationCategory: "FinanceApplication",
@@ -346,6 +383,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
       .replace("<head>", `<head>\n${head}`);
     if (path === "/") html = html.replace('<div id="root"></div>', `<div id="root">${renderHome()}</div>`);
     if (path === CALCULATOR_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderCalculator()}</div>`);
+    if (path === REAL_WORTH_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderRealWorth()}</div>`);
     if (path === "/events") html = html.replace('<div id="root"></div>', `<div id="root">${renderEvents(events)}</div>`);
     if (event) html = html.replace('<div id="root"></div>', `<div id="root">${renderEvent(event)}</div>`);
 
@@ -367,7 +405,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
 export default async (request: Request, context: Context) => withSecurityHeaders(await handler(request, context));
 
 export const config = {
-  path: ["/", "/financial-freedom-calculator", "/events", "/events/*", "/privacy-policy"],
+  path: ["/", "/financial-freedom-calculator", "/real-worth-calculator", "/events", "/events/*", "/privacy-policy"],
   // Responses opt in to CDN caching with Netlify-CDN-Cache-Control
   cache: "manual",
 };

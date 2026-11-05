@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
-import { Calculator, ChevronDown, BookOpen, CalendarDays } from "lucide-react";
+import { Calculator, ChevronDown, BookOpen, CalendarDays, Scale } from "lucide-react";
 
 interface MobileNavigationProps {
   scrollToSection: (sectionId: string) => void;
@@ -127,6 +127,16 @@ const MobileNavigation = ({ scrollToSection }: MobileNavigationProps) => {
                       <Calculator className="mr-2 h-4 w-4" />
                       <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
                         Financial Freedom Calculator
+                      </span>
+                    </Link>
+                    <Link
+                      to="/real-worth-calculator"
+                      className="flex items-center text-muted-foreground hover:text-primary transition-all duration-200 ease-in-out py-2 px-3 rounded-lg hover:bg-accent/30 focus:outline-none focus:bg-accent/30 focus:text-primary group"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Scale className="mr-2 h-4 w-4" />
+                      <span className="transition-transform duration-200 group-hover:translate-x-1 inline-block">
+                        Real Worth Calculator
                       </span>
                     </Link>
                   </div>

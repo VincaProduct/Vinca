@@ -102,6 +102,13 @@ export default async (request: Request) => {
     <priority>0.7</priority>
   </url>
 
+  <!-- Real Worth Calculator -->
+  <url>
+    <loc>${baseUrl}/real-worth-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Events -->
   <url>
     <loc>${baseUrl}/events</loc>

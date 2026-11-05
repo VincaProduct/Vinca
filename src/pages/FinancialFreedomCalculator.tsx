@@ -12,6 +12,7 @@ import MinimalResultsCard from "@/components/calculator/MinimalResultsCard";
 import CalculatorInfo from "@/components/calculator/CalculatorInfo";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { FFR_PREFILL_KEY, type RealWorthInputs } from "@/lib/realWorth";
 interface UserLumpsumData {
   [yearNumber: number]: {
     investment: number;
@@ -136,6 +137,30 @@ const FinancialFreedomCalculator = () => {
         } catch (error) {
           console.error('Error parsing cached inputs:', error);
         }
+      }
+
+      // Numbers carried over from the Real Worth Calculator: age, retirement
+      // age, savings and monthly SIP (SIPs run up to 20 years, as usual)
+      try {
+        const carried = sessionStorage.getItem(FFR_PREFILL_KEY);
+        if (carried) {
+          sessionStorage.removeItem(FFR_PREFILL_KEY);
+          const rw = JSON.parse(carried) as RealWorthInputs;
+          const years = Math.max(0, rw.retireAge - rw.age);
+          setInputs((prev) => {
+            const sipYears = Math.min(Math.max(prev.yearsForSIP, 20), years);
+            return {
+              ...prev,
+              age: rw.age,
+              yearsForSIP: sipYears,
+              waitingYearsBeforeSWP: years - sipYears,
+              initialPortfolioValue: rw.savedToday,
+              sipAmount: rw.monthly,
+            };
+          });
+        }
+      } catch (error) {
+        console.error('Error reading carried-over numbers:', error);
       }
       
 

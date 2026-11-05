@@ -913,6 +913,105 @@ export type Database = {
         }
         Relationships: []
       }
+      real_worth_rates: {
+        Row: {
+          asset_key: string
+          fact_line: string
+          label: string
+          sort_order: number
+          source_note: string
+          typical_rate: number
+          updated_at: string
+          weak_rate: number | null
+        }
+        Insert: {
+          asset_key: string
+          fact_line: string
+          label: string
+          sort_order: number
+          source_note: string
+          typical_rate: number
+          updated_at?: string
+          weak_rate?: number | null
+        }
+        Update: {
+          asset_key?: string
+          fact_line?: string
+          label?: string
+          sort_order?: number
+          source_note?: string
+          typical_rate?: number
+          updated_at?: string
+          weak_rate?: number | null
+        }
+        Relationships: []
+      }
+      real_worth_settings: {
+        Row: {
+          as_of_date: string
+          id: number
+          inflation_default: number
+          inflation_max: number
+          inflation_min: number
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          as_of_date?: string
+          id?: number
+          inflation_default?: number
+          inflation_max?: number
+          inflation_min?: number
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          as_of_date?: string
+          id?: number
+          inflation_default?: number
+          inflation_max?: number
+          inflation_min?: number
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      real_worth_snapshots: {
+        Row: {
+          age: number
+          created_at: string
+          id: string
+          inflation: number
+          monthly: number
+          rates_version: number
+          retire_age: number
+          saved_today: number
+          user_id: string
+        }
+        Insert: {
+          age: number
+          created_at?: string
+          id?: string
+          inflation: number
+          monthly: number
+          rates_version: number
+          retire_age: number
+          saved_today: number
+          user_id: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          id?: string
+          inflation?: number
+          monthly?: number
+          rates_version?: number
+          retire_age?: number
+          saved_today?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       raise_posts: {
         Row: {
           base_votes: number
