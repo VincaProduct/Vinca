@@ -14,6 +14,7 @@ import {
   REAL_WORTH_COPY,
   REAL_WORTH_FAQS,
 } from "../../../src/content/realWorth.ts";
+import { PRIVACY_POLICY_HTML } from "../../../src/content/privacyPolicy.ts";
 
 /**
  * Per-page SEO for the public (non-blog) pages: each gets its own title,
@@ -199,6 +200,7 @@ const renderHome = () => `
         <p>${escapeHtml(COMPANY.legalStatus)} · ${escapeHtml(COMPANY.arn)} · CIN: ${escapeHtml(COMPANY.cin)} · Insurance POSP Code: ${escapeHtml(COMPANY.insurancePosp)}</p>
         <p>Contact: <a href="tel:${escapeHtml(COMPANY.telephone)}">${escapeHtml(COMPANY.telephone)}</a> · <a href="mailto:${escapeHtml(COMPANY.email)}">${escapeHtml(COMPANY.email)}</a></p>
         <p><a href="/blog">Read our research-driven articles on mutual funds, markets and retirement planning</a></p>
+        <p><a href="/privacy-policy">Privacy Policy</a></p>
       </section>
     </main>`;
 
@@ -239,6 +241,16 @@ const renderRealWorth = () => `
       <p><small>${escapeHtml(REAL_WORTH_COPY.entity)}</small></p>
       <h2>Frequently Asked Questions</h2>
       ${REAL_WORTH_FAQS.map((faq) => `<details><summary>${escapeHtml(faq.question)}</summary><p>${escapeHtml(faq.answer)}</p></details>`).join("")}
+    </main>`;
+
+const PRIVACY_PATH = "/privacy-policy";
+
+/** The full privacy policy, readable without JavaScript (Meta ad review, AI assistants, search) */
+const renderPrivacy = () => `
+    <main style="padding-top: 96px; max-width: 896px; margin: 0 auto; padding-left: 16px; padding-right: 16px">
+      <h1 style="font-size: 32px; font-weight: 700">Privacy Policy</h1>
+      ${PRIVACY_POLICY_HTML}
+      <p>Vinca Investment Private Limited · AMFI-registered Mutual Fund Distributor · ARN-293401 · <a href="mailto:${escapeHtml(COMPANY.email)}">${escapeHtml(COMPANY.email)}</a></p>
     </main>`;
 
 const faqPage = (url: string, faqs: { question: string; answer: string }[]) => ({
@@ -384,6 +396,7 @@ const handler = async (request: Request, context: Context): Promise<Response | u
     if (path === "/") html = html.replace('<div id="root"></div>', `<div id="root">${renderHome()}</div>`);
     if (path === CALCULATOR_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderCalculator()}</div>`);
     if (path === REAL_WORTH_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderRealWorth()}</div>`);
+    if (path === PRIVACY_PATH) html = html.replace('<div id="root"></div>', `<div id="root">${renderPrivacy()}</div>`);
     if (path === "/events") html = html.replace('<div id="root"></div>', `<div id="root">${renderEvents(events)}</div>`);
     if (event) html = html.replace('<div id="root"></div>', `<div id="root">${renderEvent(event)}</div>`);
 
