@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, X, Check, Pencil } from 'lucide-react';
+import { Minus, Plus, X, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -375,19 +375,6 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
     navigate(mode === 'dashboard' ? '/dashboard/ffr' : '/financial-freedom-calculator');
   };
 
-  const onSave = async () => {
-    track('real_worth_save_click');
-    if (mode === 'dashboard') {
-      await saveSnapshot(validInputs, effectiveInflation);
-      return;
-    }
-    try {
-      sessionStorage.setItem(PENDING_SAVE_KEY, JSON.stringify({ inputs: validInputs, inflation: effectiveInflation }));
-      localStorage.setItem('redirect_after_login', '/dashboard/real-worth');
-    } catch { /* storage blocked */ }
-    navigate('/auth');
-  };
-
   // The page "Talk to our team" opens; kept in one place so it's easy to change
   const talkToTeam = () => {
     track('real_worth_talk_click');
@@ -609,21 +596,16 @@ export default function RealWorthCalculator({ mode }: { mode: Mode }) {
           </div>
 
           {/* Next steps */}
-          <div className="rw-rise space-y-3 rounded-xl border border-border bg-card p-4 sm:p-5" style={{ animationDelay: '160ms' }}>
-            <Button type="button" size="lg" onClick={goToFfr} className="h-auto min-h-[52px] w-full flex-col gap-0 py-3 shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5 sm:w-auto sm:px-8">
-              <span className="text-base font-semibold">Will this last through my retirement?</span>
+          <div className="rw-rise grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 sm:p-5" style={{ animationDelay: '160ms' }}>
+            <Button type="button" size="lg" onClick={goToFfr} className="h-auto min-h-[56px] w-full flex-col gap-0 py-3">
+              <span className="text-[15px] font-semibold">Will this last through my retirement?</span>
               <span className="text-xs font-normal opacity-90">Check in 2 minutes</span>
             </Button>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              <Button type="button" variant="outline" onClick={onSave} disabled={saveState !== 'idle'} className="min-h-[44px]">
-                {saveState === 'saved' ? <><Check className="mr-1.5 h-4 w-4" /> Saved</>
-                  : saveState === 'saving' ? 'Saving…'
-                  : mode === 'dashboard' ? 'Save to my plan' : 'Save this'}
-              </Button>
-              <button type="button" onClick={talkToTeam} className="min-h-[44px] text-sm font-semibold text-primary underline-offset-2 hover:underline">
-                Talk to our team
-              </button>
-            </div>
+            <Button type="button" size="lg" variant="outline" onClick={talkToTeam}
+              className="h-auto min-h-[56px] w-full flex-col gap-0 border-primary/50 py-3 text-foreground hover:bg-primary/5">
+              <span className="text-[15px] font-semibold">Talk to our team</span>
+              <span className="text-xs font-normal text-muted-foreground">Free consultation</span>
+            </Button>
           </div>
 
           {/* Disclaimer */}
