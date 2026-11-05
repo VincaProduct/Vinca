@@ -63,15 +63,6 @@ export const PAGE_SEO: Record<string, { title: string; description: string }> = 
     description:
       'Upcoming Vinca Wealth events and webinars on mutual funds, retirement planning and financial freedom, online and in Bengaluru.',
   },
-  '/achievers-club': {
-    title: 'Achievers Club | Vinca Wealth',
-    description:
-      "Join Vinca Wealth's Achievers Club: a community of investors working towards financial freedom with goal-based investing.",
-  },
-  '/pricing': {
-    title: 'Plans & Pricing | Vinca Wealth',
-    description: 'Vinca Wealth membership plans for retirement planning and financial freedom tools.',
-  },
   '/privacy-policy': {
     title: 'Privacy Policy | Vinca Wealth',
     description: 'How Vinca Wealth collects, uses and protects your personal information.',
@@ -119,7 +110,7 @@ export const HOME_FAQS: HomeFaq[] = [
   },
   {
     question: 'What are the different products Vinca Wealth suggests?',
-    answer: 'We suggest mutual funds, health insurance, life insurance, equity baskets, PMS and fractional real estate products.',
+    answer: 'We suggest mutual funds, health insurance, life insurance, equity baskets and PMS.',
   },
   {
     question: 'As an NRI, do I have a limitation in terms of funds and schemes?',

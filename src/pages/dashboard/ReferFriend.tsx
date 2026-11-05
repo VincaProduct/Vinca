@@ -3,31 +3,14 @@ import { Loader2 } from 'lucide-react';
 import { useReferrals } from '@/hooks/useReferrals';
 import { ReferralCard } from '@/components/referral/ReferralCard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useMembership } from '@/hooks/useMembership';
 
 const ReferFriend = () => {
   const { stats, loading } = useReferrals();
-  const { membership, loading: membershipLoading } = useMembership();
 
-  if (loading || membershipLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Check if user is premium
-  const isPremium = membership?.tier === 'premium';
-
-  if (!isPremium) {
-    return (
-      <div className="container max-w-4xl mx-auto p-6">
-        <Alert>
-          <AlertDescription>
-            Referral program is available for premium members only. Upgrade to premium to start referring friends and earning rewards.
-          </AlertDescription>
-        </Alert>
       </div>
     );
   }
@@ -49,7 +32,8 @@ const ReferFriend = () => {
       <div className="space-y-2">
         <h1 className="text-2xl sm:text-3xl font-bold">Refer a Friend</h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Share the wealth of knowledge and grow together. Invite your friends to join Vinca Wealth.
+          Know someone who wants to plan their retirement? Share your link and invite them to Vinca Wealth.
+          Referrals are just an invitation: there are no rewards, discounts or payments for referring.
         </p>
       </div>
 
@@ -67,7 +51,7 @@ const ReferFriend = () => {
           <CardHeader>
             <CardTitle>Referral History</CardTitle>
             <CardDescription>
-              Track your successful referrals
+              Friends who joined using your link
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -114,7 +114,7 @@ const getLatestAchievement = (points: number) => {
   return unlocked[unlocked.length - 1] || null;
 };
 
-const advisoryDescriptions: Record<string, string> = {
+const levelDescriptions: Record<string, string> = {
   "level-1": "You have begun a structured financial practice.",
   "level-2": "You are building early momentum with intention.",
   "level-3": "You are developing consistent learning discipline.",
@@ -196,7 +196,7 @@ const LearningAchievements = () => {
     
     const points = progress?.totalLearningPoints || 0;
     const unlockDate = progress?.achievementUnlocks?.[achievement.id];
-    const description = advisoryDescriptions[achievement.id] ?? achievement.description;
+    const description = levelDescriptions[achievement.id] ?? achievement.description;
     const progressPercent = getProgressToNext(achievement);
     
     // Get level number from ID
