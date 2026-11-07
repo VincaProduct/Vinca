@@ -172,7 +172,8 @@ const renderHome = () => `
         <h2 class="text-3xl font-bold mb-4">${escapeHtml(PREVIEW.h2)}</h2>
         <p>${escapeHtml(PREVIEW.text)}</p>
         <p><a href="/financial-freedom-calculator">${escapeHtml(PREVIEW.button)}</a></p>
-        ${PREVIEW.cards.map((c) => `<h3 class="text-xl font-semibold mt-6">${escapeHtml(c.title)}</h3><p>${escapeHtml(c.line)}</p>`).join("")}
+        <h3 class="text-xl font-semibold mt-6">${escapeHtml(PREVIEW.cardsHeading)}</h3>
+        ${PREVIEW.cards.map((c) => `<h4 class="font-semibold mt-4">${escapeHtml(c.title)}</h4><p>${escapeHtml(c.line)}</p>`).join("")}
         <p>${escapeHtml(PREVIEW.signIn)}</p>
         <p><small>${escapeHtml(PREVIEW.disclaimer)}</small></p>
       </section>

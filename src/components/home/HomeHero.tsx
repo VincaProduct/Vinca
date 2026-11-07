@@ -38,6 +38,10 @@ const HomeHero = () => {
       {/* Soft brand glow, static */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0"
         style={{ background: 'radial-gradient(ellipse 70% 55% at 75% 35%, hsl(158 64% 52% / 0.08), transparent 70%)' }} />
+      {/* Floating bubbles, as on the previous homepage (decoration only) */}
+      <div aria-hidden="true" className="pointer-events-none absolute right-[6%] top-[12%] h-72 w-72 rounded-full bg-primary/[0.04] sm:h-80 sm:w-80" style={{ animation: 'float 6s ease-in-out infinite' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute bottom-[10%] left-[3%] h-44 w-44 rounded-full bg-primary/[0.04]" style={{ animation: 'float 8s ease-in-out infinite reverse' }} />
+      <div aria-hidden="true" className="pointer-events-none absolute right-[30%] top-[55%] hidden h-28 w-28 rounded-full bg-primary/[0.03] lg:block" style={{ animation: 'float 5s ease-in-out infinite 1s' }} />
 
       <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
         {/* Left: who we are and what to do */}

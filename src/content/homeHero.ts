@@ -23,20 +23,24 @@ export const HERO = {
   ],
 };
 
-export type PreviewCardKey = 'score' | 'realworth' | 'market' | 'insurance' | 'learn';
+export type PreviewCardKey = 'compass' | 'score' | 'realworth' | 'market' | 'insurance' | 'learn';
 
 export const PREVIEW = {
   h2: 'Are you on track for financial freedom?',
   text: 'See your Freedom Score in 2 minutes. No sign-up for your first result.',
   button: 'Check my score',
+  scoreLabel: 'Your Freedom Score',
+  cardsLabel: 'Inside your free dashboard',
+  cardsHeading: 'Everything you need for your retirement, in one place',
   cards: [
-    { key: 'score', title: 'Will my money last?', line: 'Your score, your gap, and how your plan holds up in bad years.', url: '/dashboard/ffr' },
-    { key: 'realworth', title: 'What will my savings really be worth?', line: 'Compare FD, gold, debt and equity after inflation.', url: '/dashboard/real-worth' },
-    { key: 'market', title: 'What are markets doing?', line: 'Short updates in plain words.', url: '/dashboard/know-your-market' },
-    { key: 'insurance', title: 'Help with insurance', line: 'Check your cover, and get help if a claim is stuck.', url: '/dashboard/insurance' },
-    { key: 'learn', title: 'Learn and ask', line: 'Short lessons, and a place to ask your questions.', url: '/dashboard/learning' },
-  ] as { key: PreviewCardKey; title: string; line: string; url: string }[],
-  signIn: 'Sign in free with Google to save your plan and open all of this.',
+    { key: 'compass', title: 'Compass: a real person on your side', line: 'Book a free consultation. One person who knows your full picture keeps your plan on track.', badge: 'Our programme' },
+    { key: 'score', title: 'Will my money last?', line: 'Your score, your gap, and how your plan holds up in bad years.' },
+    { key: 'realworth', title: 'What will my savings really be worth?', line: 'Compare FD, gold, debt and equity after inflation.' },
+    { key: 'market', title: 'What are markets doing?', line: 'Short updates in plain words.' },
+    { key: 'insurance', title: 'Help with insurance', line: 'Check your cover, and get help if a claim is stuck.' },
+    { key: 'learn', title: 'Learn and ask', line: 'Short lessons, and a place to ask your questions.' },
+  ] as { key: PreviewCardKey; title: string; line: string; badge?: string }[],
+  signIn: 'Sign in with Google to unlock all these features.',
   signInButton: 'Sign in free',
   signedIn: 'Welcome back',
   signedInButton: 'Go to my dashboard',
