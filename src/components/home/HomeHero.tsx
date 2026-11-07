@@ -15,7 +15,7 @@ const LOOP = 8; // seconds
 // Step i lights when the line reaches it: 5%, 25%, 45%, 65% of the loop
 const stepKeyframes = HERO.steps.map((_, i) => {
   const at = 5 + (60 * i) / (STEP_COUNT - 1);
-  return `@keyframes hh-step${i}{0%,${at - 0.1}%{opacity:var(--off)}${at + 4}%,90%{opacity:1}97%,100%{opacity:var(--off)}}
+  return `@keyframes hh-step${i}{0%,${at - 0.1}%{opacity:0;transform:scale(.6)}${at + 4}%{opacity:1;transform:scale(1.12)}${at + 8}%,90%{opacity:1;transform:scale(1)}97%,100%{opacity:0;transform:scale(1)}}
 .hh-step${i}{animation:hh-step${i} ${LOOP}s linear infinite}`;
 }).join('');
 
@@ -24,9 +24,8 @@ const MOTION_CSS = `
 @keyframes hh-fill{0%,5%{transform:scaleY(0);opacity:1}65%,90%{transform:scaleY(1);opacity:1}97%,100%{transform:scaleY(1);opacity:0}}
 .hh-rise{animation:hh-rise .6s cubic-bezier(.22,1,.36,1) both}
 .hh-fill{transform-origin:top;animation:hh-fill ${LOOP}s linear infinite}
-.hh-dot{--off:0}.hh-text{--off:.45}
 ${stepKeyframes}
-@media (prefers-reduced-motion:reduce){.hh-rise,.hh-fill,.hh-dot,.hh-text,${HERO.steps.map((_, i) => `.hh-step${i}`).join(',')}{animation:none}}
+@media (prefers-reduced-motion:reduce){.hh-rise,.hh-fill,${HERO.steps.map((_, i) => `.hh-step${i}`).join(',')}{animation:none}}
 `;
 
 const HomeHero = () => {
@@ -34,13 +33,13 @@ const HomeHero = () => {
   const { user } = useAuth();
 
   return (
-    <section className="relative overflow-hidden bg-background px-4 pb-14 pt-20 sm:px-6 sm:pt-28 lg:px-16 lg:pb-24 lg:pt-36">
+    <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-background px-4 pb-14 pt-20 sm:px-6 sm:pt-24 lg:px-16 lg:pb-16 lg:pt-24">
       <style>{MOTION_CSS}</style>
       {/* Soft brand glow, static */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0"
         style={{ background: 'radial-gradient(ellipse 70% 55% at 75% 35%, hsl(158 64% 52% / 0.08), transparent 70%)' }} />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
         {/* Left: who we are and what to do */}
         <div className="min-w-0">
           <p className="hh-rise text-xs font-semibold uppercase tracking-wider sm:text-sm" style={{ color: 'var(--brand-text)' }}>
@@ -91,11 +90,11 @@ const HomeHero = () => {
               <li key={step.title} className="relative flex gap-4 pb-6 last:pb-0">
                 <span className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-border bg-card text-sm font-semibold text-muted-foreground">
                   {i + 1}
-                  <span aria-hidden="true" className={`hh-dot hh-step${i} absolute inset-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_0_4px_hsl(158_64%_52%/0.18)]`}>
+                  <span aria-hidden="true" className={`hh-step${i} absolute inset-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_0_4px_hsl(158_64%_52%/0.18)]`}>
                     {i + 1}
                   </span>
                 </span>
-                <div className={`hh-text hh-step${i} min-w-0 pt-0.5`}>
+                <div className="min-w-0 pt-0.5">
                   <p className="font-semibold leading-snug text-foreground">{step.title}</p>
                   <p className="mt-0.5 text-sm text-muted-foreground">{step.note}</p>
                 </div>
