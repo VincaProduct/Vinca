@@ -31,6 +31,7 @@ export const COMPANY = {
   sameAs: [
     'https://www.facebook.com/people/Vinca-Wealth/100088393606551/',
     'https://www.instagram.com/vincawealth/',
+    'https://www.linkedin.com/company/vinca-wealth/',
     'https://www.youtube.com/@vincawealth9573',
   ],
   topics: [

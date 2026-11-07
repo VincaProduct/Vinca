@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Youtube, MapPin, Phone, Mail } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube, MapPin, Phone, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -137,6 +137,15 @@ const Footer = () => {
                 aria-label="Follow us on Instagram"
               >
                 <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform text-foreground" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/vinca-wealth/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-background/50 hover:bg-background/80 rounded-lg transition-colors group"
+                aria-label="Follow us on LinkedIn"
+              >
+                <Linkedin className="w-5 h-5 group-hover:scale-110 transition-transform text-foreground" />
               </a>
               <a
                 href="https://www.youtube.com/@vincawealth9573"
