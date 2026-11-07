@@ -53,43 +53,41 @@ const DashboardPreview = () => {
     <section ref={ref} className="relative overflow-hidden border-t border-border bg-muted/30 px-4 py-14 sm:px-6 lg:px-16 lg:py-24">
       <style>{MOTION_CSS}</style>
       <div className="relative mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
-        {/* Left: heading, the score ring and the main action */}
+        {/* Left: heading, the score ring and the main action, centred */}
         <div className="relative min-w-0 lg:sticky lg:top-28 lg:self-start">
-          {/* Soft floating bubbles, decoration only */}
-          <div aria-hidden="true" className="pointer-events-none absolute -left-10 -top-10 h-56 w-56 rounded-full bg-primary/[0.06]" style={{ animation: 'float 7s ease-in-out infinite' }} />
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-6 right-6 h-24 w-24 rounded-full bg-primary/[0.05]" style={{ animation: 'float 9s ease-in-out infinite reverse' }} />
+          {/* Soft floating bubbles at the sides, clear of the text */}
+          <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-1/3 hidden h-40 w-40 rounded-full bg-primary/[0.06] lg:block" style={{ animation: 'float 7s ease-in-out infinite' }} />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-6 bottom-0 h-16 w-16 rounded-full bg-primary/[0.07] sm:h-20 sm:w-20" style={{ animation: 'float 9s ease-in-out infinite reverse' }} />
+          <div aria-hidden="true" className="pointer-events-none absolute -left-2 bottom-10 h-8 w-8 rounded-full bg-primary/[0.08]" style={{ animation: 'float 6s ease-in-out infinite 1s' }} />
 
-          <div className="relative">
-            <h2 className="text-2xl font-bold leading-tight text-foreground sm:text-4xl" style={{ textWrap: 'balance' } as React.CSSProperties}>
+          <div className="relative mx-auto flex max-w-md flex-col items-center text-center">
+            <h2 className="text-3xl font-bold leading-tight text-foreground sm:text-[2.6rem]" style={{ textWrap: 'balance' } as React.CSSProperties}>
               {PREVIEW.h2}
             </h2>
             <p className="mt-3 text-base text-muted-foreground sm:text-lg">{PREVIEW.text}</p>
 
             {/* Score ring: shows the scale, not a number, until you check yours */}
-            <div className="mt-8 flex items-center gap-5">
-              <div className="relative h-32 w-32 flex-shrink-0" aria-hidden="true">
-                <div className="dp-orbit absolute -inset-3">
-                  <span className="absolute left-1/2 top-0 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-primary/70" />
-                  <span className="absolute bottom-3 left-1 h-1.5 w-1.5 rounded-full bg-primary/40" />
-                </div>
-                <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
-                  <circle cx="60" cy="60" r="52" fill="none" strokeWidth="9" className="stroke-border" />
-                  <circle cx="60" cy="60" r="52" fill="none" strokeWidth="9" strokeLinecap="round" className="dp-arc stroke-primary" />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold leading-none text-foreground">?</span>
-                  <span className="mt-1 text-xs text-muted-foreground">/ 100</span>
-                </div>
+            <div className="relative mt-8 h-44 w-44 sm:h-52 sm:w-52" aria-hidden="true">
+              <div className="dp-orbit absolute -inset-4">
+                <span className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 rounded-full bg-primary/70" />
+                <span className="absolute bottom-4 left-2 h-2 w-2 rounded-full bg-primary/40" />
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--brand-text)' }}>{PREVIEW.scoreLabel}</p>
-                <Button size="lg" className="mt-2 h-auto min-h-[52px] px-6 py-3 text-base font-semibold"
-                  onClick={() => navigate(user ? '/dashboard/ffr' : '/financial-freedom-calculator')}>
-                  {PREVIEW.button}
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
+              <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
+                <circle cx="60" cy="60" r="52" fill="none" strokeWidth="8" className="stroke-border" />
+                <circle cx="60" cy="60" r="52" fill="none" strokeWidth="8" strokeLinecap="round" className="dp-arc stroke-primary" />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-5xl font-bold leading-none text-foreground">?</span>
+                <span className="mt-1.5 text-sm text-muted-foreground">/ 100</span>
+                <span className="mt-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--brand-text)' }}>{PREVIEW.scoreLabel}</span>
               </div>
             </div>
+
+            <Button size="lg" className="mt-7 h-auto min-h-[52px] px-7 py-3 text-base font-semibold"
+              onClick={() => navigate(user ? '/dashboard/ffr' : '/financial-freedom-calculator')}>
+              {PREVIEW.button}
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
           </div>
         </div>
 

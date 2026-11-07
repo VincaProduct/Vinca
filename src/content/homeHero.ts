@@ -6,7 +6,9 @@
 
 export const HERO = {
   eyebrow: 'AMFI-registered Mutual Fund Distributor · Bengaluru',
-  h1: 'Invest for a retirement you can count on',
+  h1: 'Invest for a Retirement you can count on',
+  /** The word in the headline shown in brand green */
+  h1Highlight: 'Retirement',
   subline:
     "We help working families build their retirement with mutual funds. Start with your numbers, then talk to a real person when you're ready.",
   primary: 'See where my retirement stands',

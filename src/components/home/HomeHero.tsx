@@ -51,7 +51,9 @@ const HomeHero = () => {
           </p>
           <h1 className="hh-rise mt-3 text-[2rem] font-bold leading-[1.12] text-foreground sm:text-5xl lg:text-[3.4rem]"
             style={{ animationDelay: '80ms', textWrap: 'balance' } as React.CSSProperties}>
-            {HERO.h1}
+            {HERO.h1.split(HERO.h1Highlight)[0]}
+            <span style={{ color: 'var(--brand-text)' }}>{HERO.h1Highlight}</span>
+            {HERO.h1.split(HERO.h1Highlight)[1]}
           </h1>
           <p className="hh-rise mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '160ms' }}>
             {HERO.subline}
