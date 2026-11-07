@@ -122,7 +122,7 @@ const WealthSystemSection = () => {
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
             <div className="grid sm:grid-cols-2 gap-4 mb-6">
               <div>
-                <div className="text-2xl font-bold text-primary">60+</div>
+                <div className="text-2xl font-bold text-primary">100+</div>
                 <div className="text-sm text-muted-foreground">Families Served</div>
               </div>
               <div>

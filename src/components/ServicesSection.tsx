@@ -1,6 +1,7 @@
 
 import { ServiceCard } from "@/components/services/ServiceCard";
 import ServicesCTA from "@/components/services/ServicesCTA";
+import { Compass, ShieldCheck, Sunrise, TrendingUp } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
@@ -8,25 +9,25 @@ const ServicesSection = () => {
       title: 'Retirement Planning',
       description: 'Know exactly when you can retire and what it will take to get there — with a score and a plan, not a guess.',
       features: ['Financial Freedom Readiness score', 'Retirement corpus estimation', 'SIP strategy and timeline', 'Retirement date projection'],
-      icon: '🏖️'
+      icon: Sunrise
     },
     {
       title: 'Mutual Fund Portfolio Management',
       description: 'Portfolio built for your retirement goal, actively monitored and rebalanced as markets move.',
       features: ['Goal-based portfolio construction', 'SIP setup and management', 'Regular portfolio rebalancing', 'Performance tracking'],
-      icon: '📈'
+      icon: TrendingUp
     },
     {
       title: 'Insurance Planning',
       description: 'The two pillars that protect your retirement corpus — assessed, gap-identified, and sorted.',
       features: ['Life insurance adequacy check', 'Health insurance review', 'Coverage gap identification', 'Claim support at zero upfront cost'],
-      icon: '🛡️'
+      icon: ShieldCheck
     },
     {
       title: 'Compass — Dedicated Wealth Management',
       description: 'One expert who knows your complete financial picture and actively manages your retirement plan.',
       features: ['Dedicated wealth expert', 'Active portfolio oversight', 'Insurance and emergency fund coverage', 'Same-day responses'],
-      icon: '🧭'
+      icon: Compass
     }
   ];
 
