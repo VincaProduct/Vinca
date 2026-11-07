@@ -15,6 +15,7 @@ import {
   REAL_WORTH_FAQS,
 } from "../../../src/content/realWorth.ts";
 import { PRIVACY_POLICY_HTML } from "../../../src/content/privacyPolicy.ts";
+import { HERO, PREVIEW } from "../../../src/content/homeHero.ts";
 
 /**
  * Per-page SEO for the public (non-blog) pages: each gets its own title,
@@ -156,17 +157,25 @@ const website = {
 /** Readable version of the homepage (same text the app shows) */
 const renderHome = () => `
     <main>
-      <section class="relative overflow-hidden min-h-screen flex items-center justify-center px-6 lg:px-16 py-20" style="background: hsl(var(--background))">
-        <div class="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
-          <h1 class="font-bold leading-tight" style="font-family: 'Plus Jakarta Sans', sans-serif">
-            <span class="block mb-4 uppercase" style="font-size: clamp(0.75rem, 1.8vw, 0.875rem); letter-spacing: 0.08em; font-weight: 600; color: var(--brand-text)">Retirement planning &amp; mutual fund investing in Bengaluru</span>
-            <span class="block" style="font-size: clamp(2rem, 5vw, 3.5rem); color: hsl(var(--foreground))">Are you on track for</span>
-            <span class="block" style="font-size: clamp(2.25rem, 6vw, 4rem); color: var(--brand-text)">Financial Freedom?</span>
-          </h1>
-          <p style="font-size: clamp(1rem, 2.5vw, 1.25rem); color: hsl(var(--muted-foreground)); font-weight: 500">Find out in 2 minutes — free</p>
-          <p class="mt-10"><a href="/financial-freedom-calculator" class="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-4 font-semibold text-primary-foreground">Calculate My Freedom Score</a></p>
-          <p style="font-size: 14px; color: hsl(var(--muted-foreground))">Used by investors across India to find their retirement gap.</p>
-        </div>
+      <section class="container mx-auto px-6 pt-28 pb-16 max-w-4xl">
+        <p style="font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-text)">${escapeHtml(HERO.eyebrow)}</p>
+        <h1 class="text-4xl font-bold mt-3">${escapeHtml(HERO.h1)}</h1>
+        <p class="mt-4">${escapeHtml(HERO.subline)}</p>
+        <p class="mt-6"><a href="/financial-freedom-calculator" class="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground">${escapeHtml(HERO.primary)}</a> <small>${escapeHtml(HERO.primaryNote)}</small></p>
+        <p><a href="/auth">${escapeHtml(HERO.secondary)}</a></p>
+        <p><small>${HERO.trust.map(escapeHtml).join(" · ")}</small></p>
+        <h2 class="text-2xl font-bold mt-10">${escapeHtml(HERO.stepsLabel)}</h2>
+        <ol>${HERO.steps.map((s) => `<li><strong>${escapeHtml(s.title)}</strong> ${escapeHtml(s.note)}</li>`).join("")}</ol>
+      </section>
+
+      <section class="container mx-auto px-6 py-16 max-w-4xl">
+        <h2 class="text-3xl font-bold mb-4">${escapeHtml(PREVIEW.h2)}</h2>
+        <p>${escapeHtml(PREVIEW.text)}</p>
+        <p><a href="/financial-freedom-calculator">${escapeHtml(PREVIEW.button)}</a></p>
+        <h3 class="text-xl font-semibold mt-6">${escapeHtml(PREVIEW.cardsHeading)}</h3>
+        ${PREVIEW.cards.map((c) => `<h4 class="font-semibold mt-4">${escapeHtml(c.title)}</h4><p>${escapeHtml(c.line)}</p>`).join("")}
+        <p>${escapeHtml(PREVIEW.signIn)}</p>
+        <p><small>${escapeHtml(PREVIEW.disclaimer)}</small></p>
       </section>
 
       <section class="container mx-auto px-6 py-16 max-w-4xl">
