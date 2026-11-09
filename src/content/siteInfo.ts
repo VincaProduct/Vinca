@@ -11,6 +11,8 @@ export const COMPANY = {
   name: 'Vinca Wealth',
   legalStatus: 'AMFI Registered Mutual Fund Distributor',
   arn: 'ARN-293401',
+  /** APMI registration for distributing PMS */
+  aprn: 'APRN09071',
   cin: 'U65999KA2022PTC169569',
   insurancePosp: '1726204591',
   description:
@@ -31,6 +33,7 @@ export const COMPANY = {
   sameAs: [
     'https://www.facebook.com/people/Vinca-Wealth/100088393606551/',
     'https://www.instagram.com/vincawealth/',
+    'https://www.linkedin.com/company/vinca-wealth/',
     'https://www.youtube.com/@vincawealth9573',
   ],
   topics: [
@@ -238,6 +241,7 @@ export const organizationSchema = () => ({
   knowsAbout: COMPANY.topics,
   identifier: [
     { '@type': 'PropertyValue', propertyID: 'AMFI ARN', value: COMPANY.arn },
+    { '@type': 'PropertyValue', propertyID: 'APMI APRN', value: COMPANY.aprn },
     { '@type': 'PropertyValue', propertyID: 'CIN', value: COMPANY.cin },
     { '@type': 'PropertyValue', propertyID: 'Insurance POSP Code', value: COMPANY.insurancePosp },
   ],

@@ -1,7 +1,23 @@
-import { Facebook, Instagram, Youtube, MapPin } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Youtube, MapPin, Phone, Mail } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+// Real links, so they work from every page and search engines can follow them.
+// "/#..." links scroll to that part of the homepage.
+const QUICK_LINKS = [
+  { label: "Services", to: "/#services" },
+  { label: "Financial Freedom Calculator", to: "/financial-freedom-calculator" },
+  { label: "Real Worth Calculator", to: "/real-worth-calculator" },
+  { label: "Events", to: "/events" },
+  { label: "Blog", to: "/blog" },
+  { label: "FAQ", to: "/#faq" },
+];
+
+const PHONE = "+91 73868 09164";
+const EMAIL = "support@vincawealth.com";
 
 const Footer = () => {
+  const location = useLocation();
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -28,8 +44,12 @@ const Footer = () => {
     ? "/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png"
     : "/images/black-logo-Photoroom.png";
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
+  // On the homepage, scroll smoothly instead of reloading; elsewhere the link
+  // opens the homepage and the header scrolls to the section.
+  const handleQuickLink = (event: React.MouseEvent, to: string) => {
+    if (!to.startsWith("/#") || location.pathname !== "/") return;
+    event.preventDefault();
+    const element = document.getElementById(to.slice(2));
     if (element) {
       const headerHeight = 80; // Account for fixed header
       const elementPosition = element.getBoundingClientRect().top;
@@ -72,56 +92,36 @@ const Footer = () => {
                 AMFI Registered Mutual Fund Distributor ·{" "}
                 <span className="whitespace-nowrap">ARN-293401</span>
               </p>
+              <p>
+                APMI Registered PMS Distributor ·{" "}
+                <span className="whitespace-nowrap">APRN09071</span>
+              </p>
               <p>CIN: U65999KA2022PTC169569</p>
               <p>Insurance POSP Code: 1726204591</p>
-            </div>
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>📞 +91 7386809164</p>
-              <p>✉️ support@vincawealth.com</p>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div>
+          <nav aria-label="Footer">
             <h4 className="font-semibold mb-4 text-foreground">Quick Links</h4>
             <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <button
-                  onClick={() => scrollToSection("services")}
-                  className="hover:text-primary transition-colors text-left"
-                >
-                  Services
-                </button>
-              </li>
-              <li>
-                <a
-                  href="/blog"
-                  className="hover:text-primary transition-colors text-left block"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection("faq")}
-                  className="hover:text-primary transition-colors text-left"
-                >
-                  FAQ
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => scrollToSection("contact")}
-                  className="hover:text-primary transition-colors text-left"
-                >
-                  Contact
-                </button>
-              </li>
+              {QUICK_LINKS.map((link) => (
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
+                    onClick={(event) => handleQuickLink(event, link.to)}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
-          </div>
+          </nav>
 
-          {/* Social Media */}
-          <div>
+          {/* Follow us, then contact */}
+          <div className="flex flex-col gap-8">
+           <div>
             <h4 className="font-semibold mb-4 text-foreground">Follow Us</h4>
             <div className="flex space-x-4">
               <a
@@ -143,6 +143,15 @@ const Footer = () => {
                 <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform text-foreground" />
               </a>
               <a
+                href="https://www.linkedin.com/company/vinca-wealth/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-background/50 hover:bg-background/80 rounded-lg transition-colors group"
+                aria-label="Follow us on LinkedIn"
+              >
+                <Linkedin className="w-5 h-5 group-hover:scale-110 transition-transform text-foreground" />
+              </a>
+              <a
                 href="https://www.youtube.com/@vincawealth9573"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -160,6 +169,29 @@ const Footer = () => {
               >
                 <MapPin className="w-5 h-5 group-hover:scale-110 transition-transform text-foreground" />
               </a>
+            </div>
+           </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-foreground">Contact Us</h4>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <a href={`tel:${PHONE.replace(/\s/g, "")}`} className="group inline-flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors">
+                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary transition-transform group-hover:scale-105">
+                      <Phone className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    {PHONE}
+                  </a>
+                </li>
+                <li>
+                  <a href={`mailto:${EMAIL}`} className="group inline-flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors break-all">
+                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary transition-transform group-hover:scale-105">
+                      <Mail className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    {EMAIL}
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
