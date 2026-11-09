@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
+import HomeHero from "@/components/home/HomeHero";
+import DashboardPreview from "@/components/home/DashboardPreview";
 // import MutualFundMistakesSection from "@/components/MutualFundMistakesSection";
 import WealthSystemSection from "@/components/WealthSystemSection";
 // import AIToolsSection from "@/components/AIToolsSection";
@@ -15,7 +16,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <HeroSection />
+      <HomeHero />
+      <DashboardPreview />
       {/* <MutualFundMistakesSection /> */}
       <WealthSystemSection />
       {/* <AIToolsSection /> */}
