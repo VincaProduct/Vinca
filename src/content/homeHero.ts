@@ -3,19 +3,27 @@
  * the page and the pages edge function, which pre-renders it for search
  * engines, so it must not import anything that uses the "@/" alias.
  */
+import { PMS_APRN, PMS_ENABLED } from './pms.ts';
 
 export const HERO = {
   eyebrow: 'AMFI-registered Mutual Fund Distributor · Bengaluru',
   h1: 'Invest for a Retirement you can count on',
   /** The word in the headline shown in brand green */
   h1Highlight: 'Retirement',
-  subline:
-    "We help working families build their retirement with mutual funds. Start with your numbers, then talk to a real person when you're ready.",
+  // PMS is mentioned only once the APRN is set (src/content/pms.ts)
+  subline: PMS_ENABLED
+    ? "We help working families build their retirement with mutual funds, and PMS for larger portfolios. Start with your numbers, then talk to a real person when you're ready."
+    : "We help working families build their retirement with mutual funds. Start with your numbers, then talk to a real person when you're ready.",
   primary: 'See where my retirement stands',
   primarySignedIn: 'Open my Freedom Score',
   primaryNote: '2 minutes · no sign-up',
   secondary: 'Talk to our team',
-  trust: ['ARN-293401', 'Your money goes straight to the fund house', '100+ families invest with us'],
+  trust: [
+    'ARN-293401',
+    ...(PMS_ENABLED ? [`PMS distributor · ${PMS_APRN}`] : []),
+    'Your money goes straight to the fund house',
+    '100+ families invest with us',
+  ],
   stepsLabel: 'How it works',
   steps: [
     { title: 'Find out where your retirement stands', note: '2 min · no sign-up' },
