@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import HomeHero from "@/components/home/HomeHero";
 import DashboardPreview from "@/components/home/DashboardPreview";
+import HomeGuides from "@/components/home/HomeGuides";
 // import MutualFundMistakesSection from "@/components/MutualFundMistakesSection";
 import WealthSystemSection from "@/components/WealthSystemSection";
 // import AIToolsSection from "@/components/AIToolsSection";
@@ -22,6 +23,7 @@ const Index = () => {
       <WealthSystemSection />
       {/* <AIToolsSection /> */}
       <ServicesSection />
+      <HomeGuides />
       <BlogSection />
       {/* <AboutSection /> */}
       {/* <ContactSection /> */}

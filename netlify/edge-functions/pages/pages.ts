@@ -16,6 +16,7 @@ import {
 } from "../../../src/content/realWorth.ts";
 import { PRIVACY_POLICY_HTML } from "../../../src/content/privacyPolicy.ts";
 import { HERO, PREVIEW } from "../../../src/content/homeHero.ts";
+import { HOME_GUIDES } from "../../../src/content/homeGuides.ts";
 
 /**
  * Per-page SEO for the public (non-blog) pages: each gets its own title,
@@ -197,6 +198,16 @@ const renderHome = () => `
         <p>Portfolio built for your retirement goal, actively monitored and rebalanced as markets move: goal-based portfolio construction, SIP setup and management, regular rebalancing, performance tracking.</p>
         <h3 class="text-xl font-semibold mt-6">Insurance Planning</h3>
         <p>Life insurance adequacy check, health insurance review and coverage gap identification, to protect your retirement corpus.</p>
+      </section>
+
+      <section class="container mx-auto px-6 py-16 max-w-4xl">
+        <h2 class="text-3xl font-bold mb-4">${escapeHtml(HOME_GUIDES.heading)}</h2>
+        <p>${escapeHtml(HOME_GUIDES.text)}</p>
+        <h3 class="text-xl font-semibold mt-6">${escapeHtml(HOME_GUIDES.toolsLabel)}</h3>
+        <ul>${HOME_GUIDES.tools.map((t) => `<li><a href="${t.href}">${escapeHtml(t.title)}</a>: ${escapeHtml(t.line)}</li>`).join("")}</ul>
+        <h3 class="text-xl font-semibold mt-6">${escapeHtml(HOME_GUIDES.articlesLabel)}</h3>
+        <ol>${HOME_GUIDES.articles.map((a) => `<li><a href="/blog/${escapeHtml(a.slug)}">${escapeHtml(a.title)}</a></li>`).join("")}</ol>
+        <p><a href="/blog">${escapeHtml(HOME_GUIDES.allArticles)}</a> · <a href="${HOME_GUIDES.social.href}" rel="noopener">${escapeHtml(HOME_GUIDES.social.label)} (${escapeHtml(HOME_GUIDES.social.handle)})</a></p>
       </section>
 
       <section id="faq" class="container mx-auto px-6 py-16 max-w-4xl">
