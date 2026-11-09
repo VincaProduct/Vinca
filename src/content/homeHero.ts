@@ -20,7 +20,7 @@ export const HERO = {
   secondary: 'Talk to our team',
   trust: [
     'ARN-293401',
-    ...(PMS_ENABLED ? [PMS_APRN as string] : []),
+    ...(PMS_ENABLED ? [`PMS distributor · ${PMS_APRN}`] : []),
     'Your money goes straight to the fund house',
     '100+ families invest with us',
   ],

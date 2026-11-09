@@ -5,7 +5,7 @@
  * homepage hero, trust line, services card and PMS risk note all switch on.
  * Must not import anything that uses the "@/" alias (used by the edge function).
  */
-export const PMS_APRN: string | null = null;
+export const PMS_APRN: string | null = 'APRN09071';
 
 export const PMS_ENABLED = PMS_APRN !== null && PMS_APRN.trim() !== '';
 
