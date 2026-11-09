@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { trackEvent } from '@/lib/tracking';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -227,12 +228,15 @@ export default function ElevatePage() {
     const ph   = bookingPhone || profilePhone || '';
     const preferredDate = format(selectedDate, 'yyyy-MM-dd');
     const email = profileEmail || user.email || '';
+    const bookingId = crypto.randomUUID();
     const { error: dbError } = await (supabase.from('consultation_bookings') as any).insert({
-      user_id: user.id, full_name: name, email, phone: ph,
+      id: bookingId, user_id: user.id, full_name: name, email, phone: ph,
       preferred_date: preferredDate, preferred_time_slot: selectedSlot,
       consultation_type: 'elevate_consultation', additional_info: additionalInfo || null, status: 'pending',
     });
     if (dbError) console.error('Booking DB error:', dbError);
+    // Google Ads / GA4: only for a booking that was saved (no name, email or phone)
+    else trackEvent('compass_booking', { event_id: bookingId });
     const { data: zohoData, error: zohoError } = await supabase.functions.invoke('zoho-booking', {
       body: { preferred_date: preferredDate, preferred_time_slot: selectedSlot, full_name: name, email, phone: ph },
     });

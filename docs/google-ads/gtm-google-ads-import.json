@@ -1,0 +1,210 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-11-10 00:00:00",
+  "containerVersion": {
+    "path": "accounts/0/containers/0/versions/0",
+    "accountId": "0",
+    "containerId": "0",
+    "containerVersionId": "0",
+    "container": {
+      "path": "accounts/0/containers/0",
+      "accountId": "0",
+      "containerId": "0",
+      "name": "Vinca Wealth - Google Ads tracking",
+      "publicId": "GTM-MJW3CHP",
+      "usageContext": ["WEB"]
+    },
+    "tag": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "901",
+        "name": "Ads - Conversion Linker",
+        "type": "gclidw",
+        "parameter": [
+          { "type": "BOOLEAN", "key": "enableCrossDomain", "value": "false" },
+          { "type": "BOOLEAN", "key": "enableUrlPassthrough", "value": "false" },
+          { "type": "BOOLEAN", "key": "enableCookieOverrides", "value": "false" }
+        ],
+        "firingTriggerId": ["2147479553"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "902",
+        "name": "Ads - Google tag AW-18326893510",
+        "type": "googtag",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "tagId", "value": "AW-18326893510" }
+        ],
+        "firingTriggerId": ["2147479573"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "903",
+        "name": "Ads - Dashboard sign-up",
+        "type": "awct",
+        "parameter": [
+          { "type": "BOOLEAN", "key": "enableNewCustomerReporting", "value": "false" },
+          { "type": "BOOLEAN", "key": "enableConversionLinker", "value": "true" },
+          { "type": "BOOLEAN", "key": "enableProductReporting", "value": "false" },
+          { "type": "BOOLEAN", "key": "enableEnhancedConversion", "value": "false" },
+          { "type": "TEMPLATE", "key": "conversionCookiePrefix", "value": "_gcl" },
+          { "type": "BOOLEAN", "key": "enableShippingData", "value": "false" },
+          { "type": "TEMPLATE", "key": "conversionId", "value": "18326893510" },
+          { "type": "TEMPLATE", "key": "conversionLabel", "value": "Get2CPfFnLUdEMbn-KJE" },
+          { "type": "TEMPLATE", "key": "orderId", "value": "{{DLV - event_id}}" },
+          { "type": "BOOLEAN", "key": "rdp", "value": "false" }
+        ],
+        "firingTriggerId": ["911"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "904",
+        "name": "Ads - Compass call booked",
+        "type": "awct",
+        "parameter": [
+          { "type": "BOOLEAN", "key": "enableNewCustomerReporting", "value": "false" },
+          { "type": "BOOLEAN", "key": "enableConversionLinker", "value": "true" },
+          { "type": "BOOLEAN", "key": "enableProductReporting", "value": "false" },
+          { "type": "BOOLEAN", "key": "enableEnhancedConversion", "value": "false" },
+          { "type": "TEMPLATE", "key": "conversionCookiePrefix", "value": "_gcl" },
+          { "type": "BOOLEAN", "key": "enableShippingData", "value": "false" },
+          { "type": "TEMPLATE", "key": "conversionId", "value": "18326893510" },
+          { "type": "TEMPLATE", "key": "conversionLabel", "value": "ayS5CPrFnLUdEMbn-KJE" },
+          { "type": "TEMPLATE", "key": "orderId", "value": "{{DLV - event_id}}" },
+          { "type": "BOOLEAN", "key": "rdp", "value": "false" }
+        ],
+        "firingTriggerId": ["912"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "905",
+        "name": "GA4 - sign_up",
+        "type": "gaawe",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "sign_up" },
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-6MQBMGPXJJ" },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  { "type": "TEMPLATE", "key": "parameter", "value": "method" },
+                  { "type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - method}}" }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  { "type": "TEMPLATE", "key": "parameter", "value": "event_id" },
+                  { "type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - event_id}}" }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": ["911"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "tagId": "906",
+        "name": "GA4 - compass_booking",
+        "type": "gaawe",
+        "parameter": [
+          { "type": "TEMPLATE", "key": "eventName", "value": "compass_booking" },
+          { "type": "TEMPLATE", "key": "measurementIdOverride", "value": "G-6MQBMGPXJJ" },
+          {
+            "type": "LIST",
+            "key": "eventSettingsTable",
+            "list": [
+              {
+                "type": "MAP",
+                "map": [
+                  { "type": "TEMPLATE", "key": "parameter", "value": "event_id" },
+                  { "type": "TEMPLATE", "key": "parameterValue", "value": "{{DLV - event_id}}" }
+                ]
+              }
+            ]
+          }
+        ],
+        "firingTriggerId": ["912"],
+        "tagFiringOption": "ONCE_PER_EVENT"
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "911",
+        "name": "CE - sign_up",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+              { "type": "TEMPLATE", "key": "arg1", "value": "sign_up" }
+            ]
+          }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "triggerId": "912",
+        "name": "CE - compass_booking",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              { "type": "TEMPLATE", "key": "arg0", "value": "{{_event}}" },
+              { "type": "TEMPLATE", "key": "arg1", "value": "compass_booking" }
+            ]
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "921",
+        "name": "DLV - event_id",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "event_id" }
+        ]
+      },
+      {
+        "accountId": "0",
+        "containerId": "0",
+        "variableId": "922",
+        "name": "DLV - method",
+        "type": "v",
+        "parameter": [
+          { "type": "INTEGER", "key": "dataLayerVersion", "value": "2" },
+          { "type": "BOOLEAN", "key": "setDefaultValue", "value": "false" },
+          { "type": "TEMPLATE", "key": "name", "value": "method" }
+        ]
+      }
+    ],
+    "builtInVariable": [
+      { "accountId": "0", "containerId": "0", "type": "EVENT", "name": "Event" }
+    ]
+  }
+}
