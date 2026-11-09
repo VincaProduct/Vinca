@@ -197,7 +197,7 @@ const renderHome = () => `
 
       <section class="container mx-auto px-6 py-12 max-w-4xl">
         <p>${escapeHtml(COMPANY.description)}</p>
-        <p>${escapeHtml(COMPANY.legalStatus)} · ${escapeHtml(COMPANY.arn)} · CIN: ${escapeHtml(COMPANY.cin)} · Insurance POSP Code: ${escapeHtml(COMPANY.insurancePosp)}</p>
+        <p>${escapeHtml(COMPANY.legalStatus)} · ${escapeHtml(COMPANY.arn)} · APMI Registered PMS Distributor · ${escapeHtml(COMPANY.aprn)} · CIN: ${escapeHtml(COMPANY.cin)} · Insurance POSP Code: ${escapeHtml(COMPANY.insurancePosp)}</p>
         <p>Contact: <a href="tel:${escapeHtml(COMPANY.telephone)}">${escapeHtml(COMPANY.telephone)}</a> · <a href="mailto:${escapeHtml(COMPANY.email)}">${escapeHtml(COMPANY.email)}</a></p>
         <p><a href="/blog">Read our research-driven articles on mutual funds, markets and retirement planning</a></p>
         <p><a href="/privacy-policy">Privacy Policy</a></p>

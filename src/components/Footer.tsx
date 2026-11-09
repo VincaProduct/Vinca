@@ -92,6 +92,10 @@ const Footer = () => {
                 AMFI Registered Mutual Fund Distributor ·{" "}
                 <span className="whitespace-nowrap">ARN-293401</span>
               </p>
+              <p>
+                APMI Registered PMS Distributor ·{" "}
+                <span className="whitespace-nowrap">APRN09071</span>
+              </p>
               <p>CIN: U65999KA2022PTC169569</p>
               <p>Insurance POSP Code: 1726204591</p>
             </div>
