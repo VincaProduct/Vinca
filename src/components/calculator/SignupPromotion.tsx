@@ -64,7 +64,7 @@ const SignupPromotion = () => {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <p className="text-sm text-muted-foreground mt-3">
-              Free signup • No credit card required • Instant access
+              100% free • No spam • Instant access
             </p>
           </div>
         </Card>

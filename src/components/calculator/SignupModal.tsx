@@ -86,7 +86,7 @@ const SignupModal = ({ isOpen, onClose }: SignupModalProps) => {
           </div>
           
           <p className="text-xs text-muted-foreground text-center mt-4">
-            Free signup • No credit card required • Instant access
+            100% free • No spam • Instant access
           </p>
         </div>
       </DialogContent>

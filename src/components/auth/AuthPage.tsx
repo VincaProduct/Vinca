@@ -185,7 +185,7 @@ const AuthPage = () => {
 
         {/* Footer */}
         <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', marginTop: 32 }}>
-          No spam. No credit card. Cancel anytime.
+          100% free. No spam. We never share your details.
         </p>
       </div>
     </div>
