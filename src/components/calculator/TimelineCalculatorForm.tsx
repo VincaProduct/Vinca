@@ -211,7 +211,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
             label="What are your monthly expenses?"
             value={inputs.currentMonthlyExpenses}
             onChange={v => handleChange('currentMonthlyExpenses', v)}
-            placeholder="50000"
+            placeholder="e.g. 50,000"
             prefix="₹"
             helper="Include rent, food, utilities — everything you spend today"
           />
@@ -243,7 +243,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
             label="What is your monthly take-home income?"
             value={inputs.monthlyIncome}
             onChange={v => handleChange('monthlyIncome', v)}
-            placeholder="100000"
+            placeholder="e.g. 1,00,000"
             prefix="₹"
             helper="Used for your savings rate and the insurance cover you need"
           />
@@ -251,7 +251,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
             label="What is your current monthly SIP?"
             value={inputs.sipAmount}
             onChange={v => handleChange('sipAmount', v)}
-            placeholder="25000"
+            placeholder="e.g. 25,000"
             prefix="₹"
             helper="Total amount you invest in mutual funds every month"
           />
@@ -259,7 +259,7 @@ const TimelineCalculatorForm: React.FC<TimelineCalculatorFormProps> = ({
             label="What is your existing investment corpus?"
             value={inputs.initialPortfolioValue}
             onChange={v => handleChange('initialPortfolioValue', v)}
-            placeholder="500000"
+            placeholder="e.g. 5,00,000"
             prefix="₹"
             helper="Include mutual funds, FDs, stocks, PPF"
           />
