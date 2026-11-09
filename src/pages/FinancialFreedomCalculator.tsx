@@ -128,9 +128,12 @@ const FinancialFreedomCalculator = () => {
         }
       }
 
-      // Fallback to localStorage
-      const cachedInputs = localStorage.getItem('financial_calculator_inputs');
-      
+      // Signed-in users without a saved plan get their last numbers from this
+      // browser. Signed-out visitors always start with an empty form (the
+      // numbers are still kept in this browser so they carry into the
+      // dashboard after signing up).
+      const cachedInputs = user ? localStorage.getItem('financial_calculator_inputs') : null;
+
       if (cachedInputs) {
         try {
           setInputs(JSON.parse(cachedInputs));
