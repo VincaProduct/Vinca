@@ -15,7 +15,8 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS ad_click_at  TIMESTAMPTZ;
 
 -- 2) Once the Zoho contact exists, copy these onto it (custom fields in Zoho
---    Contacts with the API names below). Runs once per user, when
+--    Contacts with the API names below; Zoho reserves "GCLID", so the click ID
+--    goes to Google_Click_ID). Runs once per user, when
 --    zoho_contact_id is first set. If the Zoho fields don't exist yet, Zoho
 --    rejects only this update; the contact itself is unaffected.
 CREATE OR REPLACE FUNCTION public.sync_ad_attribution_to_zoho()
@@ -44,7 +45,7 @@ BEGIN
         'UTM_Campaign',    NEW.utm_campaign,
         'UTM_Term',        NEW.utm_term,
         'UTM_Content',     NEW.utm_content,
-        'GCLID',           COALESCE(NEW.gclid, NEW.gbraid, NEW.wbraid),
+        'Google_Click_ID', COALESCE(NEW.gclid, NEW.gbraid, NEW.wbraid),
         'Landing_Page',    NEW.landing_page
       ))
     );
