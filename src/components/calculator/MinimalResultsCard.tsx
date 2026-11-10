@@ -21,19 +21,31 @@ const fmtExact = (v: number) => {
 
 function useCountUp(target: number, duration = 1500) {
   const [value, setValue] = useState(0);
-  const started = useRef(false);
+  const shown = useRef(0);
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
+    // No animation when the tab is in the background or motion is reduced:
+    // show the real score straight away (it must match the sign-in page)
+    const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || document.hidden) {
+      shown.current = target;
+      setValue(target);
+      return;
+    }
+    const from = shown.current;
     const start = performance.now();
+    let frame = 0;
     const tick = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
+      const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(tick);
+      const next = Math.round(from + (target - from) * eased);
+      shown.current = next;
+      setValue(next);
+      if (progress < 1) frame = requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    frame = requestAnimationFrame(tick);
+    // Whatever happens to the animation, land on the real score
+    const settle = setTimeout(() => { shown.current = target; setValue(target); }, duration + 100);
+    return () => { cancelAnimationFrame(frame); clearTimeout(settle); };
   }, [target, duration]);
   return value;
 }

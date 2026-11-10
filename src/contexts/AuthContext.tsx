@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { readAttribution, clearAttribution } from '@/lib/adAttribution';
+import { trackEvent } from '@/lib/tracking';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -43,18 +45,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const leadSource = localStorage.getItem('pending_lead_source') || 'Website Signup';
           localStorage.removeItem('pending_lead_source');
 
+          const userId = session.user.id;
           supabase
             .from('profiles')
             .select('zoho_sync_status')
-            .eq('id', session.user.id)
+            .eq('id', userId)
             .single()
-            .then(({ data }) => {
-              if (data?.zoho_sync_status === 'waiting_lead_source') {
-                supabase
-                  .from('profiles')
-                  .update({ lead_source: leadSource, zoho_sync_status: 'pending' })
-                  .eq('id', session.user.id)
-                  .then(() => {});
+            .then(async ({ data }) => {
+              if (data?.zoho_sync_status !== 'waiting_lead_source') return;
+
+              // A brand-new account. First store where they came from (ad click
+              // and UTM tags); if this fails, sign-up still goes ahead.
+              const attribution = readAttribution();
+              if (attribution) {
+                const { error } = await (supabase.from('profiles') as any)
+                  .update(attribution)
+                  .eq('id', userId);
+                if (!error) clearAttribution();
+              }
+
+              // Then start the Zoho contact. The status check makes this happen
+              // only once, even with two tabs open, so sign_up is sent once.
+              const { data: started } = await (supabase.from('profiles') as any)
+                .update({ lead_source: leadSource, zoho_sync_status: 'pending' })
+                .eq('id', userId)
+                .eq('zoho_sync_status', 'waiting_lead_source')
+                .select('id');
+              if (started?.length === 1) {
+                trackEvent('sign_up', { method: 'google', event_id: userId });
               }
             });
         }

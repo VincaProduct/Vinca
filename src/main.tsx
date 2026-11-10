@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./fonts.css";
 import "./index.css";
+import { captureAttribution } from "./lib/adAttribution";
 
 // Set dark mode as default
 document.documentElement.classList.add("light");
@@ -16,5 +17,8 @@ if (_utmSource) {
   localStorage.setItem('utm_medium', _utmParams.get('utm_medium') || '');
   localStorage.setItem('utm_campaign', _utmParams.get('utm_campaign') || '');
 }
+
+// Google Ads click IDs and UTM tags, kept through the Google sign-in redirect
+captureAttribution();
 
 createRoot(document.getElementById("root")!).render(<App />);
