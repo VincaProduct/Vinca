@@ -63,18 +63,30 @@ const externalLink = (url: string) => {
 };
 
 /**
- * Save progress and open /auth in the real browser. Resolves true if the page
- * was left (the real browser took over), false if nothing happened, so the
- * caller can show the manual "Open in browser" steps instead.
+ * Save progress and open /auth in the real browser. `left` is true if the
+ * page was left (the real browser took over). If not, the caller shows the
+ * manual "Open in browser" steps; `id` is then put in this page's address so
+ * the browser menu's "Open in Chrome" still carries everything across.
+ * Pass `existingId` to try again with a handoff that was already saved.
  */
-export const continueInRealBrowser = async (): Promise<boolean> => {
-  const { data: id, error } = await (supabase as any).rpc('create_browser_handoff', { p_payload: collect() });
-  if (error || !id) return false;
+export const continueInRealBrowser = async (existingId?: string | null): Promise<{ left: boolean; id: string | null }> => {
+  let id = existingId || null;
+  if (!id) {
+    const { data, error } = await (supabase as any).rpc('create_browser_handoff', { p_payload: collect() });
+    if (error || !data) return { left: false, id: null };
+    id = data as string;
+  }
   trackEvent('open_in_browser', { app: inAppBrowser() ?? undefined, os: phoneOs() });
   window.location.href = externalLink(`${window.location.origin}/auth?handoff=${id}`);
-  return new Promise((resolve) => {
+  const left = await new Promise<boolean>((resolve) => {
     setTimeout(() => resolve(document.visibilityState === 'hidden'), 2500);
   });
+  return { left, id };
+};
+
+/** Put the handoff in the address bar without reloading, for the manual steps */
+export const showHandoffInAddress = (id: string) => {
+  try { window.history.replaceState(window.history.state, '', `/auth?handoff=${id}`); } catch { /* ignore */ }
 };
 
 /** In the real browser: put back what the visitor did in the app. True if restored. */

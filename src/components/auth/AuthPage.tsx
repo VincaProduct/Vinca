@@ -2,7 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { inAppBrowser, phoneOs, continueInRealBrowser, restoreHandoff } from '@/lib/inAppBrowser';
+import { inAppBrowser, phoneOs, continueInRealBrowser, restoreHandoff, showHandoffInAddress } from '@/lib/inAppBrowser';
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -33,7 +33,9 @@ const AuthPage = () => {
   const [inApp] = useState(() => inAppBrowser());
   const [showManualSteps, setShowManualSteps] = useState(false);
   const handoffId = searchParams.get('handoff');
-  const [restoring, setRestoring] = useState(!!handoffId);
+  // A handoff that this page saved but the real browser hasn't picked up yet
+  const [pendingHandoff, setPendingHandoff] = useState<string | null>(inApp ? handoffId : null);
+  const [restoring, setRestoring] = useState(!!handoffId && !inApp);
 
   useEffect(() => {
     const refCode = searchParams.get('ref');
@@ -48,6 +50,9 @@ const AuthPage = () => {
   // then go straight to Google (one tap, the phone's account is known here)
   useEffect(() => {
     if (!handoffId || user) { setRestoring(false); return; }
+    // Opened inside Instagram / Facebook again (e.g. the Android fallback):
+    // leave the handoff for the real browser and show the manual steps
+    if (inApp) { setShowManualSteps(true); return; }
     let cancelled = false;
     restoreHandoff(handoffId).then((ok) => {
       if (cancelled) return;
@@ -93,9 +98,12 @@ const AuthPage = () => {
 
   const handleContinueInBrowser = async () => {
     setLoading(true);
-    const left = await continueInRealBrowser();
+    const { left, id } = await continueInRealBrowser(pendingHandoff);
     setLoading(false);
-    if (!left) setShowManualSteps(true);
+    if (!left) {
+      if (id) { setPendingHandoff(id); showHandoffInAddress(id); }
+      setShowManualSteps(true);
+    }
   };
 
   const browserName = phoneOs() === 'ios' ? 'Safari' : 'Chrome';
