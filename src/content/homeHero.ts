@@ -24,13 +24,15 @@ export const HERO = {
     'Your money goes straight to the fund house',
     '100+ families invest with us',
   ],
-  stepsLabel: 'How it works',
-  steps: [
-    { title: 'Find out where your retirement stands', note: '2 min · no sign-up' },
-    { title: 'Save your plan and test it against bad years', note: 'Sign in free with Google' },
-    { title: 'Talk it through with a real person', note: '30 min · no obligation' },
-    { title: 'Invest and watch your progress', note: 'Track your goal in your dashboard' },
-  ],
+  /** The three phones: what you get once you sign in (shown as a story) */
+  storiesLabel: 'Inside your free dashboard',
+  storiesNote: 'Sign in free with Google to unlock all three',
+  storiesCaption: 'Illustrative screens from the Vinca dashboard',
+  stories: [
+    { key: 'score', title: 'Know your number', note: 'Your Freedom Score and what to fix' },
+    { key: 'market', title: 'Read the market', note: 'P/E history and what your money is really worth' },
+    { key: 'compass', title: 'Talk to a real person', note: 'Compass: one person who knows your full picture' },
+  ] as { key: 'score' | 'market' | 'compass'; title: string; note: string }[],
 };
 
 export type PreviewCardKey = 'compass' | 'score' | 'realworth' | 'market' | 'insurance' | 'learn';

@@ -165,8 +165,9 @@ const renderHome = () => `
         <p class="mt-6"><a href="/financial-freedom-calculator" class="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground">${escapeHtml(HERO.primary)}</a> <small>${escapeHtml(HERO.primaryNote)}</small></p>
         <p><a href="/auth">${escapeHtml(HERO.secondary)}</a></p>
         <p><small>${HERO.trust.map(escapeHtml).join(" · ")}</small></p>
-        <h2 class="text-2xl font-bold mt-10">${escapeHtml(HERO.stepsLabel)}</h2>
-        <ol>${HERO.steps.map((s) => `<li><strong>${escapeHtml(s.title)}</strong> ${escapeHtml(s.note)}</li>`).join("")}</ol>
+        <h2 class="text-2xl font-bold mt-10">${escapeHtml(HERO.storiesLabel)}</h2>
+        <ol>${HERO.stories.map((s) => `<li><strong>${escapeHtml(s.title)}</strong>: ${escapeHtml(s.note)}</li>`).join("")}</ol>
+        <p>${escapeHtml(HERO.storiesNote)}</p>
       </section>
 
       <section class="container mx-auto px-6 py-16 max-w-4xl">
