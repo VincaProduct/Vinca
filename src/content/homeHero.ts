@@ -26,7 +26,7 @@ export const HERO = {
   ],
   /** The three phones: what you get once you sign in (shown as a story) */
   storiesLabel: 'Inside your free dashboard',
-  storiesNote: 'Sign in free with Google to unlock all three',
+  storiesNote: 'Sign in free to unlock all our Vinca Dashboard features',
   storiesCaption: 'Illustrative screens from the Vinca dashboard',
   stories: [
     { key: 'score', title: 'Know your number', note: 'Your Freedom Score and what to fix' },
