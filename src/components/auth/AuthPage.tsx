@@ -2,6 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { inAppBrowser, phoneOs, continueInRealBrowser, restoreHandoff, showHandoffInAddress } from '@/lib/inAppBrowser';
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -20,13 +21,21 @@ const AuthPage = () => {
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState('');
 
-  const [ffrState] = useState<{ score: number; retirementYear?: number; gap?: number } | null>(() => {
-    try { return JSON.parse(sessionStorage.getItem('ffr_pending_state') || 'null'); } catch { return null; }
-  });
-  const [blogContext] = useState<{ title: string } | null>(() => {
-    try { return JSON.parse(sessionStorage.getItem('auth_context_blog') || 'null'); } catch { return null; }
-  });
-  const [isConsultation] = useState(() => sessionStorage.getItem('auth_context_consultation') === 'true');
+  const readJson = (key: string) => {
+    try { return JSON.parse(sessionStorage.getItem(key) || 'null'); } catch { return null; }
+  };
+  const [ffrState, setFfrState] = useState<{ score: number; retirementYear?: number; gap?: number } | null>(() => readJson('ffr_pending_state'));
+  const [blogContext, setBlogContext] = useState<{ title: string } | null>(() => readJson('auth_context_blog'));
+  const [isConsultation, setIsConsultation] = useState(() => sessionStorage.getItem('auth_context_consultation') === 'true');
+
+  // Inside Instagram / Facebook: Google asks for the password there, so we
+  // offer to continue in Chrome or Safari, where it's one tap
+  const [inApp] = useState(() => inAppBrowser());
+  const [showManualSteps, setShowManualSteps] = useState(false);
+  const handoffId = searchParams.get('handoff');
+  // A handoff that this page saved but the real browser hasn't picked up yet
+  const [pendingHandoff, setPendingHandoff] = useState<string | null>(inApp ? handoffId : null);
+  const [restoring, setRestoring] = useState(!!handoffId && !inApp);
 
   useEffect(() => {
     const refCode = searchParams.get('ref');
@@ -37,6 +46,26 @@ const AuthPage = () => {
     }
   }, [searchParams, toast]);
 
+  // Arrived from the app's browser: put back the visitor's score and numbers,
+  // then go straight to Google (one tap, the phone's account is known here)
+  useEffect(() => {
+    if (!handoffId || user) { setRestoring(false); return; }
+    // Opened inside Instagram / Facebook again (e.g. the Android fallback):
+    // leave the handoff for the real browser and show the manual steps
+    if (inApp) { setShowManualSteps(true); return; }
+    let cancelled = false;
+    restoreHandoff(handoffId).then((ok) => {
+      if (cancelled) return;
+      setFfrState(readJson('ffr_pending_state'));
+      setBlogContext(readJson('auth_context_blog'));
+      setIsConsultation(sessionStorage.getItem('auth_context_consultation') === 'true');
+      if (ok) handleGoogleSignIn();
+      else setRestoring(false);
+    });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handoffId]);
+
   if (user) {
     const redirectPath = localStorage.getItem('redirect_after_login');
     if (redirectPath) {
@@ -46,14 +75,15 @@ const AuthPage = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleGoogleSignIn = async () => {
-    // Determine lead source — specific on-site context takes priority over UTM
+  async function handleGoogleSignIn() {
+    // Determine lead source — specific on-site context takes priority over UTM.
+    // Read fresh: a handoff from the app's browser may have just restored it.
     let leadSource: string;
-    if (ffrState) {
+    if (sessionStorage.getItem('ffr_pending_state')) {
       leadSource = 'Calculator';
-    } else if (isConsultation) {
+    } else if (sessionStorage.getItem('auth_context_consultation') === 'true') {
       leadSource = 'Consultation CTA';
-    } else if (blogContext) {
+    } else if (sessionStorage.getItem('auth_context_blog')) {
       leadSource = 'Blog Article';
     } else {
       // Fall back to UTM source captured from the URL they arrived on
@@ -62,9 +92,29 @@ const AuthPage = () => {
     localStorage.setItem('pending_lead_source', leadSource);
 
     setLoading(true);
-    await signInWithGoogle(referralCode || undefined);
+    await signInWithGoogle(referralCode || localStorage.getItem('pending_referral_code') || undefined);
     setLoading(false);
+  }
+
+  const handleContinueInBrowser = async () => {
+    setLoading(true);
+    const { left, id } = await continueInRealBrowser(pendingHandoff);
+    setLoading(false);
+    if (!left) {
+      if (id) { setPendingHandoff(id); showHandoffInAddress(id); }
+      setShowManualSteps(true);
+    }
   };
+
+  const browserName = phoneOs() === 'ios' ? 'Safari' : 'Chrome';
+
+  if (restoring) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--ui-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <p style={{ fontSize: 15, color: 'var(--ui-text-muted)' }}>Signing you in with Google…</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -155,7 +205,7 @@ const AuthPage = () => {
 
         {/* Google button */}
         <button
-          onClick={handleGoogleSignIn}
+          onClick={inApp ? handleContinueInBrowser : handleGoogleSignIn}
           disabled={loading}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
@@ -182,6 +232,27 @@ const AuthPage = () => {
           <GoogleIcon />
           <span>Continue with Google</span>
         </button>
+
+        {inApp && (
+          <div style={{ marginTop: 14, fontSize: 13, color: 'var(--ui-text-muted)', lineHeight: 1.5 }}>
+            {showManualSteps ? (
+              <p style={{ background: 'var(--ui-green-bg)', border: '1px solid var(--ui-green-line)', borderRadius: 12, padding: '12px 14px', color: 'var(--ui-text)', textAlign: 'left' }}>
+                Tap <strong>{phoneOs() === 'ios' ? '•••' : '⋮'}</strong> at the top right and choose{' '}
+                <strong>Open in {phoneOs() === 'ios' ? 'external browser' : browserName}</strong>, then tap Continue with Google there.
+              </p>
+            ) : (
+              <p>Opens {browserName}, where Google signs you in with one tap. Your numbers come with you.</p>
+            )}
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              style={{ marginTop: 10, background: 'none', border: 'none', color: 'var(--ui-text-muted)', textDecoration: 'underline', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              Or sign in here with your Google password
+            </button>
+          </div>
+        )}
 
         {/* Footer */}
         <p style={{ fontSize: 12, color: 'var(--ui-text-faint)', marginTop: 32 }}>
