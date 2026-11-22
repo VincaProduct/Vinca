@@ -1,22 +1,24 @@
 /**
- * Where a visitor came from (Google Ads click IDs and UTM tags), saved in this
+ * Where a visitor came from (Google and Meta ad click IDs and UTM tags), saved in this
  * browser on arrival so it survives the Google sign-in redirect, then written
  * to the new user's profile (and from there to Zoho). No personal data.
  *
  * Kept for 90 days, the same window Google Ads uses for click conversions.
- * A visit with a new ad click (gclid/gbraid/wbraid) replaces the saved one;
+ * A visit with a new ad click (gclid/gbraid/wbraid/fbclid) replaces the saved one;
  * other visits never overwrite it, so the first source is kept.
  */
 
 const STORAGE_KEY = 'vinca_ad_attribution';
 const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 
-const CLICK_KEYS = ['gclid', 'gbraid', 'wbraid'] as const;
+const CLICK_KEYS = ['gclid', 'gbraid', 'wbraid', 'fbclid'] as const;
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
 
 export type AdAttribution = Partial<Record<(typeof CLICK_KEYS)[number] | (typeof UTM_KEYS)[number], string>> & {
   landing_page: string;
   ad_click_at: string;
+  /** When Meta's click ID was first seen (Meta needs this time with the ID later) */
+  fbclid_at?: string;
 };
 
 const clean = (value: string | null) => (value ? value.trim().slice(0, 255) : '');
@@ -46,13 +48,19 @@ export const captureAttribution = () => {
     }
     if (Object.keys(found).length === 0) return;
 
+    const saved = readAttribution();
     const isNewClick = CLICK_KEYS.some((key) => found[key]);
-    if (readAttribution() && !isNewClick) return;
+    if (saved && !isNewClick) return;
 
+    // Reloading a page that still has the same click ID in its URL is not a new click
+    if (saved && CLICK_KEYS.every((key) => found[key] === saved[key])) return;
+
+    const now = new Date().toISOString();
     const record: AdAttribution = {
       ...found,
       landing_page: window.location.pathname.slice(0, 255),
-      ad_click_at: new Date().toISOString(),
+      ad_click_at: now,
+      ...(found.fbclid ? { fbclid_at: now } : {}),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
   } catch {
