@@ -4,28 +4,16 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { HERO } from '@/content/homeHero';
 import { openConsultation } from '@/lib/funnel';
+import HeroPhoneStory from './HeroPhoneStory';
 
 /**
- * Homepage Section 1: who we are, two actions, and how it works as a
- * timeline that fills step by step on a loop. Motion is CSS only
- * (transform/opacity, ~1 KB) and stops for visitors who prefer reduced motion.
+ * Homepage Section 1: who we are and two actions on the left; on the right,
+ * three phones playing what the dashboard gives you (HeroPhoneStory).
  */
-const STEP_COUNT = HERO.steps.length;
-const LOOP = 8; // seconds
-// Step i lights when the line reaches it: 5%, 25%, 45%, 65% of the loop
-const stepKeyframes = HERO.steps.map((_, i) => {
-  const at = 5 + (60 * i) / (STEP_COUNT - 1);
-  return `@keyframes hh-step${i}{0%,${at - 0.1}%{opacity:0;transform:scale(.6)}${at + 4}%{opacity:1;transform:scale(1.12)}${at + 8}%,90%{opacity:1;transform:scale(1)}97%,100%{opacity:0;transform:scale(1)}}
-.hh-step${i}{animation:hh-step${i} ${LOOP}s linear infinite}`;
-}).join('');
-
 const MOTION_CSS = `
 @keyframes hh-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes hh-fill{0%,5%{transform:scaleY(0);opacity:1}65%,90%{transform:scaleY(1);opacity:1}97%,100%{transform:scaleY(1);opacity:0}}
 .hh-rise{animation:hh-rise .6s cubic-bezier(.22,1,.36,1) both}
-.hh-fill{transform-origin:top;animation:hh-fill ${LOOP}s linear infinite}
-${stepKeyframes}
-@media (prefers-reduced-motion:reduce){.hh-rise,.hh-fill,${HERO.steps.map((_, i) => `.hh-step${i}`).join(',')}{animation:none}}
+@media (prefers-reduced-motion:reduce){.hh-rise{animation:none}}
 `;
 
 const HomeHero = () => {
@@ -43,7 +31,7 @@ const HomeHero = () => {
       <div aria-hidden="true" className="pointer-events-none absolute bottom-[10%] left-[3%] h-44 w-44 rounded-full bg-primary/[0.04]" style={{ animation: 'float 8s ease-in-out infinite reverse' }} />
       <div aria-hidden="true" className="pointer-events-none absolute right-[30%] top-[55%] hidden h-28 w-28 rounded-full bg-primary/[0.03] lg:block" style={{ animation: 'float 5s ease-in-out infinite 1s' }} />
 
-      <div className="relative mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-14">
         {/* Left: who we are and what to do */}
         <div className="min-w-0">
           <p className="hh-rise text-xs font-semibold uppercase tracking-wider sm:text-sm" style={{ color: 'var(--brand-text)' }}>
@@ -84,29 +72,9 @@ const HomeHero = () => {
           </ul>
         </div>
 
-        {/* Right: how it works (explains only, nothing to click) */}
-        <div className="hh-rise min-w-0 rounded-2xl border border-border bg-card/80 p-5 shadow-sm backdrop-blur sm:p-7" style={{ animationDelay: '200ms' }}>
-          <p className="mb-5 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--brand-text)' }}>{HERO.stepsLabel}</p>
-          <ol className="relative">
-            {/* Track and the fill that runs down it */}
-            <span aria-hidden="true" className="absolute bottom-6 left-[15px] top-4 w-0.5 rounded-full bg-border">
-              <span className="hh-fill absolute inset-0 rounded-full bg-primary" />
-            </span>
-            {HERO.steps.map((step, i) => (
-              <li key={step.title} className="relative flex gap-4 pb-6 last:pb-0">
-                <span className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-border bg-card text-sm font-semibold text-muted-foreground">
-                  {i + 1}
-                  <span aria-hidden="true" className={`hh-step${i} absolute inset-0 flex items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_0_4px_hsl(158_64%_52%/0.18)]`}>
-                    {i + 1}
-                  </span>
-                </span>
-                <div className="min-w-0 pt-0.5">
-                  <p className="font-semibold leading-snug text-foreground">{step.title}</p>
-                  <p className="mt-0.5 text-sm text-muted-foreground">{step.note}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+        {/* Right: the dashboard, told as a story on three phones */}
+        <div className="hh-rise min-w-0" style={{ animationDelay: '200ms' }}>
+          <HeroPhoneStory />
         </div>
       </div>
     </section>
