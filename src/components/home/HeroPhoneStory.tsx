@@ -41,15 +41,20 @@ const shotStyle = (shot: Shot, play: boolean): React.CSSProperties => ({
     : { transform: `translateY(${shot.from[1]}%) scale(${shot.from[0]})` }),
 });
 
-const ShotImage = ({ shot, play, eager }: { shot: Shot; play: boolean; eager?: boolean }) => (
+// 300px copies for normal screens, 600px for sharp phone screens
+const small = (src: string) => src.replace(/\.webp$/, '-300.webp');
+
+const ShotImage = ({ shot, play, eager, priority }: { shot: Shot; play: boolean; eager?: boolean; priority?: boolean }) => (
   <img
     src={shot.src}
+    srcSet={`${small(shot.src)} 300w, ${shot.src} 600w`}
+    sizes="236px"
     alt=""
     width={600}
     height={1167}
     decoding="async"
     loading={eager ? 'eager' : 'lazy'}
-    {...{ fetchpriority: 'low' }}
+    {...{ fetchpriority: priority ? 'high' : 'low' }}
     draggable={false}
     className={`absolute inset-0 h-full w-full object-cover object-top ${play ? 'hs-move' : ''}`}
     style={shotStyle(shot, play)}
@@ -103,7 +108,9 @@ const HeroPhoneStory = () => {
   useEffect(() => {
     if (!started) return;
     const id = setTimeout(() => {
-      Object.values(SHOTS).flat().forEach((s) => { const img = new Image(); img.decoding = 'async'; img.src = s.src; });
+      // Same size choice as the <img> tags (300px copies on normal screens)
+      const pick = (src: string) => (window.devicePixelRatio * 236 > 300 ? src : small(src));
+      Object.values(SHOTS).flat().forEach((s) => { const img = new Image(); img.decoding = 'async'; img.src = pick(s.src); });
     }, 1200);
     return () => clearTimeout(id);
   }, [started]);
@@ -163,11 +170,12 @@ const HeroPhoneStory = () => {
                     <>
                       {prevShot && <ShotImage key={`p-${prevShot.src}`} shot={prevShot} play={false} />}
                       <div key={`${story}-${shot}`} className={`absolute inset-0 ${prevShot ? 'hs-in' : ''}`}>
-                        <ShotImage shot={current} play={play} eager />
+                        <ShotImage shot={current} play={play} eager priority={!prevShot && shot === 0 && story === 0} />
                       </div>
                     </>
                   ) : (
-                    <ShotImage shot={first} play={false} eager />
+                    // Hidden on phones until tapped, so only fetched where it's visible
+                    <ShotImage shot={first} play={false} />
                   )}
                   <span className="absolute left-1/2 top-2 h-[18px] w-[64px] -translate-x-1/2 rounded-full bg-[#070b0a]" />
                 </div>

@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import PrerenderFallback from '@/components/PrerenderFallback';
 
 interface PublicRouteProps {
   children: React.ReactNode;
@@ -11,13 +11,9 @@ interface PublicRouteProps {
 const PublicRoute: React.FC<PublicRouteProps> = ({ children, signedInTo = '/dashboard/ffr' }) => {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // Checking whether they're signed in: keep the page's pre-rendered copy on
+  // screen (a spinner when navigating inside the app)
+  if (loading) return <PrerenderFallback />;
 
   // If user is logged in, redirect to dashboard
   if (user) {

@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { HERO } from '@/content/homeHero';
 import { openConsultation } from '@/lib/funnel';
 import HeroPhoneStory from './HeroPhoneStory';
+import { startedFromPrerender } from '@/components/PrerenderFallback';
 
 /**
  * Homepage Section 1: who we are and two actions on the left; on the right,
@@ -15,6 +16,9 @@ const MOTION_CSS = `
 .hh-rise{animation:hh-rise .6s cubic-bezier(.22,1,.36,1) both}
 @media (prefers-reduced-motion:reduce){.hh-rise{animation:none}}
 `;
+
+// The server already showed this hero (same markup), so don't fade it in again
+const RISE = startedFromPrerender ? '' : 'hh-rise';
 
 const HomeHero = () => {
   const navigate = useNavigate();
@@ -34,20 +38,20 @@ const HomeHero = () => {
       <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-14">
         {/* Left: who we are and what to do */}
         <div className="min-w-0">
-          <p className="hh-rise text-xs font-semibold uppercase tracking-wider sm:text-sm" style={{ color: 'var(--brand-text)' }}>
+          <p className={`${RISE} text-xs font-semibold uppercase tracking-wider sm:text-sm`} style={{ color: 'var(--brand-text)' }}>
             {HERO.eyebrow}
           </p>
-          <h1 className="hh-rise mt-3 text-[2rem] font-bold leading-[1.12] text-foreground sm:text-5xl lg:text-[3.4rem]"
+          <h1 className={`${RISE} mt-3 text-[2rem] font-bold leading-[1.12] text-foreground sm:text-5xl lg:text-[3.4rem]`}
             style={{ animationDelay: '80ms', textWrap: 'balance' } as React.CSSProperties}>
             {HERO.h1.split(HERO.h1Highlight)[0]}
             <span style={{ color: 'var(--brand-text)' }}>{HERO.h1Highlight}</span>
             {HERO.h1.split(HERO.h1Highlight)[1]}
           </h1>
-          <p className="hh-rise mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg" style={{ animationDelay: '160ms' }}>
+          <p className={`${RISE} mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg`} style={{ animationDelay: '160ms' }}>
             {HERO.subline}
           </p>
 
-          <div className="hh-rise mt-6 flex flex-col gap-3 sm:flex-row sm:items-start" style={{ animationDelay: '240ms' }}>
+          <div className={`${RISE} mt-6 flex flex-col gap-3 sm:flex-row sm:items-start`} style={{ animationDelay: '240ms' }}>
             <div className="flex flex-col items-stretch gap-1.5 sm:items-center">
               <Button size="lg" className="h-auto min-h-[52px] px-6 py-3 text-base font-semibold"
                 onClick={() => navigate(user ? '/dashboard/ffr' : '/financial-freedom-calculator')}>
@@ -62,7 +66,7 @@ const HomeHero = () => {
             </Button>
           </div>
 
-          <ul className="hh-rise mt-6 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted-foreground sm:text-sm" style={{ animationDelay: '320ms' }}>
+          <ul className={`${RISE} mt-6 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted-foreground sm:text-sm`} style={{ animationDelay: '320ms' }}>
             {HERO.trust.map((item) => (
               <li key={item} className="inline-flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 flex-shrink-0 text-primary" aria-hidden="true" />
@@ -73,7 +77,7 @@ const HomeHero = () => {
         </div>
 
         {/* Right: the dashboard, told as a story on three phones */}
-        <div className="hh-rise min-w-0" style={{ animationDelay: '200ms' }}>
+        <div className={`${RISE} min-w-0`} style={{ animationDelay: '200ms' }}>
           <HeroPhoneStory />
         </div>
       </div>

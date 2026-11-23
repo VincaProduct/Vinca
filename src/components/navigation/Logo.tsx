@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 // Light and dark versions; CSS shows the one matching the page's theme, so
 // the logo can never be out of step with the background
-const LIGHT_LOGO = "/images/black-logo-Photoroom.png";
-const DARK_LOGO = "/lovable-uploads/85ed6dc8-bea0-4bcf-bda4-506f3f06325a.png";
+const LIGHT_LOGO = "/images/black-logo-Photoroom.webp";
+const DARK_LOGO = "/images/white-logo.webp";
 
 const Logo = () => {
   const imageClass =

@@ -9,8 +9,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ReferralProvider } from "@/contexts/ReferralContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import PublicRoute from "@/components/PublicRoute";
-import Index from "./pages/Index";
-import BlogsPage from "./pages/BlogsPage";
+import PrerenderFallback from "@/components/PrerenderFallback";
+const Index = lazy(() => import("./pages/Index"));
+const BlogsPage = lazy(() => import("./pages/BlogsPage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const FinancialFreedomCalculator = lazy(() => import("./pages/FinancialFreedomCalculator"));
 const RealWorthCalculatorPage = lazy(() => import("./pages/RealWorthCalculatorPage"));
@@ -59,13 +60,9 @@ const EventDetailPage = lazy(() => import("./pages/EventDetailPage"));
 const EventConfirmationPage = lazy(() => import("./pages/EventConfirmationPage"));
 const DashboardEventsPage = lazy(() => import("./pages/dashboard/DashboardEventsPage"));
 
-// Homepage and blog stay in the main bundle (they're server-rendered and must
-// show instantly); everything else loads on demand
-const RouteFallback = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-  </div>
-);
+// Every page loads on demand. While the first page's code arrives, the
+// server's pre-rendered copy stays on screen (PrerenderFallback), so visitors
+// see content straight away instead of a spinner.
 
 const queryClient = new QueryClient();
 
@@ -79,7 +76,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <RouteSeo />
-                <Suspense fallback={<RouteFallback />}>
+                <Suspense fallback={<PrerenderFallback />}>
                 <Routes>
 
                   {/* PUBLIC ROUTES */}

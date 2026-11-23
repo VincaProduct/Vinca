@@ -17,6 +17,7 @@ import {
 import { PRIVACY_POLICY_HTML } from "../../../src/content/privacyPolicy.ts";
 import { HERO, PREVIEW } from "../../../src/content/homeHero.ts";
 import { HOME_GUIDES } from "../../../src/content/homeGuides.ts";
+import { SHOTS } from "../../../src/components/home/heroShots.ts";
 
 /**
  * Per-page SEO for the public (non-blog) pages: each gets its own title,
@@ -155,20 +156,67 @@ const website = {
   inLanguage: "en-IN",
 };
 
+// Homepage hero, built with the same markup and classes as the app's HomeHero
+// and HeroPhoneStory (first frame, nothing moving yet), so the first thing a
+// visitor sees is already the real hero. The app then takes over without a
+// visible change. Keep in step with src/components/home/HomeHero.tsx.
+const BTN = "inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-md h-auto min-h-[52px] px-6 py-3 text-base font-semibold";
+const ARROW = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right ml-1 h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+const SHIELD = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check h-3.5 w-3.5 flex-shrink-0 text-primary" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>';
+
+const heroPhone = (key: "score" | "market" | "compass", i: number) => {
+  const shot = SHOTS[key][0];
+  const active = i === 0;
+  const small = shot.src.replace(/\.webp$/, "-300.webp");
+  const img = `<img src="${shot.src}" srcset="${small} 300w, ${shot.src} 600w" sizes="236px" alt="" width="600" height="1167" decoding="async" ${active ? 'loading="eager" fetchpriority="high"' : 'loading="lazy" fetchpriority="low"'} draggable="false" class="absolute inset-0 h-full w-full object-cover object-top" style="transform-origin: ${shot.ox}% ${shot.oy}%; transform: translateY(${shot.from[1]}%) scale(${shot.from[0]});">`;
+  return `<div class="relative flex-shrink-0 transition-[transform,filter,opacity] duration-700 ease-[cubic-bezier(.22,1,.36,1)] lg:mx-[-22px] ${active ? "block" : "hidden lg:block"}" style="z-index: ${active ? 30 : 10 + i}; transform: none; filter: ${active ? "none" : "brightness(.55) saturate(.8)"};"><div class="block w-[220px] rounded-[2.3rem] bg-[#070b0a] p-[7px] ring-1 ring-white/10 sm:w-[236px] lg:w-[176px] xl:w-[218px] 2xl:w-[236px] ${active ? "shadow-[0_30px_70px_-20px_hsl(158_64%_30%/0.65)]" : "shadow-xl"}"><div class="relative aspect-[600/1167] overflow-hidden rounded-[1.85rem] bg-[#111a17]">${img}<span class="absolute left-1/2 top-2 h-[18px] w-[64px] -translate-x-1/2 rounded-full bg-[#070b0a]"></span></div></div></div>`;
+};
+
+const heroStep = (s: { title: string; note: string }, i: number) => {
+  const active = i === 0;
+  return `<a href="/financial-freedom-calculator" class="group relative overflow-hidden rounded-xl border px-2.5 py-2.5 text-left transition-colors sm:px-3.5 sm:py-3 ${active ? "border-primary/50 bg-primary/[0.08]" : "border-border bg-card/60 hover:border-primary/30"}"><span class="flex items-center gap-2"><span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}">${i + 1}</span><span class="text-xs font-semibold leading-tight text-foreground sm:text-sm">${escapeHtml(s.title)}</span></span><span class="mt-1 hidden text-xs leading-snug text-muted-foreground sm:block">${escapeHtml(s.note)}</span><span class="absolute inset-x-0 bottom-0 h-[3px] bg-border/60"></span></a>`;
+};
+
+const renderHeroSection = () => {
+  const [before, after] = HERO.h1.split(HERO.h1Highlight);
+  return `
+      <section class="relative flex min-h-[100svh] items-center overflow-hidden bg-background px-4 pb-14 pt-20 sm:px-6 sm:pt-24 lg:px-16 lg:pb-16 lg:pt-24">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="background: radial-gradient(ellipse 70% 55% at 75% 35%, hsl(158 64% 52% / 0.08), transparent 70%);"></div>
+        <div aria-hidden="true" class="pointer-events-none absolute right-[6%] top-[12%] h-72 w-72 rounded-full bg-primary/[0.04] sm:h-80 sm:w-80" style="animation: float 6s ease-in-out infinite;"></div>
+        <div aria-hidden="true" class="pointer-events-none absolute bottom-[10%] left-[3%] h-44 w-44 rounded-full bg-primary/[0.04]" style="animation: float 8s ease-in-out infinite reverse;"></div>
+        <div aria-hidden="true" class="pointer-events-none absolute right-[30%] top-[55%] hidden h-28 w-28 rounded-full bg-primary/[0.03] lg:block" style="animation: float 5s ease-in-out infinite 1s;"></div>
+        <div class="relative mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-10 xl:gap-14">
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider sm:text-sm" style="color: var(--brand-text);">${escapeHtml(HERO.eyebrow)}</p>
+            <h1 class="mt-3 text-[2rem] font-bold leading-[1.12] text-foreground sm:text-5xl lg:text-[3.4rem]" style="text-wrap: balance;">${escapeHtml(before)}<span style="color: var(--brand-text);">${escapeHtml(HERO.h1Highlight)}</span>${escapeHtml(after ?? "")}</h1>
+            <p class="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">${escapeHtml(HERO.subline)}</p>
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-start">
+              <div class="flex flex-col items-stretch gap-1.5 sm:items-center">
+                <a href="/financial-freedom-calculator" class="${BTN} bg-primary text-primary-foreground hover:bg-primary/90">${escapeHtml(HERO.primary)}${ARROW}</a>
+                <span class="text-center text-xs text-muted-foreground">${escapeHtml(HERO.primaryNote)}</span>
+              </div>
+              <a href="/auth" class="${BTN} border bg-background hover:bg-accent hover:text-accent-foreground border-primary/50">${escapeHtml(HERO.secondary)}</a>
+            </div>
+            <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted-foreground sm:text-sm">${HERO.trust.map((t) => `<li class="inline-flex items-center gap-1.5">${SHIELD}${escapeHtml(t)}</li>`).join("")}</ul>
+          </div>
+          <div class="min-w-0">
+            <div class="relative min-w-0">
+              <p class="sr-only">${escapeHtml(HERO.storiesLabel)}: ${HERO.stories.map((s) => `${escapeHtml(s.title)} (${escapeHtml(s.note)})`).join("; ")}.</p>
+              <div aria-hidden="true" class="pointer-events-none absolute left-1/2 top-[42%] h-[70%] w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-full" style="background: radial-gradient(closest-side, hsl(158 64% 45% / 0.22), transparent);"></div>
+              <div aria-hidden="true" class="relative flex items-start justify-center pt-2 lg:pt-6">${HERO.stories.map((s, i) => heroPhone(s.key as "score" | "market" | "compass", i)).join("")}</div>
+              <div class="relative mt-8 grid grid-cols-3 gap-2 sm:gap-3 lg:mt-12">${HERO.stories.map(heroStep).join("")}</div>
+              <p class="relative mt-3 text-center text-xs text-muted-foreground">${escapeHtml(HERO.storiesNote)} · <span class="opacity-80">${escapeHtml(HERO.storiesCaption)}</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+`;
+};
+
 /** Readable version of the homepage (same text the app shows) */
 const renderHome = () => `
     <main>
-      <section class="container mx-auto px-6 pt-28 pb-16 max-w-4xl">
-        <p style="font-size: 14px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand-text)">${escapeHtml(HERO.eyebrow)}</p>
-        <h1 class="text-4xl font-bold mt-3">${escapeHtml(HERO.h1)}</h1>
-        <p class="mt-4">${escapeHtml(HERO.subline)}</p>
-        <p class="mt-6"><a href="/financial-freedom-calculator" class="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground">${escapeHtml(HERO.primary)}</a> <small>${escapeHtml(HERO.primaryNote)}</small></p>
-        <p><a href="/auth">${escapeHtml(HERO.secondary)}</a></p>
-        <p><small>${HERO.trust.map(escapeHtml).join(" · ")}</small></p>
-        <h2 class="text-2xl font-bold mt-10">${escapeHtml(HERO.storiesLabel)}</h2>
-        <ol>${HERO.stories.map((s) => `<li><strong>${escapeHtml(s.title)}</strong>: ${escapeHtml(s.note)}</li>`).join("")}</ol>
-        <p>${escapeHtml(HERO.storiesNote)}</p>
-      </section>
+${renderHeroSection()}
 
       <section class="container mx-auto px-6 py-16 max-w-4xl">
         <h2 class="text-3xl font-bold mb-4">${escapeHtml(PREVIEW.h2)}</h2>

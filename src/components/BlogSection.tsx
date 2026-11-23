@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,19 @@ type BlogPost = Tables<'blog_posts'>;
 const BlogSection = () => {
   const [featuredArticles, setFeaturedArticles] = useState<BlogPost[]>([]);
   const { posts, loading, fetchPublishedPosts } = useBlogPosts();
+  const sectionRef = useRef<HTMLElement>(null);
 
+  // Fetch the articles only when the visitor scrolls near this section, so
+  // the first screen loads without waiting on the database
   useEffect(() => {
-    fetchPublishedPosts();
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') { fetchPublishedPosts(); return; }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { io.disconnect(); fetchPublishedPosts(); }
+    }, { rootMargin: '800px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -25,7 +35,7 @@ const BlogSection = () => {
   }, [posts]);
 
   return (
-    <section id="blog" className="py-12 sm:py-16 lg:py-20 bg-background">
+    <section ref={sectionRef} id="blog" className="py-12 sm:py-16 lg:py-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16 animate-fade-in">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-4 sm:mb-6 text-foreground px-2">
