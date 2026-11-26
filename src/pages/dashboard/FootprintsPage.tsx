@@ -182,8 +182,8 @@ const FootprintsPage = () => {
       <Alert>
         <AlertDescription>
           Footprints are personal financial stories shared by community members. They are
-          educational perspectives and not investment advice. Please do your own research or
-          book a consultation before making investment decisions.
+          shared for education only and are not a recommendation to buy or sell any investment.
+          Please do your own research or book a Compass call before making investment decisions.
         </AlertDescription>
       </Alert>
     </div>
