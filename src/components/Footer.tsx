@@ -10,6 +10,7 @@ const QUICK_LINKS = [
   { label: "Real Worth Calculator", to: "/real-worth-calculator" },
   { label: "Events", to: "/events" },
   { label: "Blog", to: "/blog" },
+  { label: "Expert Panel", to: "/expert-panel" },
   { label: "FAQ", to: "/#faq" },
 ];
 
