@@ -5,6 +5,7 @@ import { PlusCircle, ShieldAlert, FileSpreadsheet } from 'lucide-react';
 import { useBlogPosts } from '@/hooks/useBlogPosts';
 import { BlogPostForm } from './BlogPostForm';
 import { PostsList } from './PostsList';
+import { ReviewQueue } from './ReviewQueue';
 import { useToast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
 import { exportBlogPostsToExcel } from '@/lib/blogExport';
@@ -121,6 +122,8 @@ const BlogCMS = () => {
           </Button>
         </div>
       </div>
+
+      {!loading && <ReviewQueue posts={posts} onReview={handleEdit} onChanged={fetchUserPosts} />}
 
       <PostsList
         posts={posts}

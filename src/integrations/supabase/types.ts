@@ -74,6 +74,8 @@ export type Database = {
           status: string | null
           submitted_at: string | null
           submitted_by: string | null
+          review_note: string | null
+          changes_requested_at: string | null
           subtitle: string | null
           table_of_contents: Json | null
           title: string
@@ -105,6 +107,8 @@ export type Database = {
           status?: string | null
           submitted_at?: string | null
           submitted_by?: string | null
+          review_note?: string | null
+          changes_requested_at?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
           title: string
@@ -136,6 +140,8 @@ export type Database = {
           status?: string | null
           submitted_at?: string | null
           submitted_by?: string | null
+          review_note?: string | null
+          changes_requested_at?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
           title?: string
@@ -1559,6 +1565,8 @@ export type Database = {
           slug: string
           status: string | null
           submitted_at: string | null
+          review_note: string | null
+          changes_requested_at: string | null
           title: string
           total_views: number
           updated_at: string

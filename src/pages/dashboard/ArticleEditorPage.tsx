@@ -35,6 +35,7 @@ const ArticleEditorPage = () => {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [submittedAt, setSubmittedAt] = useState<string | null>(null);
+  const [reviewNote, setReviewNote] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>('draft');
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState<'draft' | 'review' | null>(null);
@@ -43,7 +44,7 @@ const ArticleEditorPage = () => {
     if (isNew) return;
     supabase
       .from('blog_posts')
-      .select('title, category, excerpt, content, status, submitted_at')
+      .select('title, category, excerpt, content, status, submitted_at, review_note')
       .eq('id', id)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -58,6 +59,7 @@ const ArticleEditorPage = () => {
         setContent(data.content || '');
         setStatus(data.status);
         setSubmittedAt(data.submitted_at);
+        setReviewNote(data.review_note);
         setLoading(false);
       });
   }, [id, isNew, navigate, toast]);
@@ -82,6 +84,8 @@ const ArticleEditorPage = () => {
       read_time: estimateReadTime(content),
       table_of_contents: tocFromMarkdown(content) as unknown as Json,
       submitted_at: mode === 'review' ? new Date().toISOString() : submittedAt,
+      // Sending it again means the feedback has been dealt with
+      ...(mode === 'review' ? { review_note: null } : {}),
     };
 
     const { data, error } = isNew
@@ -121,7 +125,7 @@ const ArticleEditorPage = () => {
   }
   if (!isMember) return <Navigate to="/dashboard/expert-panel" replace />;
 
-  const stage = articleStage({ status, submitted_at: submittedAt });
+  const stage = articleStage({ status, submitted_at: submittedAt, review_note: reviewNote });
   if (stage === 'published' || stage === 'archived') return <Navigate to="/dashboard/my-articles" replace />;
 
   return (
@@ -135,6 +139,16 @@ const ArticleEditorPage = () => {
         </Button>
         {!isNew && <span className={`rounded-full px-3 py-1 text-xs font-medium ${STAGE_CLASS[stage]}`}>{STAGE_LABEL[stage]}</span>}
       </div>
+
+      {stage === 'changes_requested' && reviewNote && (
+        <Card className="border-red-300/70 bg-red-50/60 dark:bg-red-900/10">
+          <CardContent className="pt-6">
+            <p className="font-semibold text-foreground mb-1">Feedback from the Vinca team</p>
+            <p className="text-foreground whitespace-pre-line">{reviewNote}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Make the changes, then send it for review again.</p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* What every article must follow (Vinca is an AMFI-registered mutual fund distributor) */}
       <Card className="border-amber-300/60 bg-amber-50/50 dark:bg-amber-900/10">

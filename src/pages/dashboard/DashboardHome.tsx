@@ -7,6 +7,7 @@ import {
 import { useFFR } from '@/hooks/useFFR';
 import { calculateFFRScore } from '@/utils/ffrScore';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePendingArticles } from '@/hooks/usePendingArticles';
 
 // ── constants ─────────────────────────────────────────────────────────────────
 const GREEN   = '#06A969';
@@ -43,6 +44,7 @@ function greeting(name: string): string {
 
 function DashboardHomeContent() {
   const { user } = useAuth();
+  const { count: pendingArticles } = usePendingArticles();
   const { inputs, results, projections, hasCalculated } = useFinancialPlanning();
   const { checklist, getNextSteps } = useFFR(
     inputs && results ? { inputs, results } : undefined
@@ -74,6 +76,19 @@ function DashboardHomeContent() {
       style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       <div className="max-w-2xl mx-auto px-6 py-12 space-y-8">
+
+        {/* ── Admins: Expert Panel articles waiting for approval ──────── */}
+        {pendingArticles > 0 && (
+          <Link
+            to="/dashboard/blog-cms"
+            className="flex items-center justify-between gap-4 rounded-xl border border-amber-300 bg-amber-50 px-5 py-4 transition-colors hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
+          >
+            <span className="text-sm font-semibold text-amber-900 dark:text-amber-100">
+              {pendingArticles} {pendingArticles === 1 ? 'article is' : 'articles are'} waiting for your approval
+            </span>
+            <span className="text-sm font-semibold text-amber-800 dark:text-amber-200">Review now →</span>
+          </Link>
+        )}
 
         {/* ── Greeting ────────────────────────────────────────────────── */}
         <div>

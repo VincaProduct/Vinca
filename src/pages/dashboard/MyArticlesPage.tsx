@@ -136,17 +136,20 @@ const MyArticlesPage = () => {
             <ul className="divide-y">
               {articles.map((a) => {
                 const stage = articleStage(a);
-                const editable = stage === 'draft' || stage === 'in_review';
+                const editable = stage === 'draft' || stage === 'in_review' || stage === 'changes_requested';
                 return (
                   <li key={a.id} className="py-4 flex flex-wrap items-center justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STAGE_CLASS[stage]}`}>{STAGE_LABEL[stage]}</span>
                         <span className="text-xs text-muted-foreground">
-                          {stage === 'published' ? `Published ${fmt(a.published_at)}` : stage === 'in_review' ? `Sent ${fmt(a.submitted_at)}` : `Edited ${fmt(a.updated_at)}`}
+                          {stage === 'published' ? `Published ${fmt(a.published_at)}` : stage === 'in_review' ? `Sent ${fmt(a.submitted_at)}` : stage === 'changes_requested' ? `Sent back ${fmt(a.changes_requested_at)}` : `Edited ${fmt(a.updated_at)}`}
                         </span>
                       </div>
                       <p className="font-medium text-foreground truncate">{a.title}</p>
+                      {stage === 'changes_requested' && a.review_note && (
+                        <p className="mt-1 text-sm text-red-700 dark:text-red-300 line-clamp-2">Feedback: {a.review_note}</p>
+                      )}
                     </div>
                     <div className="flex items-center gap-3">
                       {stage === 'published' && (
