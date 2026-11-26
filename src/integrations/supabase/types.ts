@@ -1536,6 +1536,13 @@ export type Database = {
           text_color: string
         }[]
       }
+      find_referrer: {
+        Args: { _code: string }
+        Returns: {
+          id: string
+          zoho_contact_id: string | null
+        }[]
+      }
       get_current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]

@@ -30,11 +30,9 @@ export const ReferralProvider = ({ children }: { children: React.ReactNode }) =>
       if (userProfile?.zoho_sync_status === 'waiting_referral') {
         if (referralCode && !userProfile?.referred_by_user_id) {
           // Find referrer
-          const { data: referrerProfile } = await supabase
-            .from('profiles')
-            .select('id, zoho_contact_id, zoho_lead_id, first_name, last_name')
-            .eq('referral_code', referralCode)
-            .maybeSingle();
+          // Only the referrer's id and Zoho contact id (profiles themselves are private)
+          const { data: referrers } = await supabase.rpc('find_referrer', { _code: referralCode });
+          const referrerProfile = referrers?.[0] ?? null;
 
           if (referrerProfile) {
             // Update profile with referral info AND trigger Zoho sync
