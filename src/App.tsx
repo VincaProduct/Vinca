@@ -51,6 +51,9 @@ const UnifiedFFRPage = lazy(() => import("./pages/ffr/UnifiedFFRPage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const ExpertPanelPage = lazy(() => import("./pages/ExpertPanelPage"));
 const ExpertPanelApplyPage = lazy(() => import("./pages/dashboard/ExpertPanelApplyPage"));
+const MyArticlesPage = lazy(() => import("./pages/dashboard/MyArticlesPage"));
+const ArticleEditorPage = lazy(() => import("./pages/dashboard/ArticleEditorPage"));
+const PanelApplicationsPage = lazy(() => import("./pages/dashboard/PanelApplicationsPage"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
 const MarketDataPage = lazy(() => import("./pages/dashboard/MarketDataPage"));
@@ -136,6 +139,16 @@ const App = () => (
                     <Route path="refer" element={<ReferFriend />} />
                     <Route path="support" element={<SupportPage />} />
                     <Route path="expert-panel" element={<ExpertPanelApplyPage />} />
+                    <Route path="my-articles" element={<MyArticlesPage />} />
+                    <Route path="my-articles/:id" element={<ArticleEditorPage />} />
+                    <Route
+                      path="panel-applications"
+                      element={
+                        <RoleProtectedRoute requiredRole="super_admin">
+                          <PanelApplicationsPage />
+                        </RoleProtectedRoute>
+                      }
+                    />
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />

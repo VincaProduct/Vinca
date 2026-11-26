@@ -25,6 +25,8 @@ import {
   ChevronDown,
   Sprout,
   Compass,
+  PenLine,
+  UserCheck,
 } from 'lucide-react';
 import { Newspaper } from 'lucide-react';
 import { Scale } from 'lucide-react';
@@ -43,6 +45,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
+import { usePanelMembership } from '@/hooks/usePanelMembership';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useFinancialPlanning } from '@/components/financial-planning/context/FinancialPlanningContext';
 import { useFFR } from '@/hooks/useFFR';
@@ -147,6 +150,7 @@ export const NAV: NavGroup[] = [
 const adminMenuItems = [
   { title: 'Blog CMS',            url: '/dashboard/blog-cms',         icon: FileText       },
   { title: 'Authors',             url: '/dashboard/authors',           icon: Users          },
+  { title: 'Panel Applications',  url: '/dashboard/panel-applications', icon: UserCheck     },
   { title: 'Global FAQs',         url: '/dashboard/global-faqs',       icon: HelpCircle     },
   { title: 'Market Data',         url: '/dashboard/market-valuations', icon: LineChart      },
   { title: 'Subscribers',         url: '/dashboard/subscribers',       icon: Mail           },
@@ -204,6 +208,7 @@ export function DashboardSidebar() {
   const location = useLocation();
   const { user } = useAuth();
   const { isSuperAdmin } = useUserRole();
+  const { isMember: isPanelMember } = usePanelMembership();
   const [isDark, setIsDark]     = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(() => groupForPath(location.pathname));
 
@@ -471,6 +476,38 @@ export function DashboardSidebar() {
             </nav>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* ── Expert Panel (approved members) ─────────────────────────────── */}
+        {isPanelMember && (
+          <>
+            <SidebarSeparator className="my-2" />
+            <SidebarGroup>
+              <SidebarGroupLabel className="flex items-center gap-2 text-sidebar-foreground/70 px-3 py-2">
+                <PenLine className="h-4 w-4" />
+                <span className="font-semibold">Expert Panel</span>
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu className="space-y-1 px-2">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="group">
+                      <Link
+                        to="/dashboard/my-articles"
+                        className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                          isSubActive('/dashboard/my-articles')
+                            ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm'
+                            : 'text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent'
+                        }`}
+                      >
+                        <FileText className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+                        <span className="font-medium">My Articles</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
 
         {/* ── Admin tools ─────────────────────────────────────────────────── */}
         {isSuperAdmin && (

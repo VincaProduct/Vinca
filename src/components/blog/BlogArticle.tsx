@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { supabase } from '@/integrations/supabase/client';
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from 'react-helmet-async';
 import ReactMarkdown from 'react-markdown';
@@ -129,6 +130,19 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   useEffect(() => {
     if (previewPost) setArticle(previewPost);
   }, [previewPost]);
+
+  // Count one view per reader per visit (Expert Panel members see these in My Articles)
+  useEffect(() => {
+    if (previewPost || !article?.id) return;
+    const key = `post-view:${article.id}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch {
+      // sessionStorage unavailable: still count it
+    }
+    supabase.rpc('record_blog_post_view', { _post_id: article.id }).then(() => undefined, () => undefined);
+  }, [article?.id, previewPost]);
 
   useEffect(() => {
     if (!article) return;

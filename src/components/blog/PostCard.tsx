@@ -41,6 +41,11 @@ export const PostCard = ({ post, onEdit, onDelete }: PostCardProps) => {
               <Badge className={getStatusColor(post.status || 'draft')}>
                 {post.status}
               </Badge>
+              {post.status === 'draft' && post.submitted_at && (
+                <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                  In review (Expert Panel)
+                </Badge>
+              )}
               <span>{post.category}</span>
               <span>{post.read_time}</span>
               <span>

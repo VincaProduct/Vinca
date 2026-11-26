@@ -72,6 +72,8 @@ export type Database = {
           read_time: string | null
           slug: string
           status: string | null
+          submitted_at: string | null
+          submitted_by: string | null
           subtitle: string | null
           table_of_contents: Json | null
           title: string
@@ -101,6 +103,8 @@ export type Database = {
           read_time?: string | null
           slug: string
           status?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
           title: string
@@ -130,6 +134,8 @@ export type Database = {
           read_time?: string | null
           slug?: string
           status?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
           subtitle?: string | null
           table_of_contents?: Json | null
           title?: string
@@ -1012,6 +1018,102 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_post_views: {
+        Row: {
+          day: string
+          post_id: string
+          views: number
+        }
+        Insert: {
+          day?: string
+          post_id: string
+          views?: number
+        }
+        Update: {
+          day?: string
+          post_id?: string
+          views?: number
+        }
+        Relationships: []
+      }
+      expert_panel_applications: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          linkedin_url: string | null
+          occupation: string
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sample_url: string | null
+          status: string
+          topics: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          linkedin_url?: string | null
+          occupation: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sample_url?: string | null
+          status?: string
+          topics: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          linkedin_url?: string | null
+          occupation?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sample_url?: string | null
+          status?: string
+          topics?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expert_panel_members: {
+        Row: {
+          approved_at: string
+          approved_by: string | null
+          author_id: string | null
+          created_at: string
+          level: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string
+          approved_by?: string | null
+          author_id?: string | null
+          created_at?: string
+          level?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string
+          approved_by?: string | null
+          author_id?: string | null
+          created_at?: string
+          level?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       raise_posts: {
         Row: {
           base_votes: number
@@ -1437,6 +1539,36 @@ export type Database = {
       get_current_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      approve_expert_panel_application: {
+        Args: { _application_id: string }
+        Returns: string
+      }
+      get_my_article_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          published_at: string | null
+          slug: string
+          status: string | null
+          submitted_at: string | null
+          title: string
+          total_views: number
+          updated_at: string
+          views_30d: number
+        }[]
+      }
+      is_panel_member: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
+      panel_author_id: {
+        Args: { _user_id: string }
+        Returns: string | null
+      }
+      record_blog_post_view: {
+        Args: { _post_id: string }
+        Returns: undefined
       }
       get_raise_board: {
         Args: Record<PropertyKey, never>
