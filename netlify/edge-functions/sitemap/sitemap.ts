@@ -109,6 +109,13 @@ export default async (request: Request) => {
     <priority>0.7</priority>
   </url>
 
+  <!-- Expert Panel -->
+  <url>
+    <loc>${baseUrl}/expert-panel</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
   <!-- Events -->
   <url>
     <loc>${baseUrl}/events</loc>

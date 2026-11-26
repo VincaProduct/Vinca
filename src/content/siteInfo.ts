@@ -71,6 +71,11 @@ export const PAGE_SEO: Record<string, { title: string; description: string }> = 
     description:
       'Upcoming Vinca Wealth events and webinars on mutual funds, retirement planning and financial freedom, online and in Bengaluru.',
   },
+  '/expert-panel': {
+    title: 'Expert Panel | Write for Vinca Wealth',
+    description:
+      'Join the Vinca Expert Panel: a selected panel of finance writers and professionals. Publish under your own name, get a profile page and track how your articles perform.',
+  },
   '/privacy-policy': {
     title: 'Privacy Policy | Vinca Wealth',
     description: 'How Vinca Wealth collects, uses and protects your personal information.',

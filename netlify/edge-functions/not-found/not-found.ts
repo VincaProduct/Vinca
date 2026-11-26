@@ -17,6 +17,7 @@ const KNOWN_ROUTES: RegExp[] = [
   /^\/real-worth-calculator$/,
   /^\/auth(\/.*)?$/,
   /^\/privacy-policy$/,
+  /^\/expert-panel$/,
   /^\/events(\/[^/]+(\/confirmation)?)?$/,
   /^\/dashboard(\/.*)?$/,
 ];

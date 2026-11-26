@@ -49,6 +49,8 @@ const FFRChecklist = lazy(() => import("./pages/ffr/FFRChecklist"));
 const FFROpportunities = lazy(() => import("./pages/ffr/FFROpportunities"));
 const UnifiedFFRPage = lazy(() => import("./pages/ffr/UnifiedFFRPage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const ExpertPanelPage = lazy(() => import("./pages/ExpertPanelPage"));
+const ExpertPanelApplyPage = lazy(() => import("./pages/dashboard/ExpertPanelApplyPage"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
 const MarketDataPage = lazy(() => import("./pages/dashboard/MarketDataPage"));
@@ -93,6 +95,7 @@ const App = () => (
                   <Route path="/achievers-club" element={<Navigate to="/" replace />} />
                   <Route path="/pricing" element={<Navigate to="/" replace />} />
                   <Route path="/buy-membership" element={<Navigate to="/" replace />} />
+                  <Route path="/expert-panel" element={<ExpertPanelPage />} />
                   <Route path="/events" element={<EventsPage />} />
                   <Route path="/events/:id" element={<EventDetailPage />} />
                   <Route path="/events/:id/confirmation" element={<EventConfirmationPage />} />
@@ -132,6 +135,7 @@ const App = () => (
                     <Route path="investment-opportunities" element={<Navigate to="/dashboard" replace />} />
                     <Route path="refer" element={<ReferFriend />} />
                     <Route path="support" element={<SupportPage />} />
+                    <Route path="expert-panel" element={<ExpertPanelApplyPage />} />
 
                     <Route path="blog-cms" element={<BlogCMSDashboard />} />
                     <Route path="authors" element={<AuthorsDashboard />} />
