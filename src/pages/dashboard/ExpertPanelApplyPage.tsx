@@ -121,7 +121,7 @@ const ExpertPanelApplyPage = () => {
             <h1 className="text-2xl font-bold text-foreground">Your application is under review</h1>
             <p className="text-muted-foreground">
               Sent on {new Date(latest.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}.
-              We review every application and reply within a week. Once you're approved, you can start writing here.
+              We review every application and will reply once we've reviewed yours. Once you're approved, you can start writing here.
             </p>
           </CardContent>
         </Card>

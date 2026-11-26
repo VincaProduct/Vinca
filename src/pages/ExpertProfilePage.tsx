@@ -159,7 +159,7 @@ const ExpertProfilePage = () => {
                 <p className="text-3xl font-bold text-foreground">{profile.total_reads.toLocaleString('en-IN')}</p>
                 <p className="text-sm text-muted-foreground inline-flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  Total reads
+                  Total views
                 </p>
               </div>
             </section>

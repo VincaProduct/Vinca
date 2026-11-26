@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
- * Public Expert Panel page: what the panel is, what members get, the levels
+ * Public Expert Panel page: what the panel is, what members get,
  * and how to apply. Applying uses the normal sign-in (/auth), the same one the
  * team and admins use, then continues inside the dashboard.
  */
@@ -28,44 +28,22 @@ const BENEFITS = [
   {
     icon: UserRound,
     title: 'Your own profile page',
-    text: 'Your own page at vincawealth.com/experts/your-name with your photo, bio, LinkedIn, every article you have published and its total reads.',
+    text: 'Your own page at vincawealth.com/experts/your-name with your photo, bio, LinkedIn, every article you have published and its total views.',
   },
   {
     icon: PenLine,
     title: 'Your byline on every article',
-    text: 'Your name on research-driven articles read by people planning their retirement.',
+    text: 'Your name on research-driven articles, on a platform for people planning their retirement.',
   },
   {
     icon: BarChart3,
     title: 'Proof of your work',
-    text: 'See the views and reads on each of your articles, so you can show real numbers, not just a link.',
+    text: 'See how many times each of your articles has been viewed, so you can show real numbers, not just a link.',
   },
   {
     icon: Award,
     title: 'A title for your CV',
-    text: '"Member, Expert Panel at Vinca Wealth", with a certificate once you have published three articles.',
-  },
-];
-
-const LEVELS = [
-  {
-    title: 'Member',
-    who: 'Writers and early-career finance professionals',
-    points: ['Write and publish articles', 'Profile page and byline', 'Article stats in your dashboard'],
-  },
-  {
-    title: 'Associate',
-    who: 'Members who hold NISM Series V-A certification',
-    points: [
-      'Everything a Member gets',
-      'Work alongside the Vinca team on client portfolio reviews',
-      'Every piece of work is checked by a senior team member',
-    ],
-  },
-  {
-    title: 'Senior Member',
-    who: 'Experienced professionals: wealth managers, CAs, insurance and estate specialists',
-    points: ['Everything an Associate gets', 'Lead topics in your area of expertise', 'Speak at Vinca events'],
+    text: '"Member, Expert Panel at Vinca Wealth".',
   },
 ];
 
@@ -74,7 +52,7 @@ const STEPS = [
   { icon: BadgeCheck, title: 'Get selected', text: 'Our team reviews every application. Not everyone is selected.' },
   { icon: PenLine, title: 'Write', text: 'Write articles on retirement, investing, tax, insurance and financial planning.' },
   { icon: FileCheck2, title: 'Review', text: 'Every article goes through editorial and compliance review before it is published.' },
-  { icon: Users, title: 'Publish and grow', text: 'Your article goes live under your name, and you track how it performs.' },
+  { icon: Users, title: 'Publish', text: 'Approved articles go live under your name, and you can track how they perform.' },
 ];
 
 const CRITERIA = [
@@ -114,7 +92,7 @@ const ExpertPanelPage = () => {
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
               A selected panel of finance writers and professionals helping India plan for retirement. Publish under
-              your own name, build a body of work you can show, and grow with Vinca.
+              your own name and build a body of work you can show.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button size="lg" onClick={handleApply} className="gap-2">
@@ -141,35 +119,6 @@ const ExpertPanelPage = () => {
                   </div>
                   <h3 className="text-lg font-semibold mb-2 text-foreground">{title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Levels */}
-        <section className="py-12 sm:py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold mb-4 text-center text-foreground">
-              Three levels, earned by your work
-            </h2>
-            <p className="text-lg text-muted-foreground text-center mb-10 max-w-2xl mx-auto">
-              Everyone starts as a Member. Move up as you publish, get certified and gain experience.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {LEVELS.map((level, i) => (
-                <div key={level.title} className="rounded-xl border bg-card p-6 flex flex-col">
-                  <p className="text-sm font-medium text-primary mb-1">Level {i + 1}</p>
-                  <h3 className="text-2xl font-display font-bold mb-2 text-foreground">{level.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{level.who}</p>
-                  <ul className="space-y-2 mt-auto">
-                    {level.points.map((point) => (
-                      <li key={point} className="flex gap-2 text-sm text-foreground">
-                        <BadgeCheck className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               ))}
             </div>
