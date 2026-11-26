@@ -28,7 +28,7 @@ const BENEFITS = [
   {
     icon: UserRound,
     title: 'Your own profile page',
-    text: 'A public profile on vincawealth.com with your photo, bio, LinkedIn and every article you have published.',
+    text: 'Your own page at vincawealth.com/experts/your-name with your photo, bio, LinkedIn, every article you have published and its total reads.',
   },
   {
     icon: PenLine,
@@ -229,8 +229,8 @@ const ExpertPanelPage = () => {
               Apply to join <ArrowRight className="h-4 w-4" />
             </Button>
             <p className="mt-8 text-xs text-muted-foreground max-w-2xl mx-auto">
-              Articles published on Vinca Wealth are for education only and are not investment advice. Panel members
-              write in their own name; all articles are reviewed by Vinca before publishing.
+              Articles published on Vinca Wealth are for education only and are not a recommendation to buy or sell any
+              investment. Panel members write in their own name; all articles are reviewed by Vinca before publishing.
             </p>
           </div>
         </section>

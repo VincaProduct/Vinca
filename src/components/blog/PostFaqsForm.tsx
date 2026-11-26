@@ -9,8 +9,9 @@ import type { FaqItem } from '@/lib/faqs';
 interface PostFaqsFormProps {
   items: FaqItem[];
   onChange: (items: FaqItem[]) => void;
-  showGlobalFaqs: boolean;
-  onShowGlobalFaqsChange: (show: boolean) => void;
+  /** Leave out (with onShowGlobalFaqsChange) to hide the company-FAQs switch, e.g. for Expert Panel writers */
+  showGlobalFaqs?: boolean;
+  onShowGlobalFaqsChange?: (show: boolean) => void;
 }
 
 export const PostFaqsForm = ({ items, onChange, showGlobalFaqs, onShowGlobalFaqsChange }: PostFaqsFormProps) => {
@@ -84,6 +85,7 @@ export const PostFaqsForm = ({ items, onChange, showGlobalFaqs, onShowGlobalFaqs
           Add question
         </Button>
 
+        {onShowGlobalFaqsChange && (
         <div className="flex items-start justify-between gap-4 rounded-lg border p-3">
           <div>
             <label htmlFor="show-global-faqs" className="text-sm font-medium">
@@ -100,8 +102,9 @@ export const PostFaqsForm = ({ items, onChange, showGlobalFaqs, onShowGlobalFaqs
               </a>
             </Button>
           </div>
-          <Switch id="show-global-faqs" checked={showGlobalFaqs} onCheckedChange={onShowGlobalFaqsChange} />
+          <Switch id="show-global-faqs" checked={showGlobalFaqs ?? true} onCheckedChange={onShowGlobalFaqsChange} />
         </div>
+        )}
       </CardContent>
     </Card>
   );

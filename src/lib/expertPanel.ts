@@ -91,3 +91,6 @@ export const articleSlug = (title: string) => {
     .slice(0, 80);
   return `${base || 'article'}-${Math.random().toString(36).slice(2, 6)}`;
 };
+
+/** Public portfolio page of an Expert Panel member */
+export const expertProfileUrl = (handle: string) => `https://vincawealth.com/experts/${handle}`;

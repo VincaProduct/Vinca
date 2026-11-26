@@ -59,6 +59,9 @@ export default async (request: Request) => {
     .eq('is_published', true)
     .order('event_date', { ascending: false });
 
+  // Expert Panel members' public profiles (none if the request fails)
+  const { data: experts } = await supabase.rpc('list_expert_handles');
+
   // Use the most recently published post date for the blog listing page lastmod
   const latestPostDate = posts && posts.length > 0
     ? formatDate(posts[0].published_at || posts[0].updated_at)
@@ -115,6 +118,12 @@ export default async (request: Request) => {
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+${((experts as { handle: string; updated_at: string }[] | null) || []).map((expert) => `  <url>
+    <loc>${baseUrl}/experts/${expert.handle}</loc>
+    <lastmod>${formatDate(expert.updated_at)}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`).join('\n')}
 
   <!-- Events -->
   <url>

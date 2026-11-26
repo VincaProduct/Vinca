@@ -54,6 +54,8 @@ const ExpertPanelApplyPage = lazy(() => import("./pages/dashboard/ExpertPanelApp
 const MyArticlesPage = lazy(() => import("./pages/dashboard/MyArticlesPage"));
 const ArticleEditorPage = lazy(() => import("./pages/dashboard/ArticleEditorPage"));
 const PanelApplicationsPage = lazy(() => import("./pages/dashboard/PanelApplicationsPage"));
+const MyProfilePage = lazy(() => import("./pages/dashboard/MyProfilePage"));
+const ExpertProfilePage = lazy(() => import("./pages/ExpertProfilePage"));
 const BlogPreviewPage = lazy(() => import("./pages/BlogPreviewPage"));
 const GlobalFaqsPage = lazy(() => import("./pages/dashboard/GlobalFaqsPage"));
 const MarketDataPage = lazy(() => import("./pages/dashboard/MarketDataPage"));
@@ -99,6 +101,7 @@ const App = () => (
                   <Route path="/pricing" element={<Navigate to="/" replace />} />
                   <Route path="/buy-membership" element={<Navigate to="/" replace />} />
                   <Route path="/expert-panel" element={<ExpertPanelPage />} />
+                  <Route path="/experts/:handle" element={<ExpertProfilePage />} />
                   <Route path="/events" element={<EventsPage />} />
                   <Route path="/events/:id" element={<EventDetailPage />} />
                   <Route path="/events/:id/confirmation" element={<EventConfirmationPage />} />
@@ -141,6 +144,7 @@ const App = () => (
                     <Route path="expert-panel" element={<ExpertPanelApplyPage />} />
                     <Route path="my-articles" element={<MyArticlesPage />} />
                     <Route path="my-articles/:id" element={<ArticleEditorPage />} />
+                    <Route path="my-profile" element={<MyProfilePage />} />
                     <Route
                       path="panel-applications"
                       element={

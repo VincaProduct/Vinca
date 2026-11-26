@@ -18,6 +18,7 @@ const KNOWN_ROUTES: RegExp[] = [
   /^\/auth(\/.*)?$/,
   /^\/privacy-policy$/,
   /^\/expert-panel$/,
+  /^\/experts\/[a-z0-9-]+$/, // unknown handles show the page's own "not found"
   /^\/events(\/[^/]+(\/confirmation)?)?$/,
   /^\/dashboard(\/.*)?$/,
 ];

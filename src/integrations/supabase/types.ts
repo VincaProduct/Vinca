@@ -17,6 +17,10 @@ export type Database = {
       authors: {
         Row: {
           bio: string | null
+          credentials: string | null
+          expertise: string[]
+          handle: string | null
+          location: string | null
           created_at: string
           id: string
           image: string | null
@@ -27,6 +31,10 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          credentials?: string | null
+          expertise?: string[]
+          handle?: string | null
+          location?: string | null
           created_at?: string
           id?: string
           image?: string | null
@@ -37,6 +45,10 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          credentials?: string | null
+          expertise?: string[]
+          handle?: string | null
+          location?: string | null
           created_at?: string
           id?: string
           image?: string | null
@@ -1548,6 +1560,29 @@ export type Database = {
           id: string
           zoho_contact_id: string | null
         }[]
+      }
+      get_expert_profile: {
+        Args: { _handle: string }
+        Returns: {
+          articles_published: number
+          author_id: string
+          bio: string | null
+          credentials: string | null
+          expertise: string[]
+          handle: string
+          image: string | null
+          level: string
+          location: string | null
+          member_since: string
+          name: string
+          profile_url: string | null
+          title: string | null
+          total_reads: number
+        }[]
+      }
+      list_expert_handles: {
+        Args: Record<PropertyKey, never>
+        Returns: { handle: string; updated_at: string }[]
       }
       get_current_user_role: {
         Args: never

@@ -3,9 +3,6 @@ import { Link, Navigate } from 'react-router-dom';
 import { Eye, Loader2, PenLine, Plus, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { usePanelMembership } from '@/hooks/usePanelMembership';
@@ -18,9 +15,6 @@ const MyArticlesPage = () => {
   const { membership, isMember, loading: memberLoading } = usePanelMembership();
   const [articles, setArticles] = useState<MyArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState({ name: '', title: '', bio: '', profile_url: '' });
-  const [savingProfile, setSavingProfile] = useState(false);
-
   const load = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase.rpc('get_my_article_stats');
@@ -32,39 +26,6 @@ const MyArticlesPage = () => {
   useEffect(() => {
     if (isMember) load();
   }, [isMember, load]);
-
-  useEffect(() => {
-    if (!membership?.author_id) return;
-    supabase
-      .from('authors')
-      .select('name, title, bio, profile_url')
-      .eq('id', membership.author_id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setProfile({ name: data.name || '', title: data.title || '', bio: data.bio || '', profile_url: data.profile_url || '' });
-      });
-  }, [membership?.author_id]);
-
-  const saveProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!membership?.author_id) return;
-    setSavingProfile(true);
-    const { error } = await supabase
-      .from('authors')
-      .update({
-        name: profile.name.trim(),
-        title: profile.title.trim() || null,
-        bio: profile.bio.trim() || null,
-        profile_url: profile.profile_url.trim() || null,
-      })
-      .eq('id', membership.author_id);
-    setSavingProfile(false);
-    toast(
-      error
-        ? { title: "Your profile wasn't saved", description: describeDbError(error), variant: 'destructive' }
-        : { title: 'Profile saved', description: 'It appears on every article you publish.' },
-    );
-  };
 
   if (memberLoading) {
     return (
@@ -176,43 +137,19 @@ const MyArticlesPage = () => {
         </CardContent>
       </Card>
 
-      {/* Author profile */}
+      {/* Public profile */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+        <CardContent className="pt-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             <UserRound className="h-5 w-5 text-primary" />
-            Your author profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!membership?.author_id ? (
-            <p className="text-muted-foreground">Your author profile is being set up. Please contact the Vinca team.</p>
-          ) : (
-            <form onSubmit={saveProfile} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name shown on articles</Label>
-                  <Input id="name" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input id="title" placeholder="For example: Finance writer, MBA (Finance)" value={profile.title} onChange={(e) => setProfile({ ...profile, title: e.target.value })} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="bio">Short bio</Label>
-                <Textarea id="bio" rows={3} value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="profile_url">LinkedIn profile</Label>
-                <Input id="profile_url" type="url" value={profile.profile_url} onChange={(e) => setProfile({ ...profile, profile_url: e.target.value })} />
-              </div>
-              <Button type="submit" variant="outline" disabled={savingProfile} className="gap-2">
-                {savingProfile && <Loader2 className="h-4 w-4 animate-spin" />}
-                Save profile
-              </Button>
-            </form>
-          )}
+            <div>
+              <p className="font-medium text-foreground">Your public profile</p>
+              <p className="text-sm text-muted-foreground">Photo, bio and the page you share on LinkedIn and your CV.</p>
+            </div>
+          </div>
+          <Button asChild variant="outline">
+            <Link to="/dashboard/my-profile">Edit my profile</Link>
+          </Button>
         </CardContent>
       </Card>
     </div>

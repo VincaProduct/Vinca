@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Save, Send, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, FileText, ImageIcon, Loader2, Save, Send, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RichTextEditor } from '@/components/blog/RichTextEditor';
+import { ImageUpload } from '@/components/blog/ImageUpload';
+import { SeoFieldsForm } from '@/components/blog/SeoFieldsForm';
+import { KeyTakeawaysForm, MAX_TAKEAWAYS } from '@/components/blog/KeyTakeawaysForm';
+import { PostFaqsForm } from '@/components/blog/PostFaqsForm';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,12 +19,32 @@ import { usePanelMembership } from '@/hooks/usePanelMembership';
 import { describeDbError } from '@/lib/dbErrors';
 import { estimateReadTime } from '@/lib/readTime';
 import { tocFromMarkdown } from '@/lib/toc';
+import { cleanFaqs, type FaqItem } from '@/lib/faqs';
 import type { Json } from '@/integrations/supabase/types';
 import { ARTICLE_CATEGORIES, STAGE_CLASS, STAGE_LABEL, articleSlug, articleStage } from '@/lib/expertPanel';
 
+const MIN_WORDS = 300;
+const MIN_TAKEAWAYS = 3;
+
+const emptyForm = {
+  title: '',
+  subtitle: '',
+  quote: '',
+  category: ARTICLE_CATEGORIES[0],
+  excerpt: '',
+  featured_image: '',
+  content: '',
+  meta_title: '',
+  meta_description: '',
+  focus_keyword: '',
+  key_takeaways: [] as string[],
+  faqs: [] as FaqItem[],
+};
+
 /**
- * Expert Panel members write here. Articles stay drafts until a super admin
- * publishes them from the Blog CMS; "Send for review" marks them ready.
+ * Expert Panel members write here, including the post details (image, SEO,
+ * key takeaways, FAQs). The URL, read time and table of contents are automatic;
+ * CTAs and publishing stay with super admins in the Blog CMS.
  */
 const ArticleEditorPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,21 +54,23 @@ const ArticleEditorPage = () => {
   const { user } = useAuth();
   const { membership, isMember, loading: memberLoading } = usePanelMembership();
 
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState(ARTICLE_CATEGORIES[0]);
-  const [excerpt, setExcerpt] = useState('');
-  const [content, setContent] = useState('');
+  const [form, setForm] = useState(emptyForm);
+  const [slug, setSlug] = useState('');
   const [submittedAt, setSubmittedAt] = useState<string | null>(null);
   const [reviewNote, setReviewNote] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>('draft');
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState<'draft' | 'review' | null>(null);
 
+  const update = (changes: Partial<typeof emptyForm>) => setForm((f) => ({ ...f, ...changes }));
+
   useEffect(() => {
     if (isNew) return;
     supabase
       .from('blog_posts')
-      .select('title, category, excerpt, content, status, submitted_at, review_note')
+      .select(
+        'title, subtitle, quote, category, excerpt, featured_image, content, meta_title, meta_description, focus_keyword, key_takeaways, faqs, slug, status, submitted_at, review_note',
+      )
       .eq('id', id)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -53,10 +79,21 @@ const ArticleEditorPage = () => {
           navigate('/dashboard/my-articles', { replace: true });
           return;
         }
-        setTitle(data.title);
-        setCategory(data.category || ARTICLE_CATEGORIES[0]);
-        setExcerpt(data.excerpt || '');
-        setContent(data.content || '');
+        setForm({
+          title: data.title,
+          subtitle: data.subtitle || '',
+          quote: data.quote || '',
+          category: data.category || ARTICLE_CATEGORIES[0],
+          excerpt: data.excerpt || '',
+          featured_image: data.featured_image || '',
+          content: data.content || '',
+          meta_title: data.meta_title || '',
+          meta_description: data.meta_description || '',
+          focus_keyword: data.focus_keyword || '',
+          key_takeaways: data.key_takeaways || [],
+          faqs: cleanFaqs(data.faqs),
+        });
+        setSlug(data.slug);
         setStatus(data.status);
         setSubmittedAt(data.submitted_at);
         setReviewNote(data.review_note);
@@ -64,40 +101,57 @@ const ArticleEditorPage = () => {
       });
   }, [id, isNew, navigate, toast]);
 
+  /** What's still missing before the article can be sent for review */
+  const missingForReview = () => {
+    const missing: string[] = [];
+    if (form.content.trim().split(/\s+/).filter(Boolean).length < MIN_WORDS) missing.push(`at least ${MIN_WORDS} words`);
+    if (!form.featured_image) missing.push('a featured image');
+    if (!form.meta_title.trim()) missing.push('an SEO title');
+    if (!form.meta_description.trim()) missing.push('a meta description');
+    if (form.key_takeaways.map((t) => t.trim()).filter(Boolean).length < MIN_TAKEAWAYS) missing.push(`${MIN_TAKEAWAYS} key takeaways`);
+    return missing;
+  };
+
   const save = async (mode: 'draft' | 'review') => {
     if (!user || !membership?.author_id) return;
-    if (!title.trim() || !content.trim()) {
+    if (!form.title.trim() || !form.content.trim()) {
       toast({ title: 'Add a title and your article first', variant: 'destructive' });
       return;
     }
-    if (mode === 'review' && content.trim().split(/\s+/).length < 300) {
-      toast({ title: 'A little short for review', description: 'Articles need at least 300 words before you send them for review.', variant: 'destructive' });
-      return;
+    if (mode === 'review') {
+      const missing = missingForReview();
+      if (missing.length) {
+        toast({ title: 'Almost ready for review', description: `Still needed: ${missing.join(', ')}.`, variant: 'destructive' });
+        return;
+      }
     }
 
     setSaving(mode);
     const fields = {
-      title: title.trim(),
-      category,
-      excerpt: excerpt.trim() || null,
-      content,
-      read_time: estimateReadTime(content),
-      table_of_contents: tocFromMarkdown(content) as unknown as Json,
+      title: form.title.trim(),
+      subtitle: form.subtitle.trim() || null,
+      quote: form.quote.trim() || null,
+      category: form.category,
+      excerpt: form.excerpt.trim() || null,
+      featured_image: form.featured_image || null,
+      content: form.content,
+      meta_title: form.meta_title.trim() || null,
+      meta_description: form.meta_description.trim() || null,
+      focus_keyword: form.focus_keyword.trim() || null,
+      key_takeaways: form.key_takeaways.map((t) => t.trim()).filter(Boolean).slice(0, MAX_TAKEAWAYS),
+      faqs: cleanFaqs(form.faqs) as unknown as Json,
+      read_time: estimateReadTime(form.content),
+      table_of_contents: tocFromMarkdown(form.content) as unknown as Json,
       submitted_at: mode === 'review' ? new Date().toISOString() : submittedAt,
       // Sending it again means the feedback has been dealt with
       ...(mode === 'review' ? { review_note: null } : {}),
     };
 
+    const newSlug = slug || articleSlug(form.title);
     const { data, error } = isNew
       ? await supabase
           .from('blog_posts')
-          .insert({
-            ...fields,
-            slug: articleSlug(title),
-            status: 'draft',
-            author_id: membership.author_id,
-            submitted_by: user.id,
-          })
+          .insert({ ...fields, slug: newSlug, status: 'draft', author_id: membership.author_id, submitted_by: user.id })
           .select('id')
           .single()
       : await supabase.from('blog_posts').update(fields).eq('id', id).select('id').single();
@@ -113,7 +167,10 @@ const ArticleEditorPage = () => {
         : { title: 'Draft saved' },
     );
     if (mode === 'review') navigate('/dashboard/my-articles');
-    else if (isNew && data) navigate(`/dashboard/my-articles/${data.id}`, { replace: true });
+    else if (isNew && data) {
+      setSlug(newSlug);
+      navigate(`/dashboard/my-articles/${data.id}`, { replace: true });
+    }
   };
 
   if (memberLoading || loading) {
@@ -162,41 +219,99 @@ const ArticleEditorPage = () => {
             <li>No promises of returns, and no words like "guaranteed" or "risk-free".</li>
             <li>Use your own words. Copied or AI-generated filler is not published.</li>
             <li>Back your points with data, examples or real experience, and name your sources.</li>
+            <li>Only use images you own or are free to use, and describe them for readers who can't see them.</li>
           </ul>
         </CardContent>
       </Card>
 
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title *</Label>
-          <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="A clear title that says what the reader will learn" maxLength={150} />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Post details */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            Post details
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
           <div className="space-y-2">
-            <Label>Category</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ARTICLE_CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="title">Title *</Label>
+            <Input id="title" value={form.title} onChange={(e) => update({ title: e.target.value })} placeholder="A clear title that says what the reader will learn" maxLength={150} />
           </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="excerpt">Summary (one or two lines)</Label>
-          <Textarea id="excerpt" rows={2} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} maxLength={300} />
-        </div>
-        <div className="space-y-2">
-          <Label>Your article *</Label>
-          <RichTextEditor content={content} onContentChange={setContent} />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="subtitle">Subtitle</Label>
+            <Input id="subtitle" value={form.subtitle} onChange={(e) => update({ subtitle: e.target.value })} placeholder="One line that adds to the title" maxLength={200} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Category *</Label>
+              <Select value={form.category} onValueChange={(category) => update({ category })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ARTICLE_CATEGORIES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Read time</Label>
+              <p className="h-10 flex items-center text-sm text-muted-foreground">{estimateReadTime(form.content) || 'Worked out from your article'}</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="excerpt">Summary (one or two lines)</Label>
+            <Textarea id="excerpt" rows={2} value={form.excerpt} onChange={(e) => update({ excerpt: e.target.value })} maxLength={300} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="quote">Quote (optional)</Label>
+            <Textarea id="quote" rows={2} value={form.quote} onChange={(e) => update({ quote: e.target.value })} placeholder="A short quote shown in the article, with who said it" maxLength={300} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Featured image */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ImageIcon className="h-5 w-5 text-primary" />
+            Featured image *
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ImageUpload
+            folder="posts"
+            label="Upload featured image"
+            currentImage={form.featured_image || undefined}
+            onImageUploaded={(url) => update({ featured_image: url })}
+            onImageRemoved={() => update({ featured_image: '' })}
+          />
+        </CardContent>
+      </Card>
+
+      {/* The article */}
+      <div className="space-y-2">
+        <Label className="text-base">Your article *</Label>
+        <RichTextEditor content={form.content} onContentChange={(content) => update({ content })} />
       </div>
+
+      <KeyTakeawaysForm items={form.key_takeaways} onChange={(key_takeaways) => update({ key_takeaways })} />
+
+      <SeoFieldsForm
+        metaTitle={form.meta_title}
+        metaDescription={form.meta_description}
+        focusKeyword={form.focus_keyword}
+        title={form.title}
+        excerpt={form.excerpt}
+        slug={slug || articleSlug(form.title || 'your-article').replace(/-[a-z0-9]{4}$/, '')}
+        content={form.content}
+        onUpdate={(changes) => update(changes)}
+      />
+
+      <PostFaqsForm items={form.faqs} onChange={(faqs) => update({ faqs })} />
 
       <div className="flex flex-wrap gap-3 pt-2">
         <Button variant="outline" onClick={() => save('draft')} disabled={saving !== null} className="gap-2">
@@ -208,6 +323,9 @@ const ArticleEditorPage = () => {
           {stage === 'in_review' ? 'Send updated version for review' : 'Send for review'}
         </Button>
       </div>
+      <p className="text-xs text-muted-foreground">
+        To send for review: {MIN_WORDS}+ words, a featured image, an SEO title, a meta description and {MIN_TAKEAWAYS} key takeaways.
+      </p>
     </div>
   );
 };
