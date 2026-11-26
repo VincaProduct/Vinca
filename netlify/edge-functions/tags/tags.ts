@@ -246,7 +246,7 @@ const renderMarkdown = (content: string, toc: TocItem[], ctas: PlacedCta[]) => {
         const set = srcSet(href, [640, 960, 1280]);
         return `<img src="${escapeHtml(optimizedImage(href, 960))}"${
           set ? ` srcset="${escapeHtml(set)}" sizes="(min-width: 1024px) 800px, 100vw"` : ""
-        } alt="${escapeHtml(text)}"${title ? ` title="${escapeHtml(title)}"` : ""} loading="lazy" decoding="async">`;
+        } alt="${escapeHtml(text)}"${title ? ` title="${escapeHtml(title)}"` : ""} class="block h-auto w-full rounded-lg" loading="lazy" decoding="async">`;
       },
       table(header: string, body: string) {
         return `<div class="my-6 w-full overflow-x-auto"><table><thead>${header}</thead><tbody>${body}</tbody></table></div>\n`;

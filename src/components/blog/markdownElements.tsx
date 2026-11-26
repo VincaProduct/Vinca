@@ -31,6 +31,9 @@ export const markdownElements: Components = {
       src={optimizedImage(src, 960)}
       srcSet={imageSrcSet(src, [640, 960, 1280])}
       sizes="(min-width: 1024px) 800px, 100vw"
+      // Always as wide as the text column: a small upload with a large srcset
+      // width would otherwise be drawn at a fraction of its size
+      className="block h-auto w-full rounded-lg"
       alt={alt || ""}
       loading="lazy"
       decoding="async"
