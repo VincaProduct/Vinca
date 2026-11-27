@@ -35,19 +35,21 @@ const ExpertPanelApplyPage = () => {
   });
   const update = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  // Keyed on the id: the user object changes whenever the tab regains focus
+  const userId = user?.id;
   const loadLatest = useCallback(async () => {
-    if (!user) return;
+    if (!userId) return;
     setLoading(true);
     const { data } = await supabase
       .from('expert_panel_applications')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
     setLatest((data as PanelApplication | null) ?? null);
     setLoading(false);
-  }, [user]);
+  }, [userId]);
 
   useEffect(() => {
     loadLatest();

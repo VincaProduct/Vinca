@@ -2,7 +2,9 @@ import { useState, useEffect, Suspense } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, TrendingUp, Shield, Sprout, Star, User, LogOut, LineChart, UserPlus, ExternalLink, Video, ChevronRight } from 'lucide-react';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { DashboardSidebar, NAV, type SubItem } from './DashboardSidebar';
+import { DashboardSidebar, NAV, adminMenuItems, memberMenuItems, type SubItem } from './DashboardSidebar';
+import { usePanelMembership } from '@/hooks/usePanelMembership';
+import { useUserRole } from '@/hooks/useUserRole';
 import { DashboardHeader } from './DashboardHeader';
 import {
   FinancialPlanningProvider,
@@ -53,6 +55,14 @@ function MobileScoreHeader() {
     navigate(url);
   };
 
+  // The sidebar's Admin Tools aren't on phones: list them in this menu instead
+  const { isMember } = usePanelMembership();
+  const { isSuperAdmin } = useUserRole();
+  const toolGroups = [
+    { label: 'Expert Panel', items: isMember ? memberMenuItems : [] },
+    { label: 'Admin Tools', items: isSuperAdmin ? adminMenuItems : [] },
+  ].filter((g) => g.items.length > 0);
+
   return (
     <>
       <div
@@ -97,7 +107,7 @@ function MobileScoreHeader() {
             <p className="text-xs text-muted-foreground text-left -mt-1">{user?.email}</p>
           </DrawerHeader>
 
-          <div className="px-4 pb-8 pt-4 space-y-1">
+          <div className="px-4 pb-8 pt-4 space-y-1 max-h-[70vh] overflow-y-auto">
             <button
               onClick={() => handleNavItem('/dashboard/ffr')}
               className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
@@ -121,6 +131,23 @@ function MobileScoreHeader() {
               <UserPlus className="h-4 w-4 text-muted-foreground" />
               Refer a Friend
             </button>
+
+            {toolGroups.map((group) => (
+              <div key={group.label} className="pt-2">
+                <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{group.label}</p>
+                {group.items.map(({ title, url, icon: Icon }) => (
+                  <button
+                    key={url}
+                    onClick={() => handleNavItem(url)}
+                    className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-left hover:bg-accent transition-colors"
+                  >
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    {title}
+                  </button>
+                ))}
+              </div>
+            ))}
+            {toolGroups.length > 0 && <div className="w-full h-px bg-border my-2" />}
 
             <button
               onClick={() => handleNavItem('/')}

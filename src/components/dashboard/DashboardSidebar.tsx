@@ -148,12 +148,12 @@ export const NAV: NavGroup[] = [
 ];
 
 // Expert Panel members see their own tools under the same Admin Tools heading
-const memberMenuItems = [
+export const memberMenuItems = [
   { title: 'My Articles', url: '/dashboard/my-articles', icon: PenLine },
   { title: 'My Profile',  url: '/dashboard/my-profile',  icon: User    },
 ];
 
-const adminMenuItems = [
+export const adminMenuItems = [
   { title: 'Blog CMS',            url: '/dashboard/blog-cms',         icon: FileText       },
   { title: 'Authors',             url: '/dashboard/authors',           icon: Users          },
   { title: 'Panel Applications',  url: '/dashboard/panel-applications', icon: UserCheck     },

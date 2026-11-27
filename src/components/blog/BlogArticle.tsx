@@ -22,6 +22,9 @@ import { readSsrData } from "@/lib/ssrData";
 import { postDescription, postPageTitle } from "@/lib/postSeo";
 import { optimizedImage, imageSrcSet } from "@/lib/images";
 import { KeyTakeawaysBox } from "@/components/blog/KeyTakeawaysBox";
+import { ArticleAuthorLine, ArticleAuthorAbout, ArticleDisclaimer, type ArticleAuthorInfo } from "@/components/blog/ArticleAuthor";
+import { stripTrailingDisclaimer } from "@/content/articleCompliance";
+import { readerId } from "@/lib/readerId";
 import { BlogFaqSection } from "@/components/blog/BlogFaqSection";
 import { pickRelatedPosts, type RelatedCandidate } from "@/lib/relatedPosts";
 
@@ -33,6 +36,7 @@ type BlogPost = Tables<'blog_posts'> & {
     bio: string | null;
     image: string | null;
     profile_url?: string | null;
+    handle?: string | null;
   } | null;
   /** Picked by the server-rendered page, so they show before the post list loads */
   related_posts?: RelatedPost[];
@@ -131,17 +135,22 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
     if (previewPost) setArticle(previewPost);
   }, [previewPost]);
 
-  // Count one view per reader per visit (Expert Panel members see these in My Articles)
+  // Count a view (Expert Panel members see these in My Articles). The database
+  // counts each reader once per article per day, and skips the writer and admins.
   useEffect(() => {
     if (previewPost || !article?.id) return;
+    const reader = readerId();
+    if (!reader) return; // a bot, or storage blocked
     const key = `post-view:${article.id}`;
     try {
       if (sessionStorage.getItem(key)) return;
       sessionStorage.setItem(key, '1');
     } catch {
-      // sessionStorage unavailable: still count it
+      // ignore: the database still counts this reader once a day
     }
-    supabase.rpc('record_blog_post_view', { _post_id: article.id }).then(() => undefined, () => undefined);
+    (supabase as any)
+      .rpc('record_blog_post_view', { _post_id: article.id, _reader: reader })
+      .then(() => undefined, () => undefined);
   }, [article?.id, previewPost]);
 
   useEffect(() => {
@@ -192,6 +201,16 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
   }
 
   const blogUrl = `https://vincawealth.com/blog/${article.slug}`;
+  const authorInfo: ArticleAuthorInfo = {
+    name: article.author?.name || article.author_name || 'Vinca Wealth',
+    title: article.author?.title || article.author_title,
+    bio: article.author?.bio || article.author_bio,
+    image: article.author?.image || article.author_image,
+    profileUrl: article.author?.profile_url,
+    handle: article.author?.handle,
+  };
+  // A disclaimer typed at the end is dropped: the standard one is added below
+  const articleContent = stripTrailingDisclaimer(article.content);
   const ogImage = article.featured_image || 'https://vincawealth.com/og-image.png';
   const seoTitle = article.meta_title || article.title;
   const description = postDescription(article);
@@ -331,36 +350,7 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
 
               {/* Article Actions */}
               <div className="flex items-center justify-between py-4 sm:py-6 border-y border-border mb-8 sm:mb-12">
-                <div className="flex items-center gap-3">
-                  {article.author?.image && (
-                    <img
-                      src={optimizedImage(article.author.image, 96)}
-                      alt={article.author.name || 'Author'}
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
-                    />
-                  )}
-                  <div>
-                    <div className="font-semibold text-sm sm:text-base">
-                      {article.author?.profile_url ? (
-                        <a
-                          href={article.author.profile_url}
-                          target="_blank"
-                          rel="author noopener"
-                          className="hover:text-primary hover:underline"
-                        >
-                          {article.author.name}
-                        </a>
-                      ) : (
-                        article.author?.name || article.author_name || 'Anonymous'
-                      )}
-                    </div>
-                    {(article.author?.title || article.author_title) && (
-                      <div className="text-xs sm:text-sm text-muted-foreground">
-                        {article.author?.title || article.author_title}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <ArticleAuthorLine author={authorInfo} />
                 <ShareButton url={blogUrl} />
               </div>
 
@@ -386,13 +376,13 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
               {/* Article Content with integrated CTAs */}
               {article.table_of_contents && (article.table_of_contents as unknown as TOCItem[]).length > 0 ? (
                 <BlogContentWithAnchors
-                  content={article.content}
+                  content={articleContent}
                   tocItems={article.table_of_contents as unknown as TOCItem[]}
                   ctas={ctas}
                   blogPostId={article.id}
                 />
               ) : (
-                <BlogContentWithInlineCTAs content={article.content} ctas={ctas} blogPostId={article.id} />
+                <BlogContentWithInlineCTAs content={articleContent} ctas={ctas} blogPostId={article.id} />
               )}
 
               {/* Bottom CTAs, just before the FAQs */}
@@ -401,34 +391,11 @@ const BlogArticle = ({ slug: propSlug, previewPost }: BlogArticleProps) => {
               {/* FAQs: the post's own, then the company FAQs */}
               <BlogFaqSection postFaqs={article.faqs} showGlobalFaqs={!article.hide_global_faqs} />
 
-              {/* Author Bio */}
-              {(article.author?.bio || article.author_bio) && (
-                <div className="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
-                  <h3 className="text-lg sm:text-xl font-display font-bold mb-4">About the Author</h3>
-                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-                    {(article.author?.image || article.author_image) && (
-                      <img
-                        src={article.author?.image || article.author_image || ''}
-                        alt={article.author?.name || article.author_name || 'Author'}
-                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover mx-auto sm:mx-0"
-                      />
-                    )}
-                    <div className="text-center sm:text-left">
-                      <h4 className="font-semibold text-base sm:text-lg mb-1">
-                        {article.author?.name || article.author_name}
-                      </h4>
-                      {(article.author?.title || article.author_title) && (
-                        <p className="text-sm text-muted-foreground mb-3">
-                          {article.author?.title || article.author_title}
-                        </p>
-                      )}
-                      <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                        {article.author?.bio || article.author_bio}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* About the author */}
+              {(authorInfo.bio || authorInfo.handle) && <ArticleAuthorAbout author={authorInfo} />}
+
+              {/* Disclaimer, added to every article automatically */}
+              <ArticleDisclaimer expert={!!article.submitted_by} />
             </div>
 
             {/* Table of Contents Sidebar */}

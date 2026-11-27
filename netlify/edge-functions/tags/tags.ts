@@ -4,6 +4,7 @@ import { Marked } from "https://esm.sh/marked@11.1.1";
 import { postDescription, postPageTitle } from "../../../src/lib/postSeo.ts";
 import { organizationSchema } from "../../../src/content/siteInfo.ts";
 import { pickRelatedPosts, type RelatedCandidate } from "../../../src/lib/relatedPosts.ts";
+import { ARTICLE_DISCLAIMER, EXPERT_VIEWS_NOTE, authorInitials, expertPagePath, isLinkedInUrl, stripTrailingDisclaimer } from "../../../src/content/articleCompliance.ts";
 import {
   CTA_SLOT_PATTERN,
   ctaHref,
@@ -216,6 +217,36 @@ const renderFaqs = (faqs: Faq[]) => {
             </section>`;
 };
 
+// Same look as the app's ArticleAuthor.tsx (author box, Vinca Verified, links, disclaimer)
+const VERIFIED_TICK = (cls: string) =>
+  `<svg viewBox="0 0 24 24" class="${cls} flex-shrink-0 text-primary" aria-hidden="true"><path fill="currentColor" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4" fill="none" stroke="hsl(var(--background))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LINKEDIN_ICON = '<svg viewBox="0 0 24 24" class="h-4 w-4 text-[#0A66C2]" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>';
+
+const renderAuthorAvatar = (name: string, image: string | null | undefined, size: "sm" | "lg") => {
+  const box = size === "sm" ? "w-10 h-10 sm:w-12 sm:h-12 text-sm" : "w-16 h-16 sm:w-20 sm:h-20 text-xl";
+  return image
+    ? `<img src="${escapeHtml(optimizedImage(image, size === "sm" ? 96 : 160))}" alt="${escapeHtml(name)}" width="${size === "sm" ? 48 : 80}" height="${size === "sm" ? 48 : 80}" class="${box} rounded-full object-cover flex-shrink-0">`
+    : `<span aria-hidden="true" class="${box} flex flex-shrink-0 items-center justify-center rounded-full bg-primary/15 font-bold text-primary">${escapeHtml(authorInitials(name))}</span>`;
+};
+
+const renderAuthorLinks = (name: string, url: string | null, page: string | null) => {
+  if (!url && !page) return "";
+  const urlLink = url
+    ? `<a href="${escapeHtml(url)}" target="_blank" rel="author noopener" class="inline-flex items-center gap-1.5 font-medium text-muted-foreground hover:text-primary">${
+        isLinkedInUrl(url) ? `${LINKEDIN_ICON} LinkedIn` : "Website"
+      }</a>`
+    : "";
+  const pageLink = page
+    ? `<a href="${escapeHtml(page)}" class="inline-flex items-center gap-1 font-semibold text-primary hover:underline">View all articles by ${escapeHtml(name.split(" ")[0])} →</a>`
+    : "";
+  return `<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">${urlLink}${pageLink}</div>`;
+};
+
+const renderDisclaimer = (expert: boolean) =>
+  `<aside aria-label="Disclaimer" class="mt-10 rounded-lg bg-muted/50 px-4 py-3 sm:px-5 sm:py-4 text-xs sm:text-[13px] leading-relaxed text-muted-foreground"><span class="font-semibold text-foreground/80">Disclaimer: </span>${
+    expert ? `${escapeHtml(EXPERT_VIEWS_NOTE)} ` : ""
+  }${escapeHtml(ARTICLE_DISCLAIMER)}</aside>`;
+
 const renderMarkdown = (content: string, toc: TocItem[], ctas: PlacedCta[]) => {
   const anchors = new Map<string, string>();
   toc.forEach((item) => {
@@ -337,6 +368,8 @@ const renderPost = (post: Row) => {
   const authorTitle = post.author?.title || post.author_title;
   const authorImage = post.author?.image || post.author_image;
   const authorBio = post.author?.bio || post.author_bio;
+  const authorUrl: string | null = post.author?.profile_url || null;
+  const authorPage = expertPagePath(post.author?.handle);
   const published = post.published_at || post.created_at;
   const image = post.featured_image as string | null;
   const imageSet = image ? srcSet(image, [640, 960, 1280, 1600]) : "";
@@ -378,11 +411,12 @@ const renderPost = (post: Row) => {
             </div>` : ""}
 
             <div class="flex items-center justify-between py-4 sm:py-6 border-y border-border mb-8 sm:mb-12">
-              <div class="flex items-center gap-3">
-                ${authorImage ? `<img src="${escapeHtml(optimizedImage(authorImage, 96))}" alt="${escapeHtml(authorName)}" width="48" height="48" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover">` : ""}
-                <div>
-                  <div class="font-semibold text-sm sm:text-base">${post.author?.profile_url ? `<a href="${escapeHtml(post.author.profile_url)}" rel="author noopener" target="_blank" class="hover:text-primary hover:underline">${escapeHtml(authorName)}</a>` : escapeHtml(authorName)}</div>
+              <div class="flex items-center gap-3 min-w-0">
+                ${renderAuthorAvatar(authorName, authorImage, "sm")}
+                <div class="min-w-0 space-y-0.5">
+                  <div class="flex flex-wrap items-center gap-1.5 font-semibold text-sm sm:text-base">${authorPage ? `<a href="${escapeHtml(authorPage)}" class="hover:text-primary">${escapeHtml(authorName)}</a>` : escapeHtml(authorName)}<span title="Vinca Verified" class="inline-flex">${VERIFIED_TICK("h-4 w-4")}<span class="sr-only">Vinca Verified</span></span></div>
                   ${authorTitle ? `<div class="text-xs sm:text-sm text-muted-foreground">${escapeHtml(authorTitle)}</div>` : ""}
+                  ${renderAuthorLinks(authorName, authorUrl, authorPage)}
                 </div>
               </div>
             </div>
@@ -396,20 +430,28 @@ const renderPost = (post: Row) => {
             ${renderSubscribe("subscribe-mobile", "lg:hidden mb-8")}
 
             <div class="blog-content prose prose-lg max-w-none dark:prose-invert prose-headings:scroll-mt-24">
-              ${renderMarkdown(post.content, toc, ctas)}
+              ${renderMarkdown(stripTrailingDisclaimer(post.content), toc, ctas)}
             </div>
 
             ${renderCtas(ctas, "bottom")}
 
             ${renderFaqs(postFaqs(post))}
 
-            ${authorBio ? `
+            ${authorBio || authorPage ? `
             <div class="mt-12 sm:mt-16 p-6 sm:p-8 bg-muted/30 rounded-lg">
               <h2 class="text-lg sm:text-xl font-display font-bold mb-4">About the Author</h2>
-              <p class="font-semibold text-base sm:text-lg mb-1">${escapeHtml(authorName)}</p>
-              ${authorTitle ? `<p class="text-sm text-muted-foreground mb-3">${escapeHtml(authorTitle)}</p>` : ""}
-              <p class="text-sm sm:text-base text-muted-foreground leading-relaxed">${escapeHtml(authorBio)}</p>
+              <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <div class="mx-auto sm:mx-0">${renderAuthorAvatar(authorName, authorImage, "lg")}</div>
+                <div class="text-center sm:text-left space-y-2">
+                  <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2"><p class="font-semibold text-base sm:text-lg">${escapeHtml(authorName)}</p><span class="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">${VERIFIED_TICK("h-3.5 w-3.5")}Vinca Verified</span></div>
+                  ${authorTitle ? `<p class="text-sm text-muted-foreground">${escapeHtml(authorTitle)}</p>` : ""}
+                  ${authorBio ? `<p class="text-sm sm:text-base text-muted-foreground leading-relaxed">${escapeHtml(authorBio)}</p>` : ""}
+                  <div class="flex justify-center sm:justify-start pt-1">${renderAuthorLinks(authorName, authorUrl, authorPage)}</div>
+                </div>
+              </div>
             </div>` : ""}
+
+            ${renderDisclaimer(!!post.submitted_by)}
           </div>
 
           <aside class="hidden lg:block w-80 flex-shrink-0 space-y-6"><div class="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col gap-6"><div class="min-h-0 flex-1 space-y-6 overflow-y-auto">${hasToc ? renderToc(toc) : ""}${renderCtas(ctas, "below_toc")}</div>${renderSubscribe("subscribe-sidebar", "shrink-0")}</div></aside>
