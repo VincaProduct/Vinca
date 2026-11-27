@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import VerifiedBadge from '@/components/experts/VerifiedBadge';
 import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Award, BookOpen, Eye, GraduationCap, Linkedin, Loader2, MapPin } from 'lucide-react';
@@ -118,7 +119,10 @@ const ExpertProfilePage = () => {
                   <Award className="h-3.5 w-3.5" />
                   {levelLabel}, Expert Panel at Vinca Wealth
                 </p>
-                <h1 className="text-3xl sm:text-4xl font-display font-bold text-foreground">{profile.name}</h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-3xl sm:text-4xl font-display font-bold text-foreground">{profile.name}</h1>
+                  <VerifiedBadge />
+                </div>
                 {profile.title && <p className="text-lg text-muted-foreground">{profile.title}</p>}
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                   {profile.location && (

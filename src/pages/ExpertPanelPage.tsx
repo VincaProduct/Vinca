@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import FeaturedExperts from '@/components/experts/FeaturedExperts';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -104,6 +105,9 @@ const ExpertPanelPage = () => {
             </div>
           </div>
         </section>
+
+        {/* Verified writers who have published (shows nothing until someone has) */}
+        <FeaturedExperts limit={5} />
 
         {/* What members get */}
         <section className="py-12 sm:py-16 bg-muted/30">

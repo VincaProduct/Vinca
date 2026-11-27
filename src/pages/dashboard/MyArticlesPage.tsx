@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Eye, Loader2, PenLine, Plus, UserRound } from 'lucide-react';
+import { Eye, Loader2, PenLine, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { usePanelMembership } from '@/hooks/usePanelMembership';
+import ShareProfileCard from '@/components/experts/ShareProfileCard';
 import { describeDbError } from '@/lib/dbErrors';
 import { LEVEL_LABEL, STAGE_CLASS, STAGE_LABEL, articleStage, type MyArticle } from '@/lib/expertPanel';
 
@@ -137,21 +138,8 @@ const MyArticlesPage = () => {
         </CardContent>
       </Card>
 
-      {/* Public profile */}
-      <Card>
-        <CardContent className="pt-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <UserRound className="h-5 w-5 text-primary" />
-            <div>
-              <p className="font-medium text-foreground">Your public profile</p>
-              <p className="text-sm text-muted-foreground">Photo, bio and the page you share on LinkedIn and your CV.</p>
-            </div>
-          </div>
-          <Button asChild variant="outline">
-            <Link to="/dashboard/my-profile">Edit my profile</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Public profile, ready to share */}
+      <ShareProfileCard authorId={membership?.author_id} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Copy, ExternalLink, Loader2, UserRound } from 'lucide-react';
+import { Loader2, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { usePanelMembership } from '@/hooks/usePanelMembership';
 import { describeDbError } from '@/lib/dbErrors';
 import { LEVEL_LABEL, expertProfileUrl } from '@/lib/expertPanel';
+import ShareProfileCard from '@/components/experts/ShareProfileCard';
 
 const HANDLE_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -124,37 +125,7 @@ const MyProfilePage = () => {
         </p>
       </div>
 
-      {publicUrl && (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="pt-6 flex flex-wrap items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Your public page</p>
-              <p className="font-medium text-foreground break-all">{publicUrl.replace(/^https?:\/\//, '')}</p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="gap-2"
-                onClick={() => {
-                  navigator.clipboard?.writeText(publicUrl);
-                  toast({ title: 'Link copied' });
-                }}
-              >
-                <Copy className="h-4 w-4" />
-                Copy link
-              </Button>
-              <Button asChild size="sm" className="gap-2">
-                <a href={`/experts/${savedHandle}`} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4" />
-                  View
-                </a>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {publicUrl && <ShareProfileCard handle={savedHandle} name={profile.name} showEditLink={false} />}
 
       <Card>
         <CardHeader>
